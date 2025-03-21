@@ -14,31 +14,18 @@ const { title = "bdougie on the internet", description = "Personal blog and webs
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <!-- Use absolute paths for all assets -->
+    <!-- Place theme script before any stylesheets or other resources to prevent flicker -->
+    <script is:inline>
+      // Execute immediately during page load
+      const theme = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      localStorage.setItem('theme', theme);
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <script>
-      // Check for saved theme preference or use system preference
-      const theme = (() => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-          return localStorage.getItem('theme');
-        }
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
-        }
-        return 'light';
-      })();
-      
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-
-      window.localStorage.setItem('theme', theme);
-    </script>
     <!-- Force the base URL to ensure all relative URLs resolve correctly -->
     <base href="/" />
   </head>
