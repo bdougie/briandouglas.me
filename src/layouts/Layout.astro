@@ -1,5 +1,6 @@
 ---
 import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title?: string;
@@ -14,33 +15,19 @@ const { title = "bdougie on the internet", description = "Personal blog and webs
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <!-- Use absolute paths for all assets -->
+    <!-- Place theme script before any stylesheets or other resources to prevent flicker -->
+    <script is:inline>
+      // Execute immediately during page load
+      const theme = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      localStorage.setItem('theme', theme);
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <script>
-      // Check for saved theme preference or use system preference
-      const theme = (() => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-          return localStorage.getItem('theme');
-        }
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
-        }
-        return 'light';
-      })();
-      
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-
-      window.localStorage.setItem('theme', theme);
-    </script>
-    <!-- Force the base URL to ensure all relative URLs resolve correctly -->
-    <base href="/" />
+    <!-- Removed base tag that was causing URL resolution issues -->
   </head>
   <body class="bg-gray-50 dark:bg-primary text-highlight dark:text-text-light min-h-screen transition-colors duration-200">
     <div class="max-w-3xl mx-auto px-4 py-8">
@@ -50,9 +37,7 @@ const { title = "bdougie on the internet", description = "Personal blog and webs
       <main>
         <slot />
       </main>
-      <footer class="mt-12 pt-8 border-t border-secondary">
-        <p class="text-center text-highlight dark:text-text-light">© {new Date().getFullYear()} Brian Douglas. All rights reserved.</p>
-      </footer>
+      <Footer />
     </div>
   </body>
 </html>

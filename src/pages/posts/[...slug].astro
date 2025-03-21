@@ -17,6 +17,9 @@ export async function getStaticPaths() {
   });
 }
 
+// Using [...slug] instead of [slug] allows for complex/nested slugs
+const { slug } = Astro.params;
+// Fetch the post using the slug
 // Get the post from props
 const { post } = Astro.props;
 
@@ -47,7 +50,7 @@ const { Content } = post;
     </div>
     
     <div class="mt-12 pt-6 border-t border-secondary">
-      <a href="/posts" class="text-highlight hover:text-highlight-light transition-colors">
+      <a href="/posts/" class="text-highlight hover:text-highlight-light transition-colors">
         &larr; Back to all posts
       </a>
     </div>

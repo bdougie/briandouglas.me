@@ -11,23 +11,30 @@ const sortedPosts = posts.sort((a, b) =>
   <div>
     <h1 class="text-3xl font-bold mb-8">Blog Posts</h1>
     <div class="space-y-8">
-      {sortedPosts.map((post) => (
-        <article class="border-b border-secondary pb-8 last:border-0">
-          <h2 class="text-2xl font-semibold mb-2">
-            <a href={post.url} class="text-highlight hover:text-highlight-light transition-colors">
-              {post.frontmatter.title}
-            </a>
-          </h2>
-          <time class="text-highlight-dark dark:text-text-light text-sm block mb-3">
-            {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </time>
-          <p class="text-highlight dark:text-text-light">{post.frontmatter.description}</p>
-        </article>
-      ))}
+      {sortedPosts.map((post) => {
+        // Extract the filename and create complex slug
+        const filename = post.file.split('/').pop();
+        const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+        const complexSlug = `${year}/${month}/${day}/${titleParts.join('-')}`;
+        
+        return (
+          <article class="border-b border-secondary pb-8 last:border-0">
+            <h2 class="text-2xl font-semibold mb-2">
+              <a href={`/posts/${complexSlug}/`} class="text-highlight hover:text-highlight-light transition-colors">
+                {post.frontmatter.title}
+              </a>
+            </h2>
+            <time class="text-highlight-dark dark:text-text-light text-sm block mb-3">
+              {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </time>
+            <p class="text-highlight dark:text-text-light">{post.frontmatter.description}</p>
+          </article>
+        );
+      })}
     </div>
   </div>
 </Layout>
