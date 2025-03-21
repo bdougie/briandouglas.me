@@ -1,5 +1,6 @@
 ---
 import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title?: string;
@@ -36,9 +37,7 @@ const { title = "bdougie on the internet", description = "Personal blog and webs
       <main>
         <slot />
       </main>
-      <footer class="mt-12 pt-8 border-t border-secondary">
-        <p class="text-center text-highlight dark:text-text-light">© {new Date().getFullYear()} Brian Douglas. All rights reserved.</p>
-      </footer>
+      <Footer />
     </div>
   </body>
 </html>
