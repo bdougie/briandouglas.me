@@ -1,8 +1,10 @@
 ---
 title: Getting Started with Astro
-date: 2024-01-15
+date: 2025-03-21
 description: Learn how to build fast, content-focused websites with Astro's unique approach to web development.
 ---
+
+I switch my blog from Middleman to Astro. It was a long time coming, but thanks to bolt.new and [continue.dev](https://www.continue.dev/), I was able to use AI to do all the heavy lifting. Below is the generic template post, that I've decided to keep. 
 
 Astro is a modern static site builder that offers an exciting new approach to building websites. In this post, I'll share my experience with Astro and why I think it's a great choice for content-focused websites.
 
