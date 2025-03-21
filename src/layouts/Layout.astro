@@ -42,7 +42,7 @@ const { title = "Brian Douglas", description = "Personal blog and website of Bri
     <!-- Force the base URL to ensure all relative URLs resolve correctly -->
     <base href="/" />
   </head>
-  <body class="bg-white dark:bg-primary text-highlight dark:text-text-light min-h-screen transition-colors duration-200">
+  <body class="bg-gray-50 dark:bg-primary text-highlight dark:text-text-light min-h-screen transition-colors duration-200">
     <div class="max-w-3xl mx-auto px-4 py-8">
       <header class="mb-12">
         <Navigation />
@@ -68,5 +68,13 @@ const { title = "Brian Douglas", description = "Personal blog and website of Bri
       rgb(var(--accent-light)) 30%,
       rgb(var(--accent-dark)) 60%
     );
+  }
+
+  body {
+    color: var(--text-gray); /* Use the new gray color for light mode */
+  }
+
+  .dark body {
+    color: var(--text-light); /* Use existing variable for dark mode */
   }
 </style>
