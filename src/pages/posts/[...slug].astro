@@ -1,24 +1,27 @@
 ---
+import Layout from '../../layouts/Layout.astro';
+
 export async function getStaticPaths() {
-  const posts = await Astro.glob('./**/*.md');
+  const posts = await Astro.glob('./*.md');
   
   return posts.map(post => {
-    const [year, month, day, ...titleParts] = post.file.split('/').pop().replace('.md', '').split('-');
+    const filename = post.file.split('/').pop();
+    const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+    
     return {
-      params: {
+      params: { 
         slug: `${year}/${month}/${day}/${titleParts.join('-')}`
       },
-      props: {
-        post
-      }
+      props: { post }
     };
   });
 }
 
+// Get the post from props
 const { post } = Astro.props;
-const { Content } = post;
 
-import Layout from '../../layouts/Layout.astro';
+// Access Content component directly
+const { Content } = post;
 ---
 
 <Layout title={post.frontmatter.title}>
@@ -30,101 +33,14 @@ import Layout from '../../layouts/Layout.astro';
       <time class="text-highlight-dark dark:text-text-light text-sm">
         {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
           year: 'numeric',
-          month: 'long',
+          month: 'long', 
           day: 'numeric'
         })}
       </time>
     </header>
     
-    <div class="prose lg:prose-xl prose-highlight dark:prose-invert">
+    <div class="prose prose-lg max-w-none">
       <Content />
     </div>
   </article>
 </Layout>
-
-<style is:global>
-  /* Base styles for markdown content */
-  .prose {
-    color: theme(colors.highlight);
-  }
-  
-  .prose h1,
-  .prose h2,
-  .prose h3,
-  .prose h4,
-  .prose h5,
-  .prose h6 {
-    color: theme(colors.highlight);
-    font-weight: 700;
-    margin-top: 2em;
-    margin-bottom: 1em;
-  }
-
-  .prose p {
-    margin-top: 1.25em;
-    margin-bottom: 1.25em;
-  }
-
-  .prose a {
-    color: theme(colors.highlight);
-    text-decoration: underline;
-    font-weight: 500;
-  }
-
-  .prose a:hover {
-    color: theme(colors.highlight-light);
-  }
-
-  .prose code {
-    color: theme(colors.highlight);
-    background-color: theme(colors.secondary);
-    padding: 0.2em 0.4em;
-    border-radius: 0.25em;
-    font-size: 0.875em;
-  }
-
-  .prose pre {
-    background-color: theme(colors.secondary);
-    padding: 1.25em;
-    border-radius: 0.5em;
-    overflow-x: auto;
-  }
-
-  .prose pre code {
-    background-color: transparent;
-    padding: 0;
-    border-radius: 0;
-    color: theme(colors.highlight);
-  }
-
-  /* Dark mode overrides */
-  .dark .prose {
-    color: theme(colors.text-light);
-  }
-
-  .dark .prose h1,
-  .dark .prose h2,
-  .dark .prose h3,
-  .dark .prose h4,
-  .dark .prose h5,
-  .dark .prose h6 {
-    color: theme(colors.highlight-light);
-  }
-
-  .dark .prose a {
-    color: theme(colors.highlight-light);
-  }
-
-  .dark .prose a:hover {
-    color: theme(colors.text-light);
-  }
-
-  .dark .prose code {
-    color: theme(colors.highlight-light);
-    background-color: theme(colors.secondary);
-  }
-
-  .dark .prose pre code {
-    color: theme(colors.highlight-light);
-  }
-</style>

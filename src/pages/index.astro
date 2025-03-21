@@ -18,23 +18,30 @@ const sortedPosts = posts
   <section class="mt-12">
     <h2 class="text-2xl font-bold mb-6">Recent Posts</h2>
     <div class="space-y-8">
-      {sortedPosts.map((post) => (
-        <article>
-          <h3 class="text-xl font-semibold">
-            <a href={post.url} class="hover:text-gray-600">
-              {post.frontmatter.title}
-            </a>
-          </h3>
-          <time class="text-gray-500 text-sm">
-            {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </time>
-          <p class="mt-2 text-gray-700">{post.frontmatter.description}</p>
-        </article>
-      ))}
+      {sortedPosts.map((post) => {
+        // Extract the filename
+        const filename = post.file.split('/').pop();
+        const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+        const complexSlug = `${year}/${month}/${day}/${titleParts.join('-')}`;
+        
+        return (
+          <article>
+            <h3 class="text-xl font-semibold">
+              <a href={`/posts/${complexSlug}/`} class="hover:text-gray-600">
+                {post.frontmatter.title}
+              </a>
+            </h3>
+            <time class="text-gray-500 text-sm">
+              {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </time>
+            <p class="mt-2 text-gray-700">{post.frontmatter.description}</p>
+          </article>
+        );
+      })}
     </div>
   </section>
 </Layout>
