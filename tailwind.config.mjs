@@ -12,13 +12,14 @@ export default {
         // Additional shades for better contrast
         'highlight-light': '#D4AB6A',
         'highlight-dark': '#9A7439',
-        'text-light': '#E5E7EB'
+        'text-light': '#E5E7EB',
+        'text-gray': '#4B5563' // Add this line
       },
       typography: {
         DEFAULT: {
           css: {
             maxWidth: '100ch',
-            color: '#C69749',
+            color: '#4B5563', // Change this line to use the new gray color
             '.dark &': {
               color: '#E5E7EB',
             },
@@ -47,6 +48,7 @@ export default {
               color: '#C69749',
             },
             p: {
+              color: '#4B5563', // Ensure paragraph text is gray in light mode
               '.dark &': {
                 color: '#E5E7EB',
               },

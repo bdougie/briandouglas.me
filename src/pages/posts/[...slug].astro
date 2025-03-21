@@ -1,24 +1,27 @@
 ---
+import Layout from '../../layouts/Layout.astro';
+
 export async function getStaticPaths() {
-  const posts = await Astro.glob('./**/*.md');
+  const posts = await Astro.glob('./*.md');
   
   return posts.map(post => {
-    const [year, month, day, ...titleParts] = post.file.split('/').pop().replace('.md', '').split('-');
+    const filename = post.file.split('/').pop();
+    const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+    
     return {
-      params: {
+      params: { 
         slug: `${year}/${month}/${day}/${titleParts.join('-')}`
       },
-      props: {
-        post
-      }
+      props: { post }
     };
   });
 }
 
+// Get the post from props
 const { post } = Astro.props;
-const { Content } = post;
 
-import Layout from '../../layouts/Layout.astro';
+// Access Content component directly
+const { Content } = post;
 ---
 
 <Layout title={post.frontmatter.title} description={post.frontmatter.description}>
@@ -30,7 +33,7 @@ import Layout from '../../layouts/Layout.astro';
       <time class="text-highlight-dark dark:text-text-light text-sm block mb-3">
         {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
           year: 'numeric',
-          month: 'long',
+          month: 'long', 
           day: 'numeric'
         })}
       </time>
@@ -39,7 +42,7 @@ import Layout from '../../layouts/Layout.astro';
       )}
     </header>
     
-    <div class="prose prose-lg lg:prose-xl max-w-none dark:prose-invert">
+    <div class="prose prose-lg max-w-none">
       <Content />
     </div>
     
@@ -50,97 +53,3 @@ import Layout from '../../layouts/Layout.astro';
     </div>
   </article>
 </Layout>
-
-<style>
-  /* Base styles for markdown content */
-  .prose {
-    color: #C69749;
-  }
-  
-  .prose h1,
-  .prose h2,
-  .prose h3,
-  .prose h4,
-  .prose h5,
-  .prose h6 {
-    color: #C69749;
-    font-weight: 700;
-    margin-top: 1.5em;
-    margin-bottom: 0.75em;
-  }
-
-  .prose p {
-    margin-top: 1.25em;
-    margin-bottom: 1.25em;
-    color: #C69749;
-  }
-
-  .prose a {
-    color: #C69749;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-
-  .prose a:hover {
-    color: #D4AB6A;
-  }
-
-  .prose code {
-    color: #C69749;
-    background-color: #282A3A;
-    padding: 0.2em 0.4em;
-    border-radius: 0.25em;
-    font-size: 0.875em;
-  }
-
-  .prose pre {
-    background-color: #282A3A;
-    padding: 1.25em;
-    border-radius: 0.5em;
-    overflow-x: auto;
-    margin: 1.5em 0;
-  }
-
-  .prose pre code {
-    background-color: transparent;
-    padding: 0;
-    border-radius: 0;
-    color: #C69749;
-  }
-
-  /* Dark mode overrides */
-  .dark .prose {
-    color: #E5E7EB;
-  }
-
-  .dark .prose h1,
-  .dark .prose h2,
-  .dark .prose h3,
-  .dark .prose h4,
-  .dark .prose h5,
-  .dark .prose h6 {
-    color: #D4AB6A;
-  }
-
-  .dark .prose p {
-    color: #E5E7EB;
-  }
-
-  .dark .prose a {
-    color: #D4AB6A;
-  }
-
-  .dark .prose a:hover {
-    color: #E5E7EB;
-  }
-
-  .dark .prose code {
-    color: #D4AB6A;
-    background-color: #282A3A;
-  }
-
-  .dark .prose pre code {
-    color: #D4AB6A;
-  }
-</style>

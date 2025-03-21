@@ -4,8 +4,6 @@ date: 2024-01-15
 description: Learn how to build fast, content-focused websites with Astro's unique approach to web development.
 ---
 
-# Getting Started with Astro
-
 Astro is a modern static site builder that offers an exciting new approach to building websites. In this post, I'll share my experience with Astro and why I think it's a great choice for content-focused websites.
 
 ## Why Astro?
