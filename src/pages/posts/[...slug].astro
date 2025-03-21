@@ -24,23 +24,32 @@ const { post } = Astro.props;
 const { Content } = post;
 ---
 
-<Layout title={post.frontmatter.title}>
-  <article class="max-w-3xl mx-auto">
+<Layout title={post.frontmatter.title} description={post.frontmatter.description}>
+  <article>
     <header class="mb-8">
       <h1 class="text-4xl font-bold text-highlight dark:text-highlight-light mb-4">
         {post.frontmatter.title}
       </h1>
-      <time class="text-highlight-dark dark:text-text-light text-sm">
+      <time class="text-highlight-dark dark:text-text-light text-sm block mb-3">
         {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long', 
           day: 'numeric'
         })}
       </time>
+      {post.frontmatter.description && (
+        <p class="text-highlight dark:text-text-light text-lg mt-2">{post.frontmatter.description}</p>
+      )}
     </header>
     
     <div class="prose prose-lg max-w-none">
       <Content />
+    </div>
+    
+    <div class="mt-12 pt-6 border-t border-secondary">
+      <a href="/posts" class="text-highlight hover:text-highlight-light transition-colors">
+        &larr; Back to all posts
+      </a>
     </div>
   </article>
 </Layout>
