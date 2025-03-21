@@ -17,6 +17,9 @@ export async function getStaticPaths() {
   });
 }
 
+// Using [...slug] instead of [slug] allows for complex/nested slugs
+const { slug } = Astro.params;
+// Fetch the post using the slug
 // Get the post from props
 const { post } = Astro.props;
 
