@@ -1,0 +1,12 @@
+---
+import SocialCard from '../components/SocialCard.astro';
+
+// Add cache headers to prevent caching issues
+Astro.response.headers.set('Content-Type', 'text/html; charset=utf-8');
+Astro.response.headers.set('Cache-Control', 'public, max-age=31536000');
+---
+
+<SocialCard 
+  title="Brian Douglas on the internet"
+  description="A blog managed by Brian Douglas"
+/>

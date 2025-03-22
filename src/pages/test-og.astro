@@ -1,0 +1,48 @@
+---
+// A simple test page for OG images
+Astro.response.headers.set('Content-Type', 'text/html; charset=utf-8');
+Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+---
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>OG Test Image</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 1200px;
+      height: 630px;
+      font-family: system-ui, sans-serif;
+    }
+    .card {
+      width: 1200px;
+      height: 630px;
+      background: linear-gradient(to bottom right, #000000, #282A3A);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 4rem;
+      box-sizing: border-box;
+      color: #E5E7EB;
+    }
+    h1 {
+      font-size: 4rem;
+      color: #D4AB6A;
+      margin-bottom: 2rem;
+    }
+    p {
+      font-size: 2.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Test OG Image</h1>
+    <p>If you can see this, OG images are working!</p>
+  </div>
+</body>
+</html>

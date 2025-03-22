@@ -1,0 +1,49 @@
+---
+import SocialCard from '../../components/SocialCard.astro';
+
+// Add cache headers to prevent caching issues
+Astro.response.headers.set('Content-Type', 'text/html; charset=utf-8');
+Astro.response.headers.set('Cache-Control', 'public, max-age=31536000');
+
+export async function getStaticPaths() {
+  const posts = await Astro.glob('../posts/**/*.md');
+  
+  // Important: We need to exactly mirror the URL structure of the posts
+  return [
+    // Handle home page - With trailing slash since trailingSlash is 'always'
+    {
+      params: { slug: 'home' },
+      props: { 
+        title: "Brian Douglas on the internet",
+        description: "A blog managed by Brian Douglas"
+      }
+    },
+    // Generate social cards for each blog post with the complex structure
+    ...posts.map(post => {
+      const filename = post.file.split('/').pop();
+      // Parse the filename to get year/month/day/title parts
+      const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+      
+      // The key fix: Use the exact same slug pattern as your blog post routes
+      // This should match what's in posts/[...slug].astro
+      return {
+        params: { 
+          // Note: Astro will automatically handle trailing slashes based on your config
+          slug: `${year}/${month}/${day}/${titleParts.join('-')}`
+        },
+        props: { 
+          title: post.frontmatter.title,
+          description: post.frontmatter.description
+        }
+      };
+    })
+  ];
+}
+
+// Log both the requested path and the props for debugging
+const { title, description } = Astro.props;
+const routePath = Astro.url.pathname;
+console.log(`Rendering OG image at path: ${routePath} for: "${title}"`);
+---
+
+<SocialCard title={title} description={description} />

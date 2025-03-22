@@ -1,0 +1,71 @@
+---
+// Set cache headers to prevent caching issues
+Astro.response.headers.set('Content-Type', 'text/html; charset=utf-8');
+Astro.response.headers.set('Cache-Control', 'public, max-age=31536000');
+---
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brian Douglas - Static OG Image</title>
+  <meta name="robots" content="noindex">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 1200px;
+      height: 630px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .card {
+      width: 1200px;
+      height: 630px;
+      background: linear-gradient(to bottom right, #000000, #282A3A);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 4rem;
+      box-sizing: border-box;
+      color: #E5E7EB;
+      position: relative;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(to right, #735F32, #C69749, #D4AB6A);
+    }
+    h1 {
+      font-size: 4rem;
+      color: #D4AB6A;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    p {
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+    .url {
+      font-size: 1.75rem;
+      color: #C69749;
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Brian Douglas</h1>
+    <p>Thoughts on software development</p>
+    <div class="url">briandouglas.me</div>
+  </div>
+</body>
+</html>

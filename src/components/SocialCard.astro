@@ -1,0 +1,96 @@
+---
+// The props for the social card component
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="robots" content="noindex">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 1200px;
+      height: 630px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .social-card {
+      width: 1200px;
+      height: 630px;
+      background: linear-gradient(to bottom right, #000000, #282A3A);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 4rem;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .social-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(to right, #735F32, #C69749, #D4AB6A);
+    }
+    
+    .social-card-content {
+      max-width: 90%;
+      color: #E5E7EB;
+    }
+    
+    h1 {
+      font-size: 4rem;
+      line-height: 1.2;
+      margin-bottom: 2rem;
+      color: #D4AB6A;
+      font-weight: 700;
+    }
+    
+    p {
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+    
+    .social-card-author {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 2rem;
+      font-size: 1.75rem;
+    }
+    
+    .social-card-url {
+      color: #C69749;
+    }
+  </style>
+</head>
+<body>
+  <div class="social-card">
+    <div class="social-card-content">
+      <h1>{title}</h1>
+      {description && <p>{description}</p>}
+      <div class="social-card-author">
+        <span>Brian Douglas</span>
+        <span class="social-card-url">briandouglas.me</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

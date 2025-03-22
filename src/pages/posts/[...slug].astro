@@ -27,7 +27,12 @@ const { post } = Astro.props;
 const { Content } = post;
 ---
 
-<Layout title={post.frontmatter.title} description={post.frontmatter.description}>
+<Layout 
+  title={post.frontmatter.title}
+  description={post.frontmatter.description}
+  isBlogPost={true}
+  frontmatter={post.frontmatter}
+>
   <article>
     <header class="mb-8">
       <h1 class="text-4xl font-bold text-highlight dark:text-highlight-light mb-4">
