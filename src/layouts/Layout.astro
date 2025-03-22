@@ -27,19 +27,24 @@ const pageDescription = isBlogPost && frontmatter?.description ? frontmatter.des
 // Get the canonical URL for the current page
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://briandouglas.me');
 
-// Generate OG image URL
+// Generate OG image URL - simplify this to avoid path issues
 let ogImageURL;
 if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
-  // Extract the slug from the URL for blog posts
-  // Make sure to handle the trailing slash consistently
-  const slugPath = Astro.url.pathname.replace('/posts/', '');
-  // Ensure the path ends with a trailing slash to match our static paths
-  const normalizedSlugPath = slugPath.endsWith('/') ? slugPath : `${slugPath}/`;
-  ogImageURL = new URL(`/og-image/${normalizedSlugPath}`, Astro.site || 'https://briandouglas.me').toString();
+  // Get the slug parts directly from the pathname
+  const pathParts = Astro.url.pathname.split('/').filter(Boolean);
+  // We only need the year/month/day/slug portion
+  const [_, year, month, day, ...slugParts] = pathParts;
+  const slug = slugParts.join('-');
+  
+  // Construct a clean, absolute URL for the OG image
+  ogImageURL = new URL(`og-image/${year}/${month}/${day}/${slug}/`, Astro.site).toString();
 } else {
-  // Use the home page social card for other pages
-  ogImageURL = new URL(`/og-image/home/`, Astro.site || 'https://briandouglas.me').toString();
+  // Home page or other pages
+  ogImageURL = new URL('og-image/home/', Astro.site).toString();
 }
+
+// For debugging - log the URL to see what's being generated
+console.log('OG Image URL:', ogImageURL);
 ---
 
 <!doctype html>
