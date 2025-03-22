@@ -5,9 +5,30 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title?: string;
   description?: string;
+  isBlogPost?: boolean;
+  frontmatter?: {
+    title: string;
+    description?: string;
+    date?: string;
+  };
 }
 
-const { title = "bdougie on the internet", description = "Personal blog and website of Brian Douglas" } = Astro.props;
+const { 
+  title = "bdougie on the internet", 
+  description = "Personal blog and website of Brian Douglas",
+  isBlogPost = false,
+  frontmatter
+} = Astro.props;
+
+// Use frontmatter data for blog posts, fallback to props for other pages
+const pageTitle = isBlogPost && frontmatter?.title ? frontmatter.title : title;
+const pageDescription = isBlogPost && frontmatter?.description ? frontmatter.description : description;
+
+// Get the canonical URL for the current page
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://briandouglas.me');
+
+// Use a static OG image for all pages
+const socialImageURL = 'https://briandouglas.me/og-default.png';
 ---
 
 <!doctype html>
@@ -25,9 +46,31 @@ const { title = "bdougie on the internet", description = "Personal blog and webs
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <!-- Removed base tag that was causing URL resolution issues -->
+    
+    <!-- Basic Meta Tags -->
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content={isBlogPost ? "article" : "website"} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={socialImageURL} />
+    <meta property="og:image:alt" content={pageTitle} />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@bdougieyo" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={socialImageURL} />
+    
+    {isBlogPost && frontmatter?.date && (
+      <meta property="article:published_time" content={new Date(frontmatter.date).toISOString()} />
+    )}
+    
+    <link rel="canonical" href={canonicalURL} />
   </head>
   <body class="bg-gray-50 dark:bg-primary text-highlight dark:text-text-light min-h-screen transition-colors duration-200">
     <div class="max-w-3xl mx-auto px-4 py-8">
