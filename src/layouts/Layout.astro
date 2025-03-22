@@ -27,24 +27,33 @@ const pageDescription = isBlogPost && frontmatter?.description ? frontmatter.des
 // Get the canonical URL for the current page
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://briandouglas.me');
 
-// Generate OG image URL - simplify this to avoid path issues
+// Ensure we have a site URL for OG images
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') || 'https://briandouglas.me';
+
+// Generate OG image URL that exactly matches the route structure
 let ogImageURL;
 if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
-  // Get the slug parts directly from the pathname
-  const pathParts = Astro.url.pathname.split('/').filter(Boolean);
-  // We only need the year/month/day/slug portion
-  const [_, year, month, day, ...slugParts] = pathParts;
-  const slug = slugParts.join('-');
+  // Extract the post path after /posts/
+  const postPath = Astro.url.pathname.replace(/^\/posts\//, '').replace(/\/$/, '');
   
-  // Construct a clean, absolute URL for the OG image
-  ogImageURL = new URL(`og-image/${year}/${month}/${day}/${slug}/`, Astro.site).toString();
+  if (postPath) {
+    // Use the exact same path structure for OG images
+    ogImageURL = `${siteUrl}/og-image/${postPath}/`;
+    console.log('Generated blog post OG URL:', ogImageURL);
+  } else {
+    // Fallback for unusual path structure
+    ogImageURL = `${siteUrl}/og-image/home/`;  // Change to match dynamic route format
+  }
 } else {
-  // Home page or other pages
-  ogImageURL = new URL('og-image/home/', Astro.site).toString();
+  // Home page or other pages - use the home slug in dynamic route
+  ogImageURL = `${siteUrl}/og-image/home/`;  // Change to match dynamic route format
 }
 
-// For debugging - log the URL to see what's being generated
-console.log('OG Image URL:', ogImageURL);
+// Static fallback if needed
+const fallbackImageUrl = `${siteUrl}/static-og/`;
+
+// Final URL for meta tags
+const finalOgImageUrl = ogImageURL || fallbackImageUrl;
 ---
 
 <!doctype html>
@@ -52,7 +61,8 @@ console.log('OG Image URL:', ogImageURL);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <!-- Place theme script before any stylesheets or other resources to prevent flicker -->
+    
+    <!-- Theme detection script -->
     <script is:inline>
       // Execute immediately during page load
       const theme = localStorage.getItem('theme') || 
@@ -60,6 +70,7 @@ console.log('OG Image URL:', ogImageURL);
       document.documentElement.classList.toggle('dark', theme === 'dark');
       localStorage.setItem('theme', theme);
     </script>
+    
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     
@@ -72,7 +83,7 @@ console.log('OG Image URL:', ogImageURL);
     <meta property="og:description" content={pageDescription} />
     <meta property="og:type" content={isBlogPost ? "article" : "website"} />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image" content={finalOgImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={pageTitle} />
@@ -82,13 +93,16 @@ console.log('OG Image URL:', ogImageURL);
     <meta name="twitter:site" content="@bdougieyo" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
-    <meta name="twitter:image" content={ogImageURL} />
+    <meta name="twitter:image" content={finalOgImageUrl} />
     
     {isBlogPost && frontmatter?.date && (
       <meta property="article:published_time" content={new Date(frontmatter.date).toISOString()} />
     )}
     
     <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Debug comment -->
+    <!-- OG Image URL: {finalOgImageUrl} -->
   </head>
   <body class="bg-gray-50 dark:bg-primary text-highlight dark:text-text-light min-h-screen transition-colors duration-200">
     <div class="max-w-3xl mx-auto px-4 py-8">

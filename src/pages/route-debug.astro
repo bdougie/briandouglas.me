@@ -1,0 +1,77 @@
+---
+// A utility to debug the complex URL routes
+const posts = await Astro.glob('./posts/**/*.md');
+const site = Astro.site?.toString() || 'https://briandouglas.me';
+
+// For each post, generate the URLs for the post and its OG image
+const routeMap = posts.map(post => {
+  const filename = post.file.split('/').pop();
+  const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+  const complexSlug = `${year}/${month}/${day}/${titleParts.join('-')}`;
+  
+  const postURL = new URL(`posts/${complexSlug}/`, site).toString();
+  const ogImageURL = new URL(`og-image/${complexSlug}/`, site).toString();
+  
+  return {
+    title: post.frontmatter.title,
+    postURL,
+    ogImageURL,
+  };
+});
+
+// Log the first few for debugging
+console.log('Generated route map:', routeMap.slice(0, 3));
+---
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Route Structure Debug</title>
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.5; padding: 1rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.5rem; border: 1px solid #ddd; }
+    th { background-color: #f5f5f5; }
+    .url { font-family: monospace; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h1>Route Structure Debug</h1>
+  <p>This page shows how post URLs and their corresponding OG image URLs are constructed.</p>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Post Title</th>
+        <th>Post URL</th>
+        <th>OG Image URL</th>
+        <th>Test Links</th>
+      </tr>
+    </thead>
+    <tbody>
+      {routeMap.map(route => (
+        <tr>
+          <td>{route.title}</td>
+          <td class="url">{route.postURL}</td>
+          <td class="url">{route.ogImageURL}</td>
+          <td>
+            <a href={route.postURL} target="_blank">Post</a> | 
+            <a href={route.ogImageURL} target="_blank">OG Image</a>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  
+  <h2>Current Config</h2>
+  <pre>trailingSlash: 'always'</pre>
+  
+  <h2>Debugging Tips</h2>
+  <ul>
+    <li>The post URL and OG image URL should follow the exact same path pattern</li>
+    <li>Both URLs should end with a trailing slash since your config has trailingSlash: 'always'</li>
+    <li>If OG images are 404, check that the path structure in [...slug].astro matches this pattern exactly</li>
+  </ul>
+</body>
+</html>

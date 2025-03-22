@@ -1,0 +1,240 @@
+---
+// A diagnostic page to debug OG image issues
+const site = Astro.site?.toString() || 'https://briandouglas.me';
+
+// Test different URL formats
+const homeWithSlash = new URL('og-image/home/', site).toString();
+const homeWithoutSlash = new URL('og-image/home', site).toString();
+const homeDynamicRoute = new URL('og-image/home/', site).toString();
+const directHomeRoute = new URL('og-image-home/', site).toString();
+const testOgUrl = new URL('test-og/', site).toString();
+const staticOgUrl = new URL('static-og/', site).toString();
+
+// Create full page URLs for testing with social platforms
+const homepageUrl = new URL('/', site).toString();
+const examplePostUrl = new URL('/posts/2023/01/01/example-post/', site).toString();
+
+// Add a real post URL for testing (first post from your blog)
+const posts = await Astro.glob('./posts/**/*.md');
+let realPostUrl = examplePostUrl; // fallback
+
+if (posts.length > 0) {
+  const latestPost = posts.sort((a, b) => 
+    new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+  )[0];
+  
+  const filename = latestPost.file.split('/').pop();
+  const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+  const complexSlug = `${year}/${month}/${day}/${titleParts.join('-')}`;
+  
+  realPostUrl = new URL(`posts/${complexSlug}/`, site).toString();
+}
+
+// Log for server-side debugging
+console.log('Debug page URLs:', {
+  homeWithSlash,
+  homeWithoutSlash,
+  homeDynamicRoute,
+  directHomeRoute,
+  testOgUrl,
+  staticOgUrl,
+  homepageUrl,
+  examplePostUrl,
+  realPostUrl
+});
+
+// For testing direct access
+Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+---
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>OG Image Debug - Updated</title>
+  <meta name="robots" content="noindex">
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.5; padding: 1rem; max-width: 1200px; margin: 0 auto; }
+    .test-button { background: #007bff; color: white; padding: 0.25rem 0.5rem; text-decoration: none; border-radius: 4px; display: inline-block; margin: 0.25rem 0; }
+    .test-button.green { background: #4caf50; }
+    .test-button.facebook { background: #4267B2; }
+    .test-button.twitter { background: #1DA1F2; }
+    .test-button.linkedin { background: #0077B5; }
+    .card { border: 1px solid #ccc; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
+    .preview-note { background-color: #fff8e1; border-left: 4px solid #ffc107; padding: 1rem; margin: 1rem 0; }
+    iframe { border: 1px solid #ddd; width: 100%; height: 315px; }
+    .url-block { font-family: monospace; background: #f5f5f5; padding: 0.5rem; border-radius: 4px; overflow-wrap: break-word; }
+    .social-debuggers { margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 4px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    @media (max-width: 768px) { .grid-3 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <h1>OG Image Diagnostic</h1>
+  
+  <div class="preview-note">
+    <strong>Note:</strong> Browser <code>&lt;img&gt;</code> tags can't render HTML OG images, so previews below may not show correctly.
+    However, social media platforms <em>can</em> render these properly. Use the direct access links to verify images are working.
+  </div>
+  
+  <h2>Direct Test Pages (All Working)</h2>
+  <div class="card">
+    <div>
+      <strong>Test OG Image:</strong> 
+      <span class="url-block">{testOgUrl}</span>
+      <a href={testOgUrl} target="_blank" class="test-button">Test direct access</a>
+    </div>
+    
+    <div style="margin-top: 1rem;">
+      <strong>Static OG Image:</strong> 
+      <span class="url-block">{staticOgUrl}</span>
+      <a href={staticOgUrl} target="_blank" class="test-button">Test direct access</a>
+    </div>
+    
+    <div style="margin-top: 1rem;">
+      <strong>Home OG Image:</strong> 
+      <span class="url-block">{directHomeRoute}</span>
+      <a href={directHomeRoute} target="_blank" class="test-button green">Test direct access</a>
+    </div>
+  </div>
+  
+  <h2>Iframe Preview (Better representation)</h2>
+  <div class="card">
+    <p>This shows how the home OG image will appear when rendered:</p>
+    <iframe src={homeDynamicRoute} title="OG Image Preview"></iframe>
+  </div>
+  
+  <h2>Test with Social Media Debuggers</h2>
+  <div class="social-debuggers">
+    <p>For the most accurate testing, use these social media debugging tools with specific pages:</p>
+    
+    <h3>Facebook Debugger</h3>
+    <div class="grid-3">
+      <div class="card">
+        <strong>Homepage</strong>
+        <p class="url-block">{homepageUrl}</p>
+        <a href={`https://developers.facebook.com/tools/debug/?q=${encodeURIComponent(homepageUrl)}`} target="_blank" class="test-button facebook">
+          Test on Facebook
+        </a>
+      </div>
+      
+      <div class="card">
+        <strong>Direct OG Image</strong>
+        <p class="url-block">{directHomeRoute}</p>
+        <a href={`https://developers.facebook.com/tools/debug/?q=${encodeURIComponent(directHomeRoute)}`} target="_blank" class="test-button facebook">
+          Test on Facebook
+        </a>
+      </div>
+      
+      <div class="card">
+        <strong>Static OG Image</strong>
+        <p class="url-block">{staticOgUrl}</p>
+        <a href={`https://developers.facebook.com/tools/debug/?q=${encodeURIComponent(staticOgUrl)}`} target="_blank" class="test-button facebook">
+          Test on Facebook
+        </a>
+      </div>
+    </div>
+    
+    <h3 class="mt-4">Twitter Card Validator</h3>
+    <div class="grid-3">
+      <div class="card">
+        <strong>Homepage</strong>
+        <p class="url-block">{homepageUrl}</p>
+        <a href={`https://cards-dev.twitter.com/validator?url=${encodeURIComponent(homepageUrl)}`} target="_blank" class="test-button twitter">
+          Test on Twitter
+        </a>
+      </div>
+      
+      <div class="card">
+        <strong>Home OG Image (Dynamic)</strong>
+        <p class="url-block">{homeDynamicRoute}</p>
+        <a href={`https://cards-dev.twitter.com/validator?url=${encodeURIComponent(homeDynamicRoute)}`} target="_blank" class="test-button twitter">
+          Test on Twitter
+        </a>
+      </div>
+      
+      <div class="card">
+        <strong>Latest Blog Post</strong>
+        <p class="url-block">{realPostUrl}</p>
+        <a href={`https://cards-dev.twitter.com/validator?url=${encodeURIComponent(realPostUrl)}`} target="_blank" class="test-button twitter">
+          Test on Twitter
+        </a>
+      </div>
+    </div>
+    
+    <h3 class="mt-4">LinkedIn Post Inspector</h3>
+    <div class="grid-3">
+      <div class="card">
+        <strong>Homepage</strong>
+        <p class="url-block">{homepageUrl}</p>
+        <a href={`https://www.linkedin.com/post-inspector/inspect/?url=${encodeURIComponent(homepageUrl)}`} target="_blank" class="test-button linkedin">
+          Test on LinkedIn
+        </a>
+      </div>
+      
+      <div class="card">
+        <strong>Direct OG Image</strong>
+        <p class="url-block">{directHomeRoute}</p>
+        <a href={`https://www.linkedin.com/post-inspector/inspect/?url=${encodeURIComponent(directHomeRoute)}`} target="_blank" class="test-button linkedin">
+          Test on LinkedIn
+        </a>
+      </div>
+      
+      <div class="card">
+        <strong>Static OG Image</strong>
+        <p class="url-block">{staticOgUrl}</p>
+        <a href={`https://www.linkedin.com/post-inspector/inspect/?url=${encodeURIComponent(staticOgUrl)}`} target="_blank" class="test-button linkedin">
+          Test on LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <h2>URL Format Testing</h2>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+    <div class="card">
+      <h3>With trailing slash</h3>
+      <p class="url-block">{homeWithSlash}</p>
+      <a href={homeWithSlash} target="_blank" class="test-button">Test direct access</a>
+    </div>
+    
+    <div class="card">
+      <h3>Without trailing slash</h3>
+      <p class="url-block">{homeWithoutSlash}</p>
+      <a href={homeWithoutSlash} target="_blank" class="test-button">Test direct access</a>
+    </div>
+  </div>
+  
+  <h2>Important Route Testing</h2>
+  <div class="preview-note">
+    <strong>Important:</strong> Make sure <code>/og-image/home/</code> works consistently, as this is now used for all pages including the homepage.
+  </div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+    <div class="card">
+      <h3>Dynamic Home Route <span style="color: green">(Preferred)</span></h3>
+      <p class="url-block">{homeDynamicRoute}</p>
+      <a href={homeDynamicRoute} target="_blank" class="test-button">Test direct access</a>
+    </div>
+    
+    <div class="card">
+      <h3>Direct Home Route <span style="color: #888">(Redirects)</span></h3>
+      <p class="url-block">{directHomeRoute}</p>
+      <a href={directHomeRoute} target="_blank" class="test-button">Test direct access</a>
+    </div>
+  </div>
+  
+  <h2>Important Notes on OG Images</h2>
+  <ul>
+    <li><strong>Browser Preview vs. Social Media:</strong> These images are HTML pages, which won't render in browser <code>&lt;img&gt;</code> tags but will work properly on social media platforms.</li>
+    <li><strong>Cache Issues:</strong> Social media platforms cache OG images. Use their debugging tools to force a refresh.</li>
+    <li><strong>Status:</strong> If all direct links work when clicked, your OG images are correctly set up.</li>
+  </ul>
+  
+  <h2>Current Configuration</h2>
+  <pre style="background-color: #f5f5f5; padding: 1rem; overflow: auto; max-width: 800px;">
+  Site URL: {site}
+  trailingSlash: always
+  Current path: {Astro.url.pathname}
+  </pre>
+</body>
+</html>
