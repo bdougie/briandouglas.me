@@ -10,7 +10,7 @@ export default function handler(req) {
     
     // Get title and description from the URL query parameters
     const title = searchParams.get('title') || 'bdougie on the internet';
-    const description = searchParams.get('description') || 'Personal blog and website of Brian Douglas';
+    const description = searchParams.get('description') || 'The words of of Brian Douglas';
 
     return new ImageResponse(
       (
