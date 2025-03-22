@@ -31,11 +31,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://briandou
 let ogImageURL;
 if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
   // Extract the slug from the URL for blog posts
+  // Make sure to handle the trailing slash consistently
   const slugPath = Astro.url.pathname.replace('/posts/', '');
-  ogImageURL = new URL(`/og-image/${slugPath}`, Astro.site || 'https://briandouglas.me').toString();
+  // Ensure the path ends with a trailing slash to match our static paths
+  const normalizedSlugPath = slugPath.endsWith('/') ? slugPath : `${slugPath}/`;
+  ogImageURL = new URL(`/og-image/${normalizedSlugPath}`, Astro.site || 'https://briandouglas.me').toString();
 } else {
   // Use the home page social card for other pages
-  ogImageURL = new URL(`/og-image/home`, Astro.site || 'https://briandouglas.me').toString();
+  ogImageURL = new URL(`/og-image/home/`, Astro.site || 'https://briandouglas.me').toString();
 }
 ---
 
