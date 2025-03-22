@@ -3,7 +3,7 @@ title: What is happening to DevRel?
 tags: 'devrel'
 category: blog
 date: 2021-03-26T21:40:48.367Z
-description: This is a post to discover how to write a test for an expected error with Jest
+description: A conversation about the changes happening in DevRel.
 ---
 
 [![](https://buttondown.s3.us-west-2.amazonaws.com/images/6d6f6398-d983-436a-bff8-69ea76ecc555.jpeg)](https://www.twitch.tv/videos/953959461)
