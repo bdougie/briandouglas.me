@@ -18,9 +18,10 @@ export async function getStaticPaths() {
       const filename = post.file.split('/').pop();
       const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
       
+      // Make sure the slug ends with a trailing slash to match the site's URL structure
       return {
         params: { 
-          slug: `${year}/${month}/${day}/${titleParts.join('-')}`
+          slug: `${year}/${month}/${day}/${titleParts.join('-')}/`
         },
         props: { 
           title: post.frontmatter.title,
