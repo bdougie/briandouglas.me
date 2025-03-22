@@ -27,8 +27,16 @@ const pageDescription = isBlogPost && frontmatter?.description ? frontmatter.des
 // Get the canonical URL for the current page
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://briandouglas.me');
 
-// Use a static OG image for all pages
-const socialImageURL = 'https://briandouglas.me/og-default.png';
+// Generate OG image URL
+let ogImageURL;
+if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
+  // Extract the slug from the URL for blog posts
+  const slugPath = Astro.url.pathname.replace('/posts/', '');
+  ogImageURL = new URL(`/og-image/${slugPath}`, Astro.site || 'https://briandouglas.me').toString();
+} else {
+  // Use the home page social card for other pages
+  ogImageURL = new URL(`/og-image/home`, Astro.site || 'https://briandouglas.me').toString();
+}
 ---
 
 <!doctype html>
@@ -56,7 +64,9 @@ const socialImageURL = 'https://briandouglas.me/og-default.png';
     <meta property="og:description" content={pageDescription} />
     <meta property="og:type" content={isBlogPost ? "article" : "website"} />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:image" content={socialImageURL} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={pageTitle} />
     
     <!-- Twitter Card Meta Tags -->
@@ -64,7 +74,7 @@ const socialImageURL = 'https://briandouglas.me/og-default.png';
     <meta name="twitter:site" content="@bdougieyo" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
-    <meta name="twitter:image" content={socialImageURL} />
+    <meta name="twitter:image" content={ogImageURL} />
     
     {isBlogPost && frontmatter?.date && (
       <meta property="article:published_time" content={new Date(frontmatter.date).toISOString()} />

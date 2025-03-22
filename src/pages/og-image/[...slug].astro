@@ -1,0 +1,37 @@
+---
+import SocialCard from '../../components/SocialCard.astro';
+
+export async function getStaticPaths() {
+  const posts = await Astro.glob('../posts/**/*.md');
+  
+  return [
+    // Generate a social card for the homepage
+    {
+      params: { slug: 'home' },
+      props: { 
+        title: "Brian Douglas on the internet",
+        description: "A blog managed by Brian Douglas"
+      }
+    },
+    // Generate social cards for each blog post
+    ...posts.map(post => {
+      const filename = post.file.split('/').pop();
+      const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+      
+      return {
+        params: { 
+          slug: `${year}/${month}/${day}/${titleParts.join('-')}`
+        },
+        props: { 
+          title: post.frontmatter.title,
+          description: post.frontmatter.description
+        }
+      };
+    })
+  ];
+}
+
+const { title, description } = Astro.props;
+---
+
+<SocialCard title={title} description={description} />

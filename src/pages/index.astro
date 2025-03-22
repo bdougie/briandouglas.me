@@ -9,14 +9,14 @@ const sortedPosts = posts
 
 <Layout>
   <div class="prose lg:prose-xl">
-    <h1>Hi, I'm Brian Douglas</h1>
-    <p class="lead">
+    <h1 class="text-4xl font-bold text-highlight dark:text-highlight-light">Hi, I'm Brian Douglas</h1>
+    <p class="lead text-highlight dark:text-text-light text-xl">
       Welcome to the place on the internet where I share my thoughts on software development.
     </p>
   </div>
 
   <section class="mt-12">
-    <h2 class="text-2xl font-bold mb-6">Recent Posts</h2>
+    <h2 class="text-2xl font-bold mb-6 text-highlight dark:text-highlight-light">Recent Posts</h2>
     <div class="space-y-8">
       {sortedPosts.map((post) => {
         // Extract the filename
@@ -25,20 +25,20 @@ const sortedPosts = posts
         const complexSlug = `${year}/${month}/${day}/${titleParts.join('-')}`;
         
         return (
-          <article>
+          <article class="border-b border-secondary pb-8 last:border-0">
             <h3 class="text-xl font-semibold">
-              <a href={`/posts/${complexSlug}/`} class="hover:text-gray-600">
+              <a href={`/posts/${complexSlug}/`} class="text-highlight hover:text-highlight-light transition-colors">
                 {post.frontmatter.title}
               </a>
             </h3>
-            <time class="text-gray-500 text-sm">
+            <time class="text-highlight-dark dark:text-text-light text-sm block">
               {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
               })}
             </time>
-            <p class="mt-2 text-gray-700">{post.frontmatter.description}</p>
+            <p class="mt-2 text-highlight dark:text-text-light">{post.frontmatter.description}</p>
           </article>
         );
       })}
