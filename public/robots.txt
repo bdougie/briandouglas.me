@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://briandouglas.me/sitemap-index.xml
+
+# LLMs.txt for AI agents
+# See: https://llmstxt.org/
+LLMs-Txt: https://briandouglas.me/llms.txt
