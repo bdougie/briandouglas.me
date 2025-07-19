@@ -11,6 +11,8 @@ Here's the thing about technical blog posts—they require a unique blend of tec
 
 I've been a long proponent for using GitHub pull requests for knowledge sharing and if you do it correctly, you can turn pull requests into blog posts. This is exactly what i've done with [PR#23](https://github.com/bdougie/pull2press/pull/23), in my pull2press project. 
 
+![pull2press editor](https://mzjbwtuwfhqujpktlonh.supabase.co/storage/v1/object/public/editor-images/35c8273e-0adb-4869-8bcf-e709645599a4/1752963779704-ml4dmyq.png)
+
 ## Purpose and Context
 
 The primary goal of these changes is to streamline the writing process for users by leveraging the capabilities of OpenAI's language models. We have introduced an intuitive prompt editor that detects text selection and offers a sidebar interface for AI-driven enhancements. The changes are part of our commitment to improving user productivity and content quality.
