@@ -1,11 +1,21 @@
 import type { APIRoute } from 'astro';
 
+// Import all markdown files using Vite's import.meta.glob
+const posts = import.meta.glob('./posts/*.md', { eager: true });
+
 export const GET: APIRoute = async () => {
-    // Get all blog posts
-    const posts = await Astro.glob('./posts/*.md');
+    // Convert the posts object to an array and extract frontmatter
+    const postArray = Object.entries(posts).map(([filepath, post]: [string, any]) => {
+        return {
+            filepath,
+            frontmatter: post.frontmatter,
+            compiledContent: post.compiledContent || post.default || '',
+            rawContent: post.rawContent || ''
+        };
+    });
     
     // Sort posts by date (newest first)
-    const sortedPosts = posts.sort((a, b) => 
+    const sortedPosts = postArray.sort((a, b) => 
         new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
     );
     
@@ -17,9 +27,14 @@ Welcome to briandouglas.me - A blog about software engineering, developer relati
 ${sortedPosts
     .map((post) => {
         // Extract filename to create the URL slug
-        const filename = post.file.split('/').pop();
+        const filename = post.filepath.split('/').pop() || '';
         const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
         const slug = `${year}/${month}/${day}/${titleParts.join('-')}`;
+        
+        // Get the content - prefer rawContent, fallback to compiledContent
+        const postContent = post.rawContent || 
+                          (typeof post.compiledContent === 'function' ? post.compiledContent() : post.compiledContent) || 
+                          'Content not available';
         
         return `## ${post.frontmatter.title}
 
@@ -28,7 +43,7 @@ Date: ${post.frontmatter.date}
 ${post.frontmatter.description ? `Description: ${post.frontmatter.description}\n` : ''}
 ---
 
-${post.compiledContent()}
+${postContent}
 
 ---`;
     })
