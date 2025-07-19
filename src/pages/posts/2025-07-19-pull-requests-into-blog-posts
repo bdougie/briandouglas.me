@@ -1,6 +1,6 @@
 ---
 title: Turning Pull Requests into Blog Posts 
-date: 2025-07-19 04:40 UTC
+date: 2025-07-19
 tags:
 category: ai
 description: Technical guide covering the implementation of an AI-powered prompt editor with text selection detection, sidebar interface, Supabase edge functions, and streaming OpenAI responses. Includes code examples, security considerations, and cost optimization strategies using GPT-4o tier models.
