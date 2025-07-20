@@ -5,7 +5,6 @@ tags:
 category: ai
 description: Technical guide covering the implementation of an AI-powered prompt editor with text selection detection, sidebar interface, Supabase edge functions, and streaming OpenAI responses. Includes code examples, security considerations, and cost optimization strategies using GPT-4o tier models.
 ---
-# Enhancing User Experience with AI: Introducing the Prompt Editor
 
 Here's the thing about technical blog posts—they require a unique blend of technical accuracy, storytelling, and accessibility. When you're deep in the code, you understand every nuance. But by the time you sit down to write about it days or weeks later, you've lost that immediate connection.
 
