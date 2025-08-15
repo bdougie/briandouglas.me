@@ -32,9 +32,14 @@ ${sortedPosts
         const slug = `${year}/${month}/${day}/${titleParts.join('-')}`;
         
         // Get the content - prefer rawContent, fallback to compiledContent
-        const postContent = post.rawContent || 
+        let postContent = post.rawContent || 
                           (typeof post.compiledContent === 'function' ? post.compiledContent() : post.compiledContent) || 
                           'Content not available';
+        
+        // Clean up the content - replace literal \n with actual line breaks
+        if (typeof postContent === 'string') {
+            postContent = postContent.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+        }
         
         return `## ${post.frontmatter.title}
 
