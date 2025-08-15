@@ -60,7 +60,9 @@ const finalOgImageUrl = ogImageURL || fallbackImageUrl;
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#282a3a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)" />
     
     <!-- Theme detection script -->
     <script is:inline>
@@ -72,11 +74,15 @@ const finalOgImageUrl = ogImageURL || fallbackImageUrl;
     </script>
     
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <meta name="generator" content={Astro.generator} />
     
     <!-- Basic Meta Tags -->
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
+    <meta name="author" content="Brian Douglas" />
+    <meta name="robots" content="index, follow" />
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content={pageTitle} />
@@ -100,11 +106,39 @@ const finalOgImageUrl = ogImageURL || fallbackImageUrl;
     )}
     
     <link rel="canonical" href={canonicalURL} />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <link rel="manifest" href="/manifest.json" />
     
     <!-- Debug comment -->
     <!-- OG Image URL: {finalOgImageUrl} -->
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": isBlogPost ? "BlogPosting" : "WebSite",
+        ...(isBlogPost ? {
+          "headline": pageTitle,
+          "description": pageDescription,
+          "author": {
+            "@type": "Person",
+            "name": "Brian Douglas"
+          },
+          "datePublished": frontmatter?.date ? new Date(frontmatter.date).toISOString() : undefined,
+          "url": canonicalURL.toString()
+        } : {
+          "name": "bdougie on the internet",
+          "url": canonicalURL.toString(),
+          "description": pageDescription,
+          "author": {
+            "@type": "Person",
+            "name": "Brian Douglas"
+          }
+        })
+      })}
+    </script>
   </head>
-  <body class="bg-gray-50 dark:bg-primary text-highlight dark:text-text-light min-h-screen transition-colors duration-200">
+  <body class="bg-gray-50 dark:bg-primary text-highlight dark:text-text-light min-h-screen transition-colors duration-200" lang="en">
     <div class="max-w-3xl mx-auto px-4 py-8">
       <header class="mb-12">
         <Navigation />

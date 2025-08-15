@@ -1,0 +1,19 @@
+{
+  "name": "bdougie on the internet",
+  "short_name": "bdougie",
+  "description": "A blog managed by Brian Douglas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#282a3a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["blog", "technology", "development"]
+}
