@@ -130,29 +130,13 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
           
           {/* Reply and Repost counts */}
           <div class="flex items-center gap-4">
-            <a
-              href={postUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-2 text-sm text-gray-400 hover:text-orange-500 transition-colors"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-              </svg>
+            <span class="text-sm text-gray-400">
               {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
-            </a>
+            </span>
             
-            <a
-              href={postUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-2 text-sm text-gray-400 hover:text-orange-500 transition-colors"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
+            <span class="text-sm text-gray-400">
               {repostCount} {repostCount === 1 ? 'repost' : 'reposts'}
-            </a>
+            </span>
           </div>
         </div>
       )}
@@ -178,7 +162,7 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
           href={postUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-xs text-gray-500 hover:text-orange-500 transition-colors"
+          class="text-xs text-orange-500 hover:text-orange-400 transition-colors"
         >
           Like this post on Bluesky to see your face here →
         </a>
@@ -229,7 +213,7 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
                 href={`https://bsky.app/profile/${reply.post?.author?.handle}/post/${getReplyPostId(reply.post?.uri)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-block mt-2 text-xs text-gray-500 hover:text-orange-500 transition-colors"
+                class="inline-block mt-2 text-xs text-orange-500 hover:text-orange-400 transition-colors"
               >
                 View on Bluesky →
               </a>
@@ -239,20 +223,8 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
       </div>
     )}
 
-    {/* CTA Button */}
-    <div class="flex items-center gap-4">
-      <a
-        href={postUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors"
-      >
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-        </svg>
-        Join the discussion on Bluesky
-      </a>
-      
+    {/* Attribution */}
+    <div class="flex items-center">
       <a 
         href="https://docs.bsky.app/"
         target="_blank"
