@@ -1,4 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="none"/>
-  <path d="M 160 80 L 160 432 L 280 432 Q 352 432 352 368 Q 352 320 320 304 Q 368 288 368 224 Q 368 160 296 160 L 160 160 L 160 80 Z M 240 280 L 280 280 Q 304 280 304 256 Q 304 232 280 232 L 240 232 L 240 280 Z M 240 360 L 272 360 Q 296 360 296 336 Q 296 312 272 312 L 240 312 L 240 360 Z" fill="white"/>
+  <defs>
+    <style>
+      .bg { fill: transparent; }
+      .letter { fill: white; }
+    </style>
+  </defs>
+  <rect class="bg" width="512" height="512" rx="80" ry="80"/>
+  <g transform="translate(256, 256)">
+    <text x="0" y="50" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="320" font-weight="700" text-anchor="middle" class="letter">B</text>
+  </g>
 </svg>
