@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
   <defs>
     <style>
-      .bg { fill: transparent; }
+      .bg { fill: black; }
       .letter { fill: white; }
     </style>
   </defs>
-  <rect class="bg" width="512" height="512"/>
-  <g transform="translate(256, 280)">
-    <text x="0" y="0" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="480" font-weight="700" text-anchor="middle" class="letter">B</text>
+  <rect class="bg" width="512" height="512" rx="100" ry="100"/>
+  <g transform="translate(256, 340)">
+    <text x="0" y="0" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="400" font-weight="700" text-anchor="middle" class="letter">B</text>
   </g>
 </svg>
