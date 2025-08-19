@@ -1,15 +1,43 @@
 ---
 export interface Props {
-  postUri: string;
+  postUrl?: string;  // Regular Bluesky URL
+  postUri?: string;  // AT Protocol URI (for backwards compatibility)
 }
 
-const { postUri } = Astro.props;
+const { postUrl, postUri } = Astro.props;
 
-// Extract DID and post ID from the Bluesky URI
-// Format: at://did:plc:xyz/app.bsky.feed.post/postid
-const uriParts = postUri.match(/at:\/\/(did:plc:[^\/]+)\/app\.bsky\.feed\.post\/(.+)/);
-const did = uriParts?.[1];
-const postId = uriParts?.[2];
+let did = null;
+let postId = null;
+let handle = null;
+
+// If we have a regular Bluesky URL, extract handle and post ID
+if (postUrl) {
+  // Format: https://bsky.app/profile/handle/post/postid
+  const urlParts = postUrl.match(/bsky\.app\/profile\/([^\/]+)\/post\/(.+)/);
+  handle = urlParts?.[1];
+  postId = urlParts?.[2];
+  
+  // We'll need to fetch the DID from the handle
+  if (handle) {
+    try {
+      const profileResponse = await fetch(
+        `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${handle}`
+      );
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        did = profileData.did;
+      }
+    } catch (e) {
+      console.error('Could not fetch profile DID:', e);
+    }
+  }
+} else if (postUri) {
+  // Backwards compatibility: Extract DID and post ID from AT Protocol URI
+  // Format: at://did:plc:xyz/app.bsky.feed.post/postid
+  const uriParts = postUri.match(/at:\/\/(did:plc:[^\/]+)\/app\.bsky\.feed\.post\/(.+)/);
+  did = uriParts?.[1];
+  postId = uriParts?.[2];
+}
 
 let postData = null;
 let threadData = null;
@@ -17,9 +45,12 @@ let likesData = null;
 let error = null;
 
 if (did && postId) {
+  // Construct AT Protocol URI for API calls
+  const atUri = `at://${did}/app.bsky.feed.post/${postId}`;
+  
   try {
     // Fetch post data
-    const apiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(postUri)}&depth=1`;
+    const apiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(atUri)}&depth=1`;
     const postResponse = await fetch(apiUrl, {
       headers: {
         'Accept': 'application/json',
@@ -32,7 +63,7 @@ if (did && postId) {
       
       // Fetch likes data
       try {
-        const likesUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getLikes?uri=${encodeURIComponent(postUri)}&limit=10`;
+        const likesUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getLikes?uri=${encodeURIComponent(atUri)}&limit=10`;
         const likesResponse = await fetch(likesUrl, {
           headers: {
             'Accept': 'application/json',
@@ -57,9 +88,11 @@ if (did && postId) {
   error = 'Invalid Bluesky URI format';
 }
 
-// Extract handle from Bluesky post URI or use yours
-const handle = postData?.author?.handle || 'bizza.pizza';
-const postUrl = `https://bsky.app/profile/${handle}/post/${postId}`;
+// Use the provided handle or extract from post data
+if (!handle && postData?.author?.handle) {
+  handle = postData.author.handle;
+}
+const bskyPostUrl = postUrl || `https://bsky.app/profile/${handle || 'bizza.pizza'}/post/${postId}`;
 
 // Get likes and reposts count
 const likeCount = postData?.likeCount || 0;
@@ -119,7 +152,7 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
             
             {/* Like count text */}
             <a 
-              href={postUrl}
+              href={bskyPostUrl}
               target="_blank"
               rel="noopener noreferrer"
               class="ml-3 text-sm text-gray-400 hover:text-orange-500 transition-colors"
@@ -159,7 +192,7 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
       {/* Call to action to like the post */}
       <div class="mb-4">
         <a 
-          href={postUrl}
+          href={bskyPostUrl}
           target="_blank"
           rel="noopener noreferrer"
           class="text-xs text-orange-500 hover:text-orange-400 transition-colors"

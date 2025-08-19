@@ -74,9 +74,12 @@ const { Content } = post;
       <Content />
     </div>
     
-    {/* Add Bluesky interactions if URI is present in frontmatter */}
-    {post.frontmatter.blueskyUri && (
-      <BlueskyInteractions postUri={post.frontmatter.blueskyUri} />
+    {/* Add Bluesky interactions if URL or URI is present in frontmatter */}
+    {(post.frontmatter.blueskyUrl || post.frontmatter.blueskyUri) && (
+      <BlueskyInteractions 
+        postUrl={post.frontmatter.blueskyUrl} 
+        postUri={post.frontmatter.blueskyUri} 
+      />
     )}
     
     <footer class="mt-16 pt-8 border-t border-gray-800">
