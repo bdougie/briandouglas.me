@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <!-- Black rounded square background -->
-  <rect width="512" height="512" rx="100" ry="100" fill="#1a1a1a"/>
+  <!-- Transparent background -->
+  <rect width="512" height="512" fill="none"/>
   
   <!-- White B letter path -->
   <path d="M 140 120 L 140 392 L 260 392 C 320 392 360 362 360 312 C 360 272 340 252 310 242 C 330 232 350 212 350 172 C 350 122 310 120 250 120 L 140 120 Z M 210 180 L 250 180 C 270 180 280 190 280 210 C 280 230 270 240 250 240 L 210 240 L 210 180 Z M 210 300 L 260 300 C 280 300 290 310 290 330 C 290 350 280 360 260 360 L 210 360 L 210 300 Z" fill="white"/>
