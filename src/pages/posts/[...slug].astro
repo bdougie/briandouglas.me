@@ -33,28 +33,76 @@ const { Content } = post;
   isBlogPost={true}
   frontmatter={post.frontmatter}
 >
-  <article>
-    <header class="mb-8">
-      <h1 class="text-4xl font-bold text-highlight dark:text-highlight-light mb-4">
+  <article class="max-w-3xl mx-auto">
+    <header class="mb-12">
+      <a href="/posts" class="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors mb-8 group">
+        <svg class="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to all posts
+      </a>
+      
+      <h1 class="text-4xl font-bold text-white mb-4">
         {post.frontmatter.title}
       </h1>
-      <time class="text-highlight-dark dark:text-text-light text-sm block mb-3">
-        {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long', 
-          day: 'numeric'
-        })}
-      </time>
+      
+      <div class="flex items-center gap-4 text-sm text-gray-500">
+        <time>
+          {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long', 
+            day: 'numeric'
+          })}
+        </time>
+      </div>
     </header>
     
-    <div class="prose prose-lg max-w-none">
+    <div class="prose prose-invert prose-gray max-w-none
+                prose-headings:text-white prose-headings:font-semibold
+                prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
+                prose-p:text-gray-300 prose-p:leading-relaxed
+                prose-a:text-orange-500 prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-orange-400
+                prose-strong:text-orange-400 prose-strong:font-semibold
+                prose-code:text-orange-400 prose-code:bg-gray-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+                prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-800 prose-pre:text-gray-300
+                [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-gray-300
+                prose-blockquote:border-orange-500/30 prose-blockquote:text-gray-400
+                prose-ul:text-gray-300 prose-ol:text-gray-300
+                prose-li:text-gray-300
+                prose-hr:border-gray-800">
       <Content />
     </div>
     
-    <div class="mt-12 pt-6 border-t border-secondary">
-      <a href="/posts/" class="text-highlight hover:text-highlight-light transition-colors">
-        &larr; Back to all posts
-      </a>
-    </div>
+    <footer class="mt-16 pt-8 border-t border-gray-800">
+      <div class="flex items-center justify-between">
+        <a href="/posts" class="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors group">
+          <svg class="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          All posts
+        </a>
+        
+        <div class="text-sm text-gray-500">
+          Thanks for reading!
+        </div>
+      </div>
+    </footer>
   </article>
 </Layout>
+
+<style>
+  article {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

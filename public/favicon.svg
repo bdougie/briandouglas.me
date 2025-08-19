@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Black rounded square background -->
+  <rect width="512" height="512" rx="120" ry="120" fill="#000000"/>
+  
+  <!-- White B letter path - properly centered -->
+  <path d="M 160 140 L 160 372 L 280 372 C 340 372 380 342 380 292 C 380 252 360 232 330 222 C 350 212 370 192 370 152 C 370 102 330 100 270 100 L 160 100 Z M 220 160 L 260 160 C 280 160 290 170 290 190 C 290 210 280 220 260 220 L 220 220 L 220 160 Z M 220 280 L 280 280 C 300 280 310 290 310 310 C 310 330 300 340 280 340 L 220 340 L 220 280 Z" fill="white" transform="translate(0, 20)"/>
+</svg>

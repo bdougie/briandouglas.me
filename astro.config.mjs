@@ -13,7 +13,7 @@ export default defineConfig({
     sitemap()
   ],
   build: {
-    format: 'file',
+    format: 'directory',
     inlineStylesheets: 'auto'
   },
   routing: {
@@ -21,7 +21,7 @@ export default defineConfig({
   },
   // Make sure assets are correctly referenced in nested routes
   base: '/',
-  trailingSlash: 'always',
+  trailingSlash: 'ignore',
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'viewport'

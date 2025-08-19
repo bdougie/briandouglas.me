@@ -64,15 +64,8 @@ const finalOgImageUrl = ogImageURL || fallbackImageUrl;
     <meta name="theme-color" content="#282a3a" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)" />
     
-    <!-- Theme detection script -->
-    <script is:inline>
-      // Execute immediately during page load
-      const theme = localStorage.getItem('theme') || 
-                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      document.documentElement.classList.toggle('dark', theme === 'dark');
-      localStorage.setItem('theme', theme);
-    </script>
     
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" />
@@ -139,9 +132,9 @@ const finalOgImageUrl = ogImageURL || fallbackImageUrl;
       })}
     </script>
   </head>
-  <body class="bg-gray-50 dark:bg-primary text-highlight dark:text-text-light min-h-screen transition-colors duration-200" lang="en">
-    <div class="max-w-3xl mx-auto px-4 py-8">
-      <header class="mb-12">
+  <body class="bg-black text-gray-300 min-h-screen" lang="en">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <header class="mb-16">
         <Navigation />
       </header>
       <main>
@@ -153,23 +146,28 @@ const finalOgImageUrl = ogImageURL || fallbackImageUrl;
 </html>
 
 <style is:global>
-  :root {
-    --accent: 115, 95, 50;
-    --accent-light: 198, 151, 73;
-    --accent-dark: 40, 42, 58;
-    --accent-gradient: linear-gradient(
-      45deg,
-      rgb(var(--accent)),
-      rgb(var(--accent-light)) 30%,
-      rgb(var(--accent-dark)) 60%
-    );
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
 
   body {
-    color: var(--text-gray); /* Use the new gray color for light mode */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #000;
+    color: #9ca3af;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  .dark body {
-    color: var(--text-light); /* Use existing variable for dark mode */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #fff;
+    font-weight: 600;
   }
 </style>

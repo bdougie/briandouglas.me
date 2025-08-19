@@ -5,36 +5,66 @@ const posts = await Astro.glob('./**/*.md');
 const sortedPosts = posts.sort((a, b) => 
   new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
 );
+
+// Group posts by year
+const postsByYear = sortedPosts.reduce((acc, post) => {
+  const year = new Date(post.frontmatter.date).getFullYear();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {} as Record<number, typeof posts>);
+
+const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
 ---
 
-<Layout title="Blog Posts">
+<Layout title="All Posts - bdougie">
   <div>
-    <h1 class="text-3xl font-bold mb-8">Blog Posts</h1>
-    <div class="space-y-8">
-      {sortedPosts.map((post) => {
-        // Extract the filename and create complex slug
-        const filename = post.file.split('/').pop();
-        const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
-        const complexSlug = `${year}/${month}/${day}/${titleParts.join('-')}`;
-        
-        return (
-          <article class="border-b border-secondary pb-8 last:border-0">
-            <h2 class="text-2xl font-semibold mb-2">
-              <a href={`/posts/${complexSlug}/`} class="text-highlight hover:text-highlight-light transition-colors">
-                {post.frontmatter.title}
-              </a>
-            </h2>
-            <time class="text-highlight-dark dark:text-text-light text-sm block mb-3">
-              {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </time>
-            <p class="text-highlight dark:text-text-light">{post.frontmatter.description}</p>
-          </article>
-        );
-      })}
-    </div>
+    <h1 class="text-3xl font-bold text-white mb-12">All Posts</h1>
+    
+    {years.map(year => (
+      <div class="mb-12">
+        <h2 class="text-lg font-semibold text-gray-500 mb-6">{year}</h2>
+        <div class="space-y-4">
+          {postsByYear[Number(year)].map((post) => {
+            // Extract the filename and create complex slug
+            const filename = post.file.split('/').pop();
+            const [y, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+            const complexSlug = `${y}/${month}/${day}/${titleParts.join('-')}`;
+            
+            return (
+              <article class="group bg-gray-900/30 border border-gray-800 rounded-lg p-5 hover:bg-gray-900/50 hover:border-gray-700 transition-all">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <h3 class="text-base font-medium mb-2">
+                      <a href={`/posts/${complexSlug}/`} class="text-gray-200 group-hover:text-white transition-colors">
+                        {post.frontmatter.title}
+                      </a>
+                    </h3>
+                    <p class="text-sm text-gray-400 leading-relaxed line-clamp-2">
+                      {post.frontmatter.description}
+                    </p>
+                  </div>
+                  <time class="text-xs text-gray-500 ml-4 whitespace-nowrap">
+                    {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </time>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    ))}
   </div>
 </Layout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
