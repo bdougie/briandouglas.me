@@ -124,18 +124,18 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
               rel="noopener noreferrer"
               class="ml-3 text-sm text-gray-400 hover:text-orange-500 transition-colors"
             >
-              {likeCount} {likeCount === 1 ? 'like' : 'likes'}
+              {likeCount}{' '}{likeCount === 1 ? 'like' : 'likes'}
             </a>
           </div>
           
           {/* Reply and Repost counts */}
           <div class="flex items-center gap-4">
             <span class="text-sm text-gray-400">
-              {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
+              {replyCount}{' '}{replyCount === 1 ? 'reply' : 'replies'}
             </span>
             
             <span class="text-sm text-gray-400">
-              {repostCount} {repostCount === 1 ? 'repost' : 'reposts'}
+              {repostCount}{' '}{repostCount === 1 ? 'repost' : 'reposts'}
             </span>
           </div>
         </div>
@@ -145,13 +145,13 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
       {likeCount === 0 && (
         <div class="flex items-center gap-6 mb-4">
           <span class="text-sm text-gray-400">
-            {likeCount} likes
+            {likeCount}{' '}likes
           </span>
           <span class="text-sm text-gray-400">
-            {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
+            {replyCount}{' '}{replyCount === 1 ? 'reply' : 'replies'}
           </span>
           <span class="text-sm text-gray-400">
-            {repostCount} {repostCount === 1 ? 'repost' : 'reposts'}
+            {repostCount}{' '}{repostCount === 1 ? 'repost' : 'reposts'}
           </span>
         </div>
       )}
