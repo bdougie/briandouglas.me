@@ -1,0 +1,1 @@
+- The blog posts are in src/pages/posts/ not src/content/blog/.
