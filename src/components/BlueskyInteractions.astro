@@ -1,0 +1,287 @@
+---
+export interface Props {
+  postUri: string;
+}
+
+const { postUri } = Astro.props;
+
+// Extract DID and post ID from the Bluesky URI
+// Format: at://did:plc:xyz/app.bsky.feed.post/postid
+const uriParts = postUri.match(/at:\/\/(did:plc:[^\/]+)\/app\.bsky\.feed\.post\/(.+)/);
+const did = uriParts?.[1];
+const postId = uriParts?.[2];
+
+let postData = null;
+let threadData = null;
+let likesData = null;
+let error = null;
+
+if (did && postId) {
+  try {
+    // Fetch post data
+    const apiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(postUri)}&depth=1`;
+    const postResponse = await fetch(apiUrl, {
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
+    
+    if (postResponse.ok) {
+      threadData = await postResponse.json();
+      postData = threadData.thread?.post;
+      
+      // Fetch likes data
+      try {
+        const likesUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getLikes?uri=${encodeURIComponent(postUri)}&limit=10`;
+        const likesResponse = await fetch(likesUrl, {
+          headers: {
+            'Accept': 'application/json',
+          }
+        });
+        
+        if (likesResponse.ok) {
+          likesData = await likesResponse.json();
+        }
+      } catch (likesError) {
+        // Silently fail for likes, show post without them
+        console.error('Could not fetch likes:', likesError);
+      }
+    } else {
+      error = 'Failed to fetch post data';
+    }
+  } catch (e) {
+    error = 'Error loading Bluesky data';
+    console.error('Bluesky API error:', e);
+  }
+} else {
+  error = 'Invalid Bluesky URI format';
+}
+
+// Extract handle from Bluesky post URI or use yours
+const handle = postData?.author?.handle || 'bizza.pizza';
+const postUrl = `https://bsky.app/profile/${handle}/post/${postId}`;
+
+// Get likes and reposts count
+const likeCount = postData?.likeCount || 0;
+const repostCount = postData?.repostCount || 0;
+const replyCount = postData?.replyCount || 0;
+
+// Get replies (limited to first 5 for display)
+const replies = threadData?.thread?.replies?.slice(0, 5) || [];
+
+// Get users who liked (limit to 5 for display)
+const likers = likesData?.likes?.slice(0, 5) || [];
+const remainingLikes = Math.max(0, likeCount - likers.length);
+---
+
+{postData && (
+  <div class="mt-12 pt-8 border-t border-gray-800">
+    <h3 class="text-lg font-semibold text-white mb-6">Discuss on Bluesky</h3>
+    
+    {/* Engagement Stats with Stacked Avatars */}
+    <div class="mb-6">
+      {/* Likes with Stacked Avatars */}
+      {likeCount > 0 && (
+        <div class="flex items-center gap-4 mb-4">
+          <div class="flex items-center">
+            {/* Stacked Avatars */}
+            <div class="avatar-stack flex -space-x-2 hover:space-x-1 transition-all duration-300">
+              {likers.map((like: any, index: number) => (
+                <a 
+                  href={`https://bsky.app/profile/${like.actor?.handle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="avatar-item relative transition-all duration-300 block"
+                  style={`z-index: ${5 - index}`}
+                  title={`@${like.actor?.handle}`}
+                >
+                  <img 
+                    src={like.actor?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${like.actor?.handle}`}
+                    alt={like.actor?.displayName || like.actor?.handle}
+                    class="w-8 h-8 rounded-full border-2 border-black bg-gray-900 hover:border-orange-500 transition-all duration-200"
+                  />
+                </a>
+              ))}
+              {remainingLikes > 0 && (
+                <div class="avatar-item relative z-0 transition-all duration-300">
+                  <div class="w-8 h-8 rounded-full border-2 border-black bg-gray-900 flex items-center justify-center hover:border-orange-500 transition-all duration-200">
+                    <span class="text-xs text-gray-400">+{remainingLikes}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Like count text */}
+            <a 
+              href={postUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="ml-3 text-sm text-gray-400 hover:text-orange-500 transition-colors"
+            >
+              {likeCount} {likeCount === 1 ? 'like' : 'likes'}
+            </a>
+          </div>
+          
+          {/* Reply and Repost counts */}
+          <div class="flex items-center gap-4">
+            <a
+              href={postUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-2 text-sm text-gray-400 hover:text-orange-500 transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+              </svg>
+              {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
+            </a>
+            
+            <a
+              href={postUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-2 text-sm text-gray-400 hover:text-orange-500 transition-colors"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              {repostCount} {repostCount === 1 ? 'repost' : 'reposts'}
+            </a>
+          </div>
+        </div>
+      )}
+      
+      {/* If no likes yet, show simple stats */}
+      {likeCount === 0 && (
+        <div class="flex items-center gap-6 mb-4">
+          <span class="text-sm text-gray-400">
+            {likeCount} likes
+          </span>
+          <span class="text-sm text-gray-400">
+            {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
+          </span>
+          <span class="text-sm text-gray-400">
+            {repostCount} {repostCount === 1 ? 'repost' : 'reposts'}
+          </span>
+        </div>
+      )}
+    </div>
+
+    {/* Replies Preview */}
+    {replies.length > 0 && (
+      <div class="space-y-4 mb-6">
+        <h4 class="text-sm font-medium text-gray-400">Recent replies</h4>
+        {replies.map((reply: any) => (
+          <div class="flex gap-3 p-3 bg-gray-900/30 border border-gray-800 rounded-lg">
+            <a 
+              href={`https://bsky.app/profile/${reply.post?.author?.handle}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex-shrink-0"
+            >
+              <img 
+                src={reply.post?.author?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reply.post?.author?.handle}`}
+                alt={reply.post?.author?.displayName || reply.post?.author?.handle}
+                class="w-8 h-8 rounded-full hover:ring-2 hover:ring-orange-500 transition-all"
+              />
+            </a>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline gap-2 mb-1">
+                <a 
+                  href={`https://bsky.app/profile/${reply.post?.author?.handle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm font-medium text-white truncate hover:text-orange-500 transition-colors"
+                >
+                  {reply.post?.author?.displayName || reply.post?.author?.handle}
+                </a>
+                <a 
+                  href={`https://bsky.app/profile/${reply.post?.author?.handle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-xs text-gray-500 hover:text-orange-500 transition-colors"
+                >
+                  @{reply.post?.author?.handle}
+                </a>
+              </div>
+              <p class="text-sm text-gray-400 break-words">
+                {reply.post?.record?.text}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* CTA Button */}
+    <div class="flex items-center gap-4">
+      <a
+        href={postUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors"
+      >
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+        </svg>
+        Join the discussion on Bluesky
+      </a>
+      
+      <a 
+        href="https://docs.bsky.app/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-xs text-gray-500 hover:text-orange-500 transition-colors"
+      >
+        Powered by Bluesky API
+      </a>
+    </div>
+  </div>
+)}
+
+{error && (
+  <div class="mt-12 pt-8 border-t border-gray-800">
+    <p class="text-sm text-gray-500">Unable to load Bluesky interactions</p>
+  </div>
+)}
+
+<style>
+  /* Stacked avatars with expand on hover */
+  .avatar-stack {
+    cursor: pointer;
+  }
+  
+  /* Default stacked state */
+  .avatar-stack.-space-x-2 > .avatar-item {
+    margin-right: -0.5rem;
+  }
+  
+  .avatar-stack.-space-x-2 > .avatar-item:last-child {
+    margin-right: 0;
+  }
+  
+  /* Expanded state on hover */
+  .avatar-stack:hover.space-x-1 > .avatar-item {
+    margin-right: 0.25rem;
+  }
+  
+  .avatar-stack:hover.space-x-1 > .avatar-item:last-child {
+    margin-right: 0;
+  }
+  
+  /* Individual avatar hover effect */
+  .avatar-stack:hover .avatar-item {
+    transform: translateY(-2px);
+  }
+  
+  .avatar-stack .avatar-item:hover {
+    transform: translateY(-4px) scale(1.1);
+    z-index: 10 !important;
+  }
+  
+  /* Smooth transitions */
+  .avatar-stack,
+  .avatar-stack .avatar-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+</style>

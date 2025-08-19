@@ -3,6 +3,7 @@ title: Creating Bulletproof Tests Without Mocks for UI Components
 date: 2025-08-19
 tags: ["testing", "react", "best-practices", "ui-components"]
 description: Learn how to build reliable, fast, and maintainable tests for UI components without relying on mocks, improving test suite reliability and developer experience.
+blueskyUri: at://did:plc:4g4melrdxiwqmgeik55rkgx7/app.bsky.feed.post/3lwrjocyf622w
 ---
 
 In the ever-evolving landscape of software development, ensuring robust and reliable test suites is pivotal. Recently, a significant enhancement was made to our project's testing strategy: the creation of bulletproof tests for UI components without relying on mocks. This blog post delves into the purpose, implementation, and impact of these changes.

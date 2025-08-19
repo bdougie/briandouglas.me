@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import BlueskyInteractions from '../../components/BlueskyInteractions.astro';
 
 export async function getStaticPaths() {
   const posts = await Astro.glob('./*.md');
@@ -72,6 +73,11 @@ const { Content } = post;
                 prose-hr:border-gray-800">
       <Content />
     </div>
+    
+    {/* Add Bluesky interactions if URI is present in frontmatter */}
+    {post.frontmatter.blueskyUri && (
+      <BlueskyInteractions postUri={post.frontmatter.blueskyUri} />
+    )}
     
     <footer class="mt-16 pt-8 border-t border-gray-800">
       <div class="flex items-center justify-between">
