@@ -69,6 +69,12 @@ const replyCount = postData?.replyCount || 0;
 // Get replies (limited to first 5 for display)
 const replies = threadData?.thread?.replies?.slice(0, 5) || [];
 
+// Function to extract post ID from reply URI
+const getReplyPostId = (uri: string) => {
+  const match = uri?.match(/app\.bsky\.feed\.post\/(.+)$/);
+  return match ? match[1] : null;
+};
+
 // Get users who liked (limit to 5 for display)
 const likers = likesData?.likes?.slice(0, 5) || [];
 const remainingLikes = Math.max(0, likeCount - likers.length);
@@ -165,6 +171,18 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
           </span>
         </div>
       )}
+      
+      {/* Call to action to like the post */}
+      <div class="mb-4">
+        <a 
+          href={postUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs text-gray-500 hover:text-orange-500 transition-colors"
+        >
+          Like this post on Bluesky to see your face here →
+        </a>
+      </div>
     </div>
 
     {/* Replies Preview */}
@@ -207,6 +225,14 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
               <p class="text-sm text-gray-400 break-words">
                 {reply.post?.record?.text}
               </p>
+              <a 
+                href={`https://bsky.app/profile/${reply.post?.author?.handle}/post/${getReplyPostId(reply.post?.uri)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-block mt-2 text-xs text-gray-500 hover:text-orange-500 transition-colors"
+              >
+                View on Bluesky →
+              </a>
             </div>
           </div>
         ))}
