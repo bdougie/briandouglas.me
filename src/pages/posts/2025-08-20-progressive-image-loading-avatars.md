@@ -2,7 +2,7 @@
 title: "Enhancing User Experience with Progressive Image Loading for Avatars"
 description: "Explore how implementing blur-up progressive image loading for avatar images significantly improves perceived performance and user experience, with technical implementation details and code examples."
 date: 2025-08-20
-blueskyUrl: ""
+blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3lwtsbkmuuc2m"
 ---
 
 I just got back from Nigeria and nothing is more painful than trying to share your site at an event and waiting for it to load. 
