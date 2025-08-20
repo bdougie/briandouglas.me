@@ -17,7 +17,7 @@ You know that awkward moment when someone's looking at your site and there's jus
 
 ## Why I Had to Fix This
 
-After my Nigeria trip, I realized my site was built with a Silicon Valley bias - assuming everyone has fiber internet. But avatars are everywhere on my site (profiles, comments, author sections), and they were killing the experience on slower connections. This fix makes the site feel instant, even on sketchy conference WiFi or mobile data.
+After my Nigeria trip, I realized my site was built with a Silicon Valley bias - assuming everyone has fiber internet. But one avatar was killing the experience on slower connections. This fix makes the site feel instant, even on sketchy conference WiFi or mobile data.
 
 ## How I Built It
 
