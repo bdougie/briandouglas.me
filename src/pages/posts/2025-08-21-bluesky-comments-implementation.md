@@ -1,5 +1,6 @@
 ---
 title: "Adding Bluesky Comments to My Blog: A Technical Implementation"
+description: "Learn how I integrated Bluesky's social features into my blog, creating a zero-maintenance comment system using the AT Protocol's open APIs. This technical walkthrough covers the implementation details, UI design decisions, and lessons learned from building social engagement without databases or authentication."
 date: 2025-08-21
 blueskyUrl: ""
 ---
