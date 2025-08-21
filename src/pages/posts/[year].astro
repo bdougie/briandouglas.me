@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { formatDateShort } from '../../utils/dateFormatting';
 
 export async function getStaticPaths() {
   const posts = await Astro.glob('./**/*.md');
@@ -69,10 +70,7 @@ const months = Object.keys(postsByMonth);
                     </p>
                   </div>
                   <time class="text-xs text-gray-500 ml-4 whitespace-nowrap">
-                    {new Date(post.frontmatter.date + 'T00:00:00').toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                    })}
+                    {formatDateShort(post.frontmatter.date)}
                   </time>
                 </div>
               </article>

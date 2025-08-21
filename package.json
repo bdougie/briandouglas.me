@@ -10,7 +10,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "optimize:images": "node scripts/optimize-images.mjs",
-    "optimize:images:all": "node scripts/optimize-images.mjs --webp"
+    "optimize:images:all": "node scripts/optimize-images.mjs --webp",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
@@ -23,13 +25,17 @@
     "@astrojs/prefetch": "^0.4.1",
     "@astrojs/sitemap": "^3.5.0",
     "@squoosh/lib": "^0.3.1",
+    "@vitest/ui": "^3.2.4",
+    "happy-dom": "^18.0.1",
     "imagemin": "^9.0.1",
     "imagemin-gifsicle": "^7.0.0",
     "imagemin-mozjpeg": "^10.0.0",
     "imagemin-pngquant": "^10.0.0",
     "imagemin-svgo": "^11.0.1",
     "imagemin-webp": "^8.0.0",
+    "playwright": "^1.55.0",
     "sharp": "^0.34.3",
-    "sitemap": "^8.0.0"
+    "sitemap": "^8.0.0",
+    "vitest": "^3.2.4"
   }
 }
