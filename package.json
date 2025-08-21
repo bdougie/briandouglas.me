@@ -13,6 +13,7 @@
     "optimize:images:all": "node scripts/optimize-images.mjs --webp"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.12",
     "@astrojs/tailwind": "^5.1.0",
     "@tailwindcss/typography": "^0.5.10",
     "astro": "^5.2.5",
