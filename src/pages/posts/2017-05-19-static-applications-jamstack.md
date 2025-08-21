@@ -2,7 +2,7 @@
 title: Static Applications & JAMstack
 tags: JAMstack
 description: podcast
-date: 2017-05-19T17:26:04.572Z
+date: 2017-05-19
 summary: >-
   I was on the Web Platform Podcast last chatting about Netlify the focus and
   vision for Static Apps known aka JAMStack.

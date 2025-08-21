@@ -1,6 +1,6 @@
 ---
 title: Start Writing Apis With Rails
-date: 2015-07-14 15:29 UTC
+date: 2015-07-14
 tags: api, rails, json
 category: rails
 description: How to get started with the rails-api gem

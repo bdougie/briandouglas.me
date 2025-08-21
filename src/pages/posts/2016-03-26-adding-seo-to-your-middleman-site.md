@@ -1,6 +1,6 @@
 ---
 title: Adding SEO To Your Middleman Site
-date: 2016-03-26 09:29 UTC
+date: 2016-03-26
 tags: blog, middleman
 category: react
 description: Learn how to implement SEO in your middleman site

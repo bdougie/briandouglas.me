@@ -1,6 +1,6 @@
 ---
 title: Deploying Your Ember App
-date: 2015-08-30 14:52 UTC
+date: 2015-08-30
 tags:
 category: ember
 description: Deploying Ember with Divshot explained

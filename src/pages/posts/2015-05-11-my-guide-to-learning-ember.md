@@ -1,6 +1,6 @@
 ---
 title: My Guide to Learning Ember
-date: 2015-05-11 04:40 UTC
+date: 2015-05-11
 tags:
 category: ember
 description: quick tips on learning Ember

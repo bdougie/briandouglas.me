@@ -2,7 +2,7 @@
 title: Managing Data Flow in React Native
 tags: 'react, react-native, talk'
 category: talk
-date: 2017-02-16T15:59:50.842Z
+date: 2017-02-16
 description: >-
   I go through how to manage remote data-flow in a React Native application,
   using 5 of different techniques including starting with Promises and

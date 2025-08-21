@@ -1,6 +1,6 @@
 ---
 title: Cleaner Privates with DCI
-date: 2015-09-13 07:27 UTC
+date: 2015-09-13
 tags:
 category: ruby
 description: DCI in Ruby

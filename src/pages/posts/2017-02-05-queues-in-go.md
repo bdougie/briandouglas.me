@@ -2,7 +2,7 @@
 title: Queues in Go
 tags: 'go, computer science'
 category: go
-date: 2017-02-05T01:59:58.000Z
+date: 2017-02-05
 description: >-
   Queues are an abstract data structures when the collection of data are kept in order.
   Items can be enqueued to add to the queue and dequeued to be removed from the queue.

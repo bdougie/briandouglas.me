@@ -1,6 +1,6 @@
 ---
 title: Setting up Bootstrap in Ember in 2 steps
-date: 2015-07-06 07:05 UTC
+date: 2015-07-06
 tags:
 category: ember
 ---

@@ -1,6 +1,6 @@
 ---
 title: Binding ES Class Methods in React
-date: 2016-07-18 04:56 UTC
+date: 2016-07-18
 tags: react, javascript, es6
 category: react
 description: Working with this can be confusing in React, especially when React has multiple ways to build components. Let's look the few ways to deal with this.

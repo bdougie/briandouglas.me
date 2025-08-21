@@ -2,7 +2,7 @@
 title: Steps to Migrate from the Graphcool Web UI to the Graphcool Framework
 tags: graphql
 category: graphql
-date: 2017-11-30T21:22:18.000Z
+date: 2017-11-30
 decription: >-
   Graphcool has released a new framework to improve the standards around getting
   a GraphQL server up and deployed. But what about the people have already been

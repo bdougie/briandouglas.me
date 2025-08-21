@@ -1,6 +1,6 @@
 ---
 title: Rails and React Sitting in a Tree
-date: 2016-08-04 22:48 UTC
+date: 2016-08-04
 tags: react-native, swift, ios, talk
 category: react
 description: Injecting React into the asset pipeline is not so easy. Within the past 6 months I have discovered a great way to integrated React into my Rails app development workflow and take advantage of what everyone is excited about today.

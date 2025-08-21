@@ -2,7 +2,7 @@
 title: 'Sanboxing React Components with react-storybook '
 tags: 'react, talk'
 category: talk
-date: 2017-02-20T19:20:39.770Z
+date: 2017-02-20
 description: >-
   This is an example of the workflow at Netlify with react-storybook and how it
   cut down our development time between designer to developer.  

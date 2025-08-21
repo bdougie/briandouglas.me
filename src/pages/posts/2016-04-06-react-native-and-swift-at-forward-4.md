@@ -1,6 +1,6 @@
 ---
 title: React Native and Swift at Forward 4
-date: 2016-04-06 04:38 UTC
+date: 2016-04-06
 tags: react-native, swift, ios, talk
 category: react
 description: Compare Swift to React Native to find out whether or not it is worth the investment in learning iOS when you already know JavaScript

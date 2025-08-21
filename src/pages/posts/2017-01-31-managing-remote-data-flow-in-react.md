@@ -2,7 +2,7 @@
 title: Managing Remote Data Flow in React
 tags: 'react, graphql, apollo'
 description: react
-date: 2017-01-31T19:03:06.924Z
+date: 2017-01-31
 summary: >-
   Within the past year I have discovered different ways to solve the same
   problem — managing the increasingly complex data requirements of modern

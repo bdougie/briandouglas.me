@@ -2,7 +2,7 @@
 title: Stacks in Go
 tags: 'go, computer science'
 category: go
-date: 2017-01-30T21:37:27.914Z
+date: 2017-01-30
 description: >-
   A Stack is an abstract data type that serves as a collection of elements with
   two principle operations, pop and push. Writing Stacks in Go is a great way to

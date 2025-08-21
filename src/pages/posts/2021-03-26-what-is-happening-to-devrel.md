@@ -2,7 +2,7 @@
 title: What is happening to DevRel?
 tags: 'devrel'
 category: blog
-date: 2021-03-26T21:40:48.367Z
+date: 2021-03-26
 description: A conversation about the changes happening in DevRel.
 ---
 

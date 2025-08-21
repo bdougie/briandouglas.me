@@ -2,7 +2,7 @@
 title: Testing expected Errors with Jest
 tags: 'jest, react, javascript'
 category: blog
-date: 2020-01-10T21:40:48.367Z
+date: 2020-01-10
 description: This is a post to discover how to write a test for an expected error with Jest
 ---
 

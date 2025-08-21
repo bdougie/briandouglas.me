@@ -2,7 +2,7 @@
 title: Customizing your bash command prompt
 tags: 'tools, bash'
 category: tools
-date: 2017-04-24T19:36:33.871Z
+date: 2017-04-24
 description: Customize your bash with emojis
 ---
 For awhile now I have wanted to customize my command prompt in my terminal, but I thought I was limited because I did not use the fancy [iterm](https://www.iterm2.com/) or [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh).

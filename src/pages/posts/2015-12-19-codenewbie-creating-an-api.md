@@ -1,6 +1,6 @@
 ---
 title: CodeNewbie Creating An Api
-date: 2015-12-19 22:05 UTC
+date: 2015-12-19
 tags: api, rails, json
 category: rails
 summary: This is online webinar on how to approach building your API 

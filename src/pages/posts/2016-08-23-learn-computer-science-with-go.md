@@ -1,6 +1,6 @@
 ---
 title: Learn Computer Science with Go
-date: '2016-08-23 05:05 UTC'
+date: 2016-08-23
 tags: 'go, computer-science'
 category: go
 description: >-

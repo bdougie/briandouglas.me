@@ -2,7 +2,7 @@
 title: Getting GraphQL in your API
 tags: 'graphql, apollo, talk'
 category: talk
-date: 2017-12-01T18:09:27.491Z
+date: 2017-12-01
 description: >-
   Convincing your team to change up technologies can be challenging. Convincing
   my team to use GraphQL was not, mainly due to simplicity in getting a GraphQL
