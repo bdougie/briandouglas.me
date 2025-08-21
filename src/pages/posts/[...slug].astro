@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import BlueskyInteractions from '../../components/BlueskyInteractions.astro';
+import { formatDateLong } from '../../utils/dateFormatting';
 
 export async function getStaticPaths() {
   const posts = await Astro.glob('./*.md');
@@ -27,23 +28,6 @@ const { post } = Astro.props;
 
 // Access Content component directly
 const { Content } = post;
-
-// Helper function to format date safely
-function formatDate(dateStr: string) {
-  try {
-    const date = new Date(dateStr + 'T00:00:00.000Z');
-    if (isNaN(date.getTime())) {
-      return 'Invalid Date';
-    }
-    
-    const months = ['January', 'February', 'March', 'April', 'May', 'June',
-                   'July', 'August', 'September', 'October', 'November', 'December'];
-    
-    return `${months[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
-  } catch (e) {
-    return 'Invalid Date';
-  }
-}
 ---
 
 <Layout 
@@ -67,7 +51,7 @@ function formatDate(dateStr: string) {
       
       <div class="flex items-center gap-4 text-sm text-gray-500">
         <time>
-          {formatDate(post.frontmatter.date)}
+          {formatDateLong(post.frontmatter.date)}
         </time>
       </div>
     </header>

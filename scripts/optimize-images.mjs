@@ -57,16 +57,21 @@ async function optimizeImages() {
       const relativePath = path.relative(tempDir, file.destinationPath);
       const originalPath = path.join(publicDir, relativePath);
       
-      const originalStats = await fs.stat(originalPath);
-      const optimizedStats = await fs.stat(file.destinationPath);
-      
-      const savings = ((originalStats.size - optimizedStats.size) / originalStats.size * 100).toFixed(1);
-      
-      if (optimizedStats.size < originalStats.size) {
-        await fs.copyFile(file.destinationPath, originalPath);
-        console.log(`✅ ${relativePath}: ${savings}% smaller`);
-      } else {
-        console.log(`⏭️  ${relativePath}: Already optimized`);
+      try {
+        const originalStats = await fs.stat(originalPath);
+        const optimizedStats = await fs.stat(file.destinationPath);
+        
+        const savings = ((originalStats.size - optimizedStats.size) / originalStats.size * 100).toFixed(1);
+        
+        if (optimizedStats.size < originalStats.size) {
+          await fs.copyFile(file.destinationPath, originalPath);
+          console.log(`✅ ${relativePath}: ${savings}% smaller`);
+        } else {
+          console.log(`⏭️  ${relativePath}: Already optimized`);
+        }
+      } catch (err) {
+        // Skip files that don't exist in the original location
+        console.log(`⚠️  ${relativePath}: Skipping (file not found in original location)`);
       }
     }
     

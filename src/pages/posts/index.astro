@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { formatDateShort } from '../../utils/dateFormatting';
 
 const posts = await Astro.glob('./**/*.md');
 const sortedPosts = posts
@@ -17,24 +18,6 @@ const postsByYear = sortedPosts.reduce((acc, post) => {
 }, {} as Record<number, typeof posts>);
 
 const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
-
-// Helper function to format date safely
-function formatDate(dateStr: string) {
-  try {
-    // Parse the date string consistently
-    const date = new Date(dateStr + 'T00:00:00.000Z');
-    if (isNaN(date.getTime())) {
-      return 'Invalid Date';
-    }
-    
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
-    return `${months[date.getUTCMonth()]} ${date.getUTCDate()}`;
-  } catch (e) {
-    return 'Invalid Date';
-  }
-}
 ---
 
 <Layout title="All Posts - bdougie">
@@ -65,7 +48,7 @@ function formatDate(dateStr: string) {
                     </p>
                   </div>
                   <time class="text-xs text-gray-500 ml-4 whitespace-nowrap">
-                    {formatDate(post.frontmatter.date)}
+                    {formatDateShort(post.frontmatter.date)}
                   </time>
                 </div>
               </article>

@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { formatDateShort } from '../utils/dateFormatting';
 
 const posts = await Astro.glob('./posts/**/*.md');
 const sortedPosts = posts
@@ -81,11 +82,7 @@ const sortedPosts = posts
                 </h3>
               </div>
               <time class="text-xs text-gray-500 block mb-2">
-                {new Date(post.frontmatter.date + 'T00:00:00').toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                })}
+                {formatDateShort(post.frontmatter.date)}
               </time>
               <p class="text-sm text-gray-400 leading-relaxed line-clamp-2">
                 {post.frontmatter.description}
