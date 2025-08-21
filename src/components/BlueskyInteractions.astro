@@ -1,19 +1,22 @@
 ---
 export interface Props {
   postUrl?: string;  // Regular Bluesky URL
+  blueskyUrl?: string;  // Alias for postUrl (for consistency with frontmatter)
   postUri?: string;  // AT Protocol URI (for backwards compatibility)
+  compact?: boolean;  // Compact mode for homepage display
 }
 
-const { postUrl, postUri } = Astro.props;
+const { postUrl, blueskyUrl, postUri, compact = false } = Astro.props;
+const actualPostUrl = postUrl || blueskyUrl;
 
 let did = null;
 let postId = null;
 let handle = null;
 
 // If we have a regular Bluesky URL, extract handle and post ID
-if (postUrl) {
+if (actualPostUrl) {
   // Format: https://bsky.app/profile/handle/post/postid
-  const urlParts = postUrl.match(/bsky\.app\/profile\/([^\/]+)\/post\/(.+)/);
+  const urlParts = actualPostUrl.match(/bsky\.app\/profile\/([^\/]+)\/post\/(.+)/);
   handle = urlParts?.[1];
   postId = urlParts?.[2];
   
@@ -113,7 +116,7 @@ const likers = likesData?.likes?.slice(0, 5) || [];
 const remainingLikes = Math.max(0, likeCount - likers.length);
 ---
 
-{postData && (
+{postData && !compact && (
   <div class="mt-12 pt-8 border-t border-gray-800">
     <h3 class="text-lg font-semibold text-white mb-6">Discuss on Bluesky</h3>
     
@@ -270,8 +273,68 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
   </div>
 )}
 
+{/* Compact mode for homepage */}
+{postData && compact && (
+  <div class="flex items-center gap-4 text-sm">
+    <a 
+      href={bskyPostUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 600 530" fill="currentColor">
+        <path d="M135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.3797-3.6904-10.832-3.7077-7.8964-0.0174-2.9357-1.1937 0.51669-3.7077 7.8964-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.4491-163.25-81.433-5.9562-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"/>
+      </svg>
+      <span>{likeCount} {likeCount === 1 ? 'like' : 'likes'}</span>
+    </a>
+    
+    <span class="text-gray-500">·</span>
+    
+    <a 
+      href={bskyPostUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-gray-400 hover:text-orange-500 transition-colors"
+    >
+      {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
+    </a>
+    
+    {repostCount > 0 && (
+      <>
+        <span class="text-gray-500">·</span>
+        <span class="text-gray-400">
+          {repostCount} {repostCount === 1 ? 'repost' : 'reposts'}
+        </span>
+      </>
+    )}
+    
+    {/* Show first 3 avatars of people who liked */}
+    {likers.length > 0 && (
+      <>
+        <span class="text-gray-500">·</span>
+        <div class="flex -space-x-2">
+          {likers.slice(0, 3).map((like: any, index: number) => (
+            <img 
+              src={like.actor?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${like.actor?.handle}`}
+              alt={like.actor?.displayName || like.actor?.handle}
+              class="w-5 h-5 rounded-full border border-gray-800 bg-gray-900"
+              style={`z-index: ${3 - index}`}
+              title={`@${like.actor?.handle}`}
+            />
+          ))}
+          {likeCount > 3 && (
+            <div class="w-5 h-5 rounded-full border border-gray-800 bg-gray-900 flex items-center justify-center">
+              <span class="text-[10px] text-gray-500">+{likeCount - 3}</span>
+            </div>
+          )}
+        </div>
+      </>
+    )}
+  </div>
+)}
+
 {error && (
-  <div class="mt-12 pt-8 border-t border-gray-800">
+  <div class={compact ? "" : "mt-12 pt-8 border-t border-gray-800"}>
     <p class="text-sm text-gray-500">Unable to load Bluesky interactions</p>
   </div>
 )}

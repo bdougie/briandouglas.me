@@ -47,7 +47,7 @@ const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
                     </p>
                   </div>
                   <time class="text-xs text-gray-500 ml-4 whitespace-nowrap">
-                    {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
+                    {new Date(post.frontmatter.date + 'T00:00:00').toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
                     })}

@@ -1,11 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import BlueskyInteractions from '../components/BlueskyInteractions.astro';
 
 const posts = await Astro.glob('./posts/**/*.md');
 const sortedPosts = posts
   .filter(post => !post.frontmatter.draft)
   .sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime())
   .slice(0, 5);
+
+// Get latest 3 posts with Bluesky URLs
+const postsWithBluesky = posts
+  .filter(post => !post.frontmatter.draft && post.frontmatter.blueskyUrl)
+  .sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime())
+  .slice(0, 3);
 ---
 
 <Layout>
@@ -81,7 +88,7 @@ const sortedPosts = posts
                 </h3>
               </div>
               <time class="text-xs text-gray-500 block mb-2">
-                {new Date(post.frontmatter.date).toLocaleDateString('en-US', {
+                {new Date(post.frontmatter.date + 'T00:00:00').toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'short',
                   day: 'numeric',
@@ -105,6 +112,42 @@ const sortedPosts = posts
       </div>
     </div>
   </div>
+  
+  <!-- Bluesky Interactions Section -->
+  {postsWithBluesky.length > 0 && (
+    <div class="mt-16 border-t border-gray-800 pt-12">
+      <h2 class="text-xl font-bold text-white mb-8">Recent Discussions</h2>
+      <div class="space-y-12">
+        {postsWithBluesky.map((post) => {
+          // Extract the filename for the post link
+          const filename = post.file.split('/').pop();
+          const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+          const complexSlug = `${year}/${month}/${day}/${titleParts.join('-')}`;
+          
+          return (
+            <div class="space-y-4">
+              <div class="flex items-baseline justify-between">
+                <h3 class="text-base font-medium">
+                  <a href={`/posts/${complexSlug}/`} class="text-gray-300 hover:text-white transition-colors">
+                    {post.frontmatter.title}
+                  </a>
+                </h3>
+                <time class="text-xs text-gray-500">
+                  {new Date(post.frontmatter.date + 'T00:00:00').toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </time>
+              </div>
+              <div class="pl-4 border-l-2 border-gray-800">
+                <BlueskyInteractions blueskyUrl={post.frontmatter.blueskyUrl} compact={true} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  )}
 </Layout>
 
 <style>
