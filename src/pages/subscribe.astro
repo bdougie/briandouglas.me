@@ -104,7 +104,7 @@ const rssUrl = new URL('/rss.xml', site).toString();
         </div>
       </section>
 
-      <!-- Newsletter Section (placeholder for future) -->
+      <!-- Newsletter Section -->
       <section class="bg-gray-900/30 border border-gray-800 rounded-lg p-6">
         <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-orange-500">
@@ -113,9 +113,21 @@ const rssUrl = new URL('/rss.xml', site).toString();
           </svg>
           Newsletter
         </h2>
-        <p class="text-gray-400">
-          Newsletter coming soon! For now, subscribe via RSS or follow me on social media for updates.
+        <p class="text-gray-400 mb-4">
+          Subscribe to my Substack newsletter for deeper insights, exclusive content, and regular updates delivered to your inbox.
         </p>
+        <a 
+          href="https://bdougie.substack.com/" 
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="m22 7-10 5L2 7"></path>
+          </svg>
+          Subscribe on Substack
+        </a>
       </section>
     </div>
   </div>
