@@ -9,7 +9,7 @@ I just got back from Nigeria and nothing is more painful than trying to share yo
 
 That experience was a wake-up call. Not everyone has blazing-fast internet, and my site needs to work everywhere. So when I got back, I immediately implemented progressive image loading for all the avatar images on my site. Let me show you what I did and why it matters.
 
-![Progressive image loading demonstration showing the blur-up effect transitioning to a sharp avatar image](/progressive-loading-demo.gif)
+![Progressive image loading demonstration showing the blur-up effect transitioning to a sharp avatar image](/gifs/progressive-loading-demo.gif)
 
 ## What Even Is Progressive Image Loading?
 

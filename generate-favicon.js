@@ -18,6 +18,6 @@ const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="
 sharp(Buffer.from(svgContent))
   .resize(1024, 1024)
   .png()
-  .toFile('public/favicon.png')
+  .toFile('public/images/favicon.png')
   .then(() => console.log('Favicon generated successfully!'))
   .catch(err => console.error('Error generating favicon:', err));
