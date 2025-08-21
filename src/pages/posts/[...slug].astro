@@ -4,8 +4,9 @@ import BlueskyInteractions from '../../components/BlueskyInteractions.astro';
 
 export async function getStaticPaths() {
   const posts = await Astro.glob('./*.md');
+  const publishedPosts = posts.filter(post => !post.frontmatter.draft);
   
-  return posts.map(post => {
+  return publishedPosts.map(post => {
     const filename = post.file.split('/').pop();
     const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
     

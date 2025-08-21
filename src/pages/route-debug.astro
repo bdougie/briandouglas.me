@@ -1,10 +1,11 @@
 ---
 // A utility to debug the complex URL routes
 const posts = await Astro.glob('./posts/**/*.md');
+const publishedPosts = posts.filter(post => !post.frontmatter.draft);
 const site = Astro.site?.toString() || 'https://briandouglas.me';
 
 // For each post, generate the URLs for the post and its OG image
-const routeMap = posts.map(post => {
+const routeMap = publishedPosts.map(post => {
   const filename = post.file.split('/').pop();
   const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
   const complexSlug = `${year}/${month}/${day}/${titleParts.join('-')}`;

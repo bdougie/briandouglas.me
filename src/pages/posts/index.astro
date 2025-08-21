@@ -2,9 +2,11 @@
 import Layout from '../../layouts/Layout.astro';
 
 const posts = await Astro.glob('./**/*.md');
-const sortedPosts = posts.sort((a, b) => 
-  new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
-);
+const sortedPosts = posts
+  .filter(post => !post.frontmatter.draft)
+  .sort((a, b) => 
+    new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+  );
 
 // Group posts by year
 const postsByYear = sortedPosts.reduce((acc, post) => {

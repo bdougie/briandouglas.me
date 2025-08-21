@@ -16,10 +16,11 @@ const examplePostUrl = new URL('/posts/2023/01/01/example-post/', site).toString
 
 // Add a real post URL for testing (first post from your blog)
 const posts = await Astro.glob('./posts/**/*.md');
+const publishedPosts = posts.filter(post => !post.frontmatter.draft);
 let realPostUrl = examplePostUrl; // fallback
 
-if (posts.length > 0) {
-  const latestPost = posts.sort((a, b) => 
+if (publishedPosts.length > 0) {
+  const latestPost = publishedPosts.sort((a, b) => 
     new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
   )[0];
   

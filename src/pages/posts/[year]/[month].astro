@@ -3,10 +3,11 @@ import Layout from '../../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
   const posts = await Astro.glob('../**/*.md');
+  const publishedPosts = posts.filter(post => !post.frontmatter.draft);
   
   const monthsWithPosts = new Map();
   
-  posts.forEach(post => {
+  publishedPosts.forEach(post => {
     const date = new Date(post.frontmatter.date);
     const year = date.getFullYear().toString();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
