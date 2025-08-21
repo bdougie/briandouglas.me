@@ -27,6 +27,23 @@ const { post } = Astro.props;
 
 // Access Content component directly
 const { Content } = post;
+
+// Helper function to format date safely
+function formatDate(dateStr: string) {
+  try {
+    const date = new Date(dateStr + 'T00:00:00.000Z');
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    
+    const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                   'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    return `${months[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
+  } catch (e) {
+    return 'Invalid Date';
+  }
+}
 ---
 
 <Layout 
@@ -50,11 +67,7 @@ const { Content } = post;
       
       <div class="flex items-center gap-4 text-sm text-gray-500">
         <time>
-          {new Date(post.frontmatter.date + 'T00:00:00').toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long', 
-            day: 'numeric'
-          })}
+          {formatDate(post.frontmatter.date)}
         </time>
       </div>
     </header>
