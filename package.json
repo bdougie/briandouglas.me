@@ -7,7 +7,6 @@
     "dev": "astro dev",
     "build": "npm run optimize:images && astro build",
     "build:prod": "npm run optimize:images:all && astro build",
-    "build:ci": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "optimize:images": "node scripts/optimize-images.mjs",
