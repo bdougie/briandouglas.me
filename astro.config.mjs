@@ -28,8 +28,27 @@ export default defineConfig({
   },
   image: {
     service: {
-      entrypoint: 'astro/assets/services/sharp'
-    }
+      entrypoint: 'astro/assets/services/sharp',
+      config: {
+        limitInputPixels: false,
+        png: {
+          quality: 85,
+          compressionLevel: 9
+        },
+        jpeg: {
+          quality: 85,
+          progressive: true
+        },
+        webp: {
+          quality: 85
+        },
+        avif: {
+          quality: 80
+        }
+      }
+    },
+    domains: ['briandouglas.me'],
+    remotePatterns: [{ protocol: "https" }]
   },
   compressHTML: true,
   vite: {

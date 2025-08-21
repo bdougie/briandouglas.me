@@ -72,6 +72,8 @@ The component implements multiple layers of error handling:
 
 One of the most visually interesting parts is the stacked avatar display for likes. The avatars stack with negative margin (`-space-x-2`) and expand on hover (`hover:space-x-1`). Each avatar has a decreasing z-index to create the proper layering effect:
 
+![stacked avatars](/stacked-avatars.gif)
+
 ```astro
 <div class="avatar-stack flex -space-x-2 hover:space-x-1 transition-all duration-300">
   {likers.map((like: any, index: number) => (
