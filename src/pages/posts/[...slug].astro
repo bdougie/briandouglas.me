@@ -31,15 +31,29 @@ const { Content } = post;
 // Helper function to format date safely
 function formatDate(dateStr: string) {
   try {
-    const date = new Date(dateStr + 'T00:00:00.000Z');
-    if (isNaN(date.getTime())) {
+    // Parse the date string more reliably by treating it as a local date
+    const [year, month, day] = dateStr.split('-').map(Number);
+    
+    // Validate the parsed values
+    if (!year || !month || !day || month < 1 || month > 12 || day < 1 || day > 31) {
+      return 'Invalid Date';
+    }
+    
+    // Create date using local timezone to avoid UTC offset issues
+    const date = new Date(year, month - 1, day);
+    
+    // Double-check that the date is valid
+    if (isNaN(date.getTime()) || 
+        date.getFullYear() !== year || 
+        date.getMonth() !== month - 1 || 
+        date.getDate() !== day) {
       return 'Invalid Date';
     }
     
     const months = ['January', 'February', 'March', 'April', 'May', 'June',
                    'July', 'August', 'September', 'October', 'November', 'December'];
     
-    return `${months[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
+    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
   } catch (e) {
     return 'Invalid Date';
   }

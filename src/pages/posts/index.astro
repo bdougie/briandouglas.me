@@ -21,16 +21,29 @@ const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
 // Helper function to format date safely
 function formatDate(dateStr: string) {
   try {
-    // Parse the date string consistently
-    const date = new Date(dateStr + 'T00:00:00.000Z');
-    if (isNaN(date.getTime())) {
+    // Parse the date string more reliably by treating it as a local date
+    const [year, month, day] = dateStr.split('-').map(Number);
+    
+    // Validate the parsed values
+    if (!year || !month || !day || month < 1 || month > 12 || day < 1 || day > 31) {
+      return 'Invalid Date';
+    }
+    
+    // Create date using local timezone to avoid UTC offset issues
+    const date = new Date(year, month - 1, day);
+    
+    // Double-check that the date is valid
+    if (isNaN(date.getTime()) || 
+        date.getFullYear() !== year || 
+        date.getMonth() !== month - 1 || 
+        date.getDate() !== day) {
       return 'Invalid Date';
     }
     
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
-    return `${months[date.getUTCMonth()]} ${date.getUTCDate()}`;
+    return `${months[date.getMonth()]} ${date.getDate()}`;
   } catch (e) {
     return 'Invalid Date';
   }
