@@ -3,6 +3,7 @@ title: Improving Pull Request Contributions Chart Performance with Supabase Avat
 date: 2025-08-22
 tags: ["supabase", "performance", "caching", "database"]
 draft: false
+blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3lwyvu72ay223"
 ---
 
 # Improving Pull Request Contributions Chart Performance with Supabase Avatar Caching
