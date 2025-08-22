@@ -5,7 +5,7 @@ tags: ["performance", "optimization", "vite", "javascript", "bundling"]
 draft: false
 ---
 
-In the quest to improve our application's performance and address the critical issue documented in #463, I embarked on a comprehensive bundle splitting optimization strategy. This initiative aimed to significantly reduce our main JavaScript bundle size, which was a hefty 1,158KB, causing prolonged load times and impacting the Largest Contentful Paint (LCP) metric, which was hovering around 5.9 seconds. By implementing an advanced chunking strategy, I successfully reduced the main bundle to 204KB, an 82% reduction, while maintaining full functionality and stability. This post outlines the technical journey, challenges faced, and the solutions implemented.
+In the quest to improve my application's performance and address the critical issue documented in #463, I embarked on a comprehensive bundle splitting optimization strategy. This initiative aimed to significantly reduce our main JavaScript bundle size, which was a hefty 1,158KB, causing prolonged load times and impacting the Largest Contentful Paint (LCP) metric, which was hovering around 5.9 seconds. By implementing an advanced chunking strategy, I successfully reduced the main bundle to 204KB, an 82% reduction, while maintaining full functionality and stability. This post outlines the technical journey, challenges faced, and the solutions implemented.
 
 ## Purpose and Context
 
