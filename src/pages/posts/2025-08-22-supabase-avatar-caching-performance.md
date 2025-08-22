@@ -2,7 +2,7 @@
 title: Improving Pull Request Contributions Chart Performance with Supabase Avatar Caching
 date: 2025-08-22
 tags: ["supabase", "performance", "caching", "database"]
-draft: true
+draft: false
 ---
 
 # Improving Pull Request Contributions Chart Performance with Supabase Avatar Caching
