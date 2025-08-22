@@ -2,7 +2,7 @@
 title: "Optimizing Bundle Splitting: A Deep Dive into Reducing the Main Bundle by 82%"
 date: 2025-08-23
 tags: ["performance", "optimization", "vite", "javascript", "bundling"]
-draft: true
+draft: false
 ---
 
 # Optimizing Bundle Splitting: A Deep Dive into Reducing the Main Bundle by 82%
