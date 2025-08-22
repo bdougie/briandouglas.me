@@ -47,8 +47,11 @@ export default defineConfig({
         }
       }
     },
-    domains: ['briandouglas.me'],
-    remotePatterns: [{ protocol: "https" }]
+    domains: ['briandouglas.me', 'res.cloudinary.com'],
+    remotePatterns: [
+      { protocol: "https" },
+      { protocol: "https", hostname: "res.cloudinary.com" }
+    ]
   },
   compressHTML: true,
   vite: {

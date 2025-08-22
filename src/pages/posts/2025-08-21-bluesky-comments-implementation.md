@@ -5,6 +5,8 @@ date: 2025-08-21
 blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3lwvxpj6gms2m"
 ---
 
+import OptimizedImage from '../../components/OptimizedImage.astro';
+
 ## The inspiration and motivation
 
 After seeing [ashley.dev blog's Bluesky integration](https://ashley.dev/posts/the-quiet-season/), I realized I could bring the same social engagement to my own site. The beauty of this approach is that it leverages Bluesky's existing infrastructure - no need for databases, authentication systems, or moderation tools. Each blog post becomes a thread on Bluesky, and the conversations happening there automatically appear on my blog.
@@ -72,7 +74,7 @@ The component implements multiple layers of error handling:
 
 One of the most visually interesting parts is the stacked avatar display for likes. The avatars stack with negative margin (`-space-x-2`) and expand on hover (`hover:space-x-1`). Each avatar has a decreasing z-index to create the proper layering effect:
 
-![stacked avatars](/gifs/stacked-avatars.gif)
+<OptimizedImage src="/gifs/stacked-avatars.gif" alt="stacked avatars" />
 
 ```astro
 <div class="avatar-stack flex -space-x-2 hover:space-x-1 transition-all duration-300">

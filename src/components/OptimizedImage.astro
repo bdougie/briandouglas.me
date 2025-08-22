@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { getCloudinaryImageUrl, getModernImageFormatsFromPath } from '../utils/cloudinary.js';
 
 export interface Props {
   src: string;
@@ -10,6 +11,7 @@ export interface Props {
   class?: string;
   format?: 'webp' | 'avif' | 'png' | 'jpg';
   quality?: number;
+  useCloudinary?: boolean;
 }
 
 const {
@@ -20,15 +22,51 @@ const {
   loading = 'lazy',
   class: className,
   format = 'webp',
-  quality = 85
+  quality = 85,
+  useCloudinary = true
 } = Astro.props;
 
 const isGif = src.endsWith('.gif');
+
+// Use Cloudinary if enabled and src starts with /images, /gifs, or /img/uploads
+const shouldUseCloudinary = useCloudinary && (src.startsWith('/images') || src.startsWith('/gifs') || src.startsWith('/img/uploads'));
+const optimizedSrc = shouldUseCloudinary 
+  ? getCloudinaryImageUrl(src, { width, height, quality, format })
+  : src;
+
+// For modern browsers, get WebP and AVIF variants from Cloudinary
+const modernFormats = shouldUseCloudinary && !isGif
+  ? getModernImageFormatsFromPath(src, { width, height, quality })
+  : null;
 ---
 
 {isGif ? (
   <img
-    src={src}
+    src={shouldUseCloudinary ? optimizedSrc : src}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    class={className}
+    decoding="async"
+  />
+) : shouldUseCloudinary && modernFormats ? (
+  <picture>
+    <source srcset={modernFormats.avif} type="image/avif" />
+    <source srcset={modernFormats.webp} type="image/webp" />
+    <img
+      src={modernFormats.original}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      class={className}
+      decoding="async"
+    />
+  </picture>
+) : shouldUseCloudinary ? (
+  <img
+    src={optimizedSrc}
     alt={alt}
     width={width}
     height={height}

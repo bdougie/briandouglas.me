@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import OptimizedImage from '../components/OptimizedImage.astro';
 import { formatDateShort } from '../utils/dateFormatting';
 
 const posts = await Astro.glob('./posts/**/*.md');
@@ -16,10 +17,13 @@ const sortedPosts = posts
       <!-- Avatar and Name Section -->
       <div class="flex items-start gap-4 mb-6">
         <!-- Avatar -->
-        <img 
-          src="https://github.com/bdougie.png" 
-          alt="Brian Douglas" 
+        <OptimizedImage
+          src="https://github.com/bdougie.png"
+          alt="Brian Douglas"
+          width={80}
+          height={96}
           class="w-20 h-24 rounded-lg flex-shrink-0 object-cover border-2 border-orange-500"
+          useCloudinary={false}
         />
         
         <!-- Name, Title, Location -->

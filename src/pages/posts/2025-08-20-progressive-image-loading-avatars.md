@@ -5,11 +5,13 @@ date: 2025-08-20
 blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3lwtsbkmuuc2m"
 ---
 
+import OptimizedImage from '../../components/OptimizedImage.astro';
+
 I just got back from Nigeria and nothing is more painful than trying to share your site at an event and waiting for it to load. 
 
 That experience was a wake-up call. Not everyone has blazing-fast internet, and my site needs to work everywhere. So when I got back, I immediately implemented progressive image loading for all the avatar images on my site. Let me show you what I did and why it matters.
 
-![Progressive image loading demonstration showing the blur-up effect transitioning to a sharp avatar image](/gifs/progressive-loading-demo.gif)
+<OptimizedImage src="/gifs/progressive-loading-demo.gif" alt="Progressive image loading demonstration showing the blur-up effect transitioning to a sharp avatar image" />
 
 ## What Even Is Progressive Image Loading?
 

@@ -6,9 +6,11 @@ draft: false
 blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3lwyvu72ay223"
 ---
 
+import OptimizedImage from '../../components/OptimizedImage.astro';
+
 In a recent update to our project, I implemented a Supabase-based avatar caching strategy aimed at enhancing the performance of our Pull Request Contributions chart. This change significantly reduces load times and eliminates redundant GitHub API calls for avatars. Here's a detailed breakdown of the technical implementation, architecture decisions, and the impact of these changes.
 
-![pr cached example](/gifs/pr-cached.gif)
+<OptimizedImage src="/gifs/pr-cached.gif" alt="pr cached example" />
 
 ## The Pull Request Contributions Chart
 
