@@ -3,14 +3,11 @@
 # Redirect www to non-www
 https://www.briandouglas.me/* https://briandouglas.me/:splat 301!
 
-# Handle trailing slashes for blog posts
-/posts/* /posts/:splat/ 301
+# Force HTTPS
+http://briandouglas.me/* https://briandouglas.me/:splat 301!
 
 # Redirect old blog URLs if needed (examples - customize as needed)
 # /blog/* /posts/:splat 301
 
 # Handle 404s with custom page (if you have one)
 # /* /404 404
-
-# Force HTTPS
-http://briandouglas.me/* https://briandouglas.me/:splat 301!
