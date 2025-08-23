@@ -1,6 +1,7 @@
 ---
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import { generateSimpleCloudinaryOG } from '../utils/cloudinary';
 
 interface Props {
   title?: string;
@@ -30,18 +31,28 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://briandou
 // Ensure we have a site URL for OG images
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') || 'https://briandouglas.me';
 
-// For now, just use the static OG image system until Cloudinary is properly configured
-// This ensures the site works without requiring Cloudinary setup
-let finalOgImageUrl;
-if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
-  const postPath = Astro.url.pathname.replace(/^\/posts\//, '').replace(/\/$/, '');
-  if (postPath) {
-    finalOgImageUrl = `${siteUrl}/og-image/${postPath}/`;
+// Try to use Cloudinary for social cards if configured
+const cloudinaryUrl = generateSimpleCloudinaryOG({
+  title: pageTitle,
+  description: pageDescription,
+  site: 'briandouglas.me'
+});
+
+// Use Cloudinary if available, otherwise fall back to static OG images
+let finalOgImageUrl = cloudinaryUrl;
+
+if (cloudinaryUrl === '/images/og-default.png') {
+  // Fallback to static OG image system if Cloudinary not configured
+  if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
+    const postPath = Astro.url.pathname.replace(/^\/posts\//, '').replace(/\/$/, '');
+    if (postPath) {
+      finalOgImageUrl = `${siteUrl}/og-image/${postPath}/`;
+    } else {
+      finalOgImageUrl = `${siteUrl}/og-image/home/`;
+    }
   } else {
     finalOgImageUrl = `${siteUrl}/og-image/home/`;
   }
-} else {
-  finalOgImageUrl = `${siteUrl}/og-image/home/`;
 }
 ---
 

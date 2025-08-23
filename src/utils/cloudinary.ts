@@ -49,6 +49,7 @@ export function buildCloudinaryUrl(publicId: string, options: any = {}): string 
 export function getCloudinaryImageUrl(localPath: string, options: any = {}): string {
   // Map local paths to Cloudinary public IDs
   const pathMap: { [key: string]: string } = {
+    '/images/black-social-bg.png': 'black-social-bg',
     '/images/favicon.svg': 'briandouglas-me/favicon',
     '/images/favicon.png': 'briandouglas-me/favicon-png',
     '/images/og-default.png': 'briandouglas-me/og-default',
@@ -188,7 +189,7 @@ export function generateCloudinaryOGImage(config: SocialCardConfig): string {
 
 /**
  * Generate a simple Cloudinary URL using text overlay on a solid background
- * This version doesn't require a template image - creates everything programmatically
+ * Uses a black background image with text overlays for social cards
  */
 export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
   const {
@@ -211,21 +212,38 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
       .replace(/"/g, '%E2%80%9D');
   };
 
-  // Truncate text for better fit
-  const truncatedTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
+  // Format title for social card - uppercase and handle length
+  let formattedTitle = title.toUpperCase();
   
-  // Use a simple approach: create text overlay on a solid color
-  // Using upload endpoint with text overlay transformations
+  // Split long titles into multiple lines if needed
+  const words = formattedTitle.split(' ');
+  let lines = [];
+  let currentLine = '';
+  
+  words.forEach(word => {
+    if ((currentLine + ' ' + word).length <= 20) {
+      currentLine = currentLine ? currentLine + ' ' + word : word;
+    } else {
+      if (currentLine) lines.push(currentLine);
+      currentLine = word;
+    }
+  });
+  if (currentLine) lines.push(currentLine);
+  
+  // Join lines with %0A (URL encoded newline) and limit to 3 lines
+  const titleText = lines.slice(0, 3).join('%0A');
+  
+  // Build transformation string for Cloudinary
+  // Assuming the black background is uploaded to Cloudinary as 'black-social-bg'
   const transformations = [
-    'w_1200,h_630,c_fill', // Card dimensions
-    'b_rgb:000000', // Black background
-    `l_text:Arial_72_bold:${encodeText(truncatedTitle)},co_rgb:FFFFFF`, // White title
-    'g_center,y_-50', // Center title, slightly above center
-    `l_text:Arial_36:${encodeText(site)},co_rgb:888888`, // Gray site URL
-    'g_south,y_60' // Site URL at bottom
+    'w_1200,h_630,c_fill', // Ensure correct dimensions
+    `l_text:Arial_72_bold:${encodeText(titleText)},co_rgb:FFFFFF,w_900,c_fit`, // White title
+    'fl_layer_apply,g_center,y_-50', // Center title
+    `l_text:Arial_32:${encodeText(site)},co_rgb:FFFFFF`, // White site URL
+    'fl_layer_apply,g_south,y_80' // Site URL at bottom
   ].join('/');
   
-  // Use a simple 1x1 transparent PNG that exists in most Cloudinary accounts
-  // or fall back to creating one with text
-  return `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/sample`;
+  // Use the black background image uploaded to Cloudinary
+  // You'll need to upload black-social-bg.png to your Cloudinary account
+  return `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/black-social-bg`;
 }
