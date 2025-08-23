@@ -3,6 +3,8 @@
  * Replaces static OG image generation with dynamic Cloudinary URLs
  */
 
+import { getCldOgImageUrl } from 'astro-cloudinary/helpers';
+
 // Cloudinary configuration
 const CLOUDINARY_CLOUD_NAME = 'bdougie';
 const CLOUDINARY_BASE_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}`;
@@ -189,7 +191,7 @@ export function generateCloudinaryOGImage(config: SocialCardConfig): string {
 
 /**
  * Generate a simple Cloudinary URL using text overlay on a solid background
- * Uses a black background image with text overlays for social cards
+ * Uses the uploaded black background image directly from Cloudinary
  */
 export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
   const {
@@ -199,29 +201,23 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
     site = 'briandouglas.me'
   } = config;
 
-  const cloudName = import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME;
-  
-  if (!cloudName) {
-    console.warn('Missing PUBLIC_CLOUDINARY_CLOUD_NAME - falling back to static OG image');
-    return '/images/og-default.png';
-  }
-
-  const encodeText = (text: string): string => {
-    return encodeURIComponent(text)
-      .replace(/'/g, '%E2%80%99')
-      .replace(/"/g, '%E2%80%9D');
+  // Format title for display - title case for better readability
+  const toTitleCase = (str: string): string => {
+    return str.toLowerCase().split(' ').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
   };
-
-  // Format title for social card - uppercase and handle length
-  let formattedTitle = title.toUpperCase();
   
-  // Split long titles into multiple lines if needed
+  const formattedTitle = toTitleCase(title);
+  
+  // Split long titles into multiple lines for better readability
   const words = formattedTitle.split(' ');
-  let lines = [];
+  const lines: string[] = [];
   let currentLine = '';
+  const maxCharsPerLine = 15; // Approximate for bold text
   
   words.forEach(word => {
-    if ((currentLine + ' ' + word).length <= 20) {
+    if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
       currentLine = currentLine ? currentLine + ' ' + word : word;
     } else {
       if (currentLine) lines.push(currentLine);
@@ -230,32 +226,28 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
   });
   if (currentLine) lines.push(currentLine);
   
-  // Join lines with %0A (URL encoded newline) and limit to 3 lines
-  const titleText = lines.slice(0, 3).join('%0A');
+  // Use the uploaded black background image directly from Cloudinary
+  const cloudName = 'bdougie';
+  const blackBgPublicId = 'black_1200x630_gwl7jh'; // Your uploaded image
   
-  // Use Cloudinary's fetch to load the black background from your site
-  // This avoids needing to upload anything to Cloudinary
+  // Build the Cloudinary URL with text overlays using the upload endpoint
+  // Match the style from the reference image: left-aligned, bold text
+  const transformations = ['w_1200,h_630,c_fill']; // Base size
   
-  // Format the title for display
-  const displayTitle = lines.join(' ').toUpperCase();
+  // Add each line of the title with proper spacing
+  lines.slice(0, 3).forEach((line, index) => {
+    const yOffset = 200 + (index * 90); // Start at y=200, 90px between lines
+    transformations.push(
+      `l_text:Helvetica_80_bold:${encodeURIComponent(line)},co_white`,
+      `fl_layer_apply,g_west,x_75,y_${yOffset - 315}` // Adjust positioning
+    );
+  });
   
-  // The URL of the black background image on your site
-  // This will be served from your public folder
-  const blackBgUrl = 'https://briandouglas.me/images/black-social-bg.png';
-  const encodedBgUrl = encodeURIComponent(blackBgUrl);
+  // Add site name at bottom left with smaller, regular weight font
+  transformations.push(
+    `l_text:Helvetica_32:${encodeURIComponent(site)},co_white`,
+    'fl_layer_apply,g_south_west,x_75,y_75'
+  );
   
-  // Use Cloudinary's fetch endpoint to load and transform the image
-  const baseUrl = `https://res.cloudinary.com/${cloudName}/image/fetch`;
-  
-  // Build transformations
-  const transformations = [
-    'w_1200,h_630,c_fill',  // Ensure correct dimensions
-    `l_text:Arial_72_bold:${encodeText(displayTitle)},co_white,w_900,c_fit`,  // White title
-    'fl_layer_apply,g_center',  // Apply and center the title
-    `l_text:Arial_36:${encodeText(site)},co_white`,  // White site URL
-    'fl_layer_apply,g_south,y_80'  // Apply and position at bottom
-  ].join('/');
-  
-  // Return the complete URL
-  return `${baseUrl}/${transformations}/${encodedBgUrl}`;
+  return `https://res.cloudinary.com/${cloudName}/image/upload/${transformations.join('/')}/${blackBgPublicId}`;
 }
