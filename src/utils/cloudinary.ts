@@ -216,10 +216,11 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
 
   const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload`;
   
-  // Create a pure black background with minimal design
+  // Create a pure black background without any template image
+  // Using Cloudinary's blank image generation
   const transformations = [
-    // Start with a pure black rectangle
-    `c_fill,w_1200,h_630,b_rgb:000000`,
+    // Create a 1200x630 black rectangle
+    `w_1200,h_630,c_pad,b_rgb:000000`,
     
     // Add title in white, centered
     `l_text:arial_72_bold:${encodeText(truncatedTitle)},co_rgb:FFFFFF,c_fit,w_1000`,
@@ -230,7 +231,7 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
     `fl_layer_apply,g_south,y_60`
   ];
 
-  // Use a 1x1 transparent pixel as the base image
+  // Use Cloudinary's blank image feature
   const transformationString = transformations.join('/');
-  return `${baseUrl}/${transformationString}/v1/sample.png`;
+  return `${baseUrl}/${transformationString}/v1/blank`;
 }
