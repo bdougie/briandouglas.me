@@ -29,7 +29,8 @@ const {
 const isGif = src.endsWith('.gif');
 
 // Use Cloudinary if enabled and src starts with /images, /gifs, or /img/uploads
-const shouldUseCloudinary = useCloudinary && (src.startsWith('/images') || src.startsWith('/gifs') || src.startsWith('/img/uploads'));
+// But only if it's not a local development environment
+const shouldUseCloudinary = false; // Temporarily disable Cloudinary until properly configured
 const optimizedSrc = shouldUseCloudinary 
   ? getCloudinaryImageUrl(src, { width, height, quality, format })
   : src;

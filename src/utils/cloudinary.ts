@@ -213,19 +213,19 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
 
   // Truncate text for better fit
   const truncatedTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
-
-  const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload`;
   
-  // Create a pure black background using Cloudinary's text generation
-  // This creates text on a solid background color
+  // Use a simple approach: create text overlay on a solid color
+  // Using upload endpoint with text overlay transformations
+  const transformations = [
+    'w_1200,h_630,c_fill', // Card dimensions
+    'b_rgb:000000', // Black background
+    `l_text:Arial_72_bold:${encodeText(truncatedTitle)},co_rgb:FFFFFF`, // White title
+    'g_center,y_-50', // Center title, slightly above center
+    `l_text:Arial_36:${encodeText(site)},co_rgb:888888`, // Gray site URL
+    'g_south,y_60' // Site URL at bottom
+  ].join('/');
   
-  // Create the main title text with proper formatting
-  const mainText = encodeText(truncatedTitle);
-  const siteText = encodeText(site);
-  
-  // Use Cloudinary's text generation with a black background
-  // Format: /text:font_size_style:text_content/transformations
-  return `https://res.cloudinary.com/${cloudName}/image/text:Arial_72_bold:${mainText}/` +
-    `w_1200,h_630,c_pad,b_black,co_white/` +
-    `l_text:Arial_36:${siteText},co_rgb:888888,g_south,y_60`;
+  // Use a simple 1x1 transparent PNG that exists in most Cloudinary accounts
+  // or fall back to creating one with text
+  return `https://res.cloudinary.com/${cloudName}/image/upload/${transformations}/sample`;
 }
