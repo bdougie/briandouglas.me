@@ -105,37 +105,22 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
   };
 
   // Truncate text for better fit
-  const truncatedTitle = title.length > 50 ? title.substring(0, 47) + '...' : title;
-  const truncatedDesc = description.length > 100 ? description.substring(0, 97) + '...' : description;
+  const truncatedTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
 
   const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload`;
   
-  // Create a black background with gradient effect
+  // Create a pure black background with minimal design
   const transformations = [
-    // Start with a black rectangle
+    // Start with a pure black rectangle
     `c_fill,w_1200,h_630,b_rgb:000000`,
     
-    // Add golden top stripe
-    `l_text:arial_1:.,co_rgb:735F32,c_fill,w_1200,h_8`,
-    `fl_layer_apply,g_north`,
+    // Add title in white, centered
+    `l_text:arial_72_bold:${encodeText(truncatedTitle)},co_rgb:FFFFFF,c_fit,w_1000`,
+    `fl_layer_apply,g_center`,
     
-    // Add title in golden color
-    `l_text:arial_76_bold:${encodeText(truncatedTitle)},co_rgb:D4AB6A,c_fit,w_1000`,
-    `fl_layer_apply,g_center,y_-100`,
-    
-    // Add description if provided
-    ...(description ? [
-      `l_text:arial_46:${encodeText(truncatedDesc)},co_rgb:E5E7EB,c_fit,w_1000`,
-      `fl_layer_apply,g_center,y_20`
-    ] : []),
-    
-    // Add author
-    `l_text:arial_36:${encodeText(author)},co_rgb:E5E7EB`,
-    `fl_layer_apply,g_south_west,x_100,y_80`,
-    
-    // Add site
-    `l_text:arial_36:${encodeText(site)},co_rgb:C69749`,
-    `fl_layer_apply,g_south_east,x_100,y_80`
+    // Add site URL at the bottom in a subtle gray
+    `l_text:arial_36:${encodeText(site)},co_rgb:888888`,
+    `fl_layer_apply,g_south,y_60`
   ];
 
   // Use a 1x1 transparent pixel as the base image
