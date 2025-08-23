@@ -12,6 +12,8 @@ export interface Props {
   format?: 'webp' | 'avif' | 'png' | 'jpg';
   quality?: number;
   useCloudinary?: boolean;
+  progressive?: boolean;
+  placeholder?: string;
 }
 
 const {
@@ -23,7 +25,9 @@ const {
   class: className,
   format = 'webp',
   quality = 85,
-  useCloudinary = true
+  useCloudinary = true,
+  progressive = false,
+  placeholder
 } = Astro.props;
 
 const isGif = src.endsWith('.gif');
@@ -39,9 +43,86 @@ const optimizedSrc = shouldUseCloudinary
 const modernFormats = shouldUseCloudinary && !isGif
   ? getModernImageFormatsFromPath(src, { width, height, quality })
   : null;
+
+// Generate a unique ID for this image instance
+const imageId = `img-${Math.random().toString(36).substr(2, 9)}`;
+
+// Default placeholder for GitHub avatars - a very small base64 encoded blur (10x12 px)
+// This is a blurred version that roughly matches the colors of your avatar
+const defaultPlaceholder = src.includes('github.com') 
+  ? 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAMAAgDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUH/8QAIBAAAgIBBAMBAAAAAAAAAAAAAQMCBAAFERIhEzFBUf/EABUBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFxEBAQEBAAAAAAAAAAAAAAAAAAECEf/aAAwDAQACEQMRAD8AzGvTfcvXmteOBYsRCRG8VJiJbnv2R9GOq6nqFs11sswyNoiR+S7fBvnLXstXCxTtxhGKluCpCAO+Xsc/cxbqyWJrUhlxsoxMYrIJB67H7lZn//Z'
+  : placeholder;
+
+// Build style for progressive wrapper
+const wrapperStyle = progressive && defaultPlaceholder
+  ? `position: relative; overflow: hidden; background-image: url('${defaultPlaceholder}'); background-size: cover; background-position: center; filter: blur(8px);`
+  : '';
 ---
 
-{isGif ? (
+{progressive && defaultPlaceholder ? (
+  <div 
+    class={className}
+    style={wrapperStyle}
+  >
+    {isGif ? (
+      <img
+        id={imageId}
+        src={shouldUseCloudinary ? optimizedSrc : src}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        class="progressive-image"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out;"
+        decoding="async"
+        onload={`this.style.opacity = '1'; this.parentElement.style.filter = 'none';`}
+      />
+    ) : shouldUseCloudinary && modernFormats ? (
+      <picture>
+        <source srcset={modernFormats.avif} type="image/avif" />
+        <source srcset={modernFormats.webp} type="image/webp" />
+        <img
+          id={imageId}
+          src={modernFormats.original}
+          alt={alt}
+          width={width}
+          height={height}
+          loading={loading}
+          class={`progressive-image ${className}`}
+          style="opacity: 0; transition: opacity 0.5s ease-in-out;"
+          decoding="async"
+          onload={`this.style.opacity = '1'; this.parentElement.style.filter = 'none';`}
+        />
+      </picture>
+    ) : shouldUseCloudinary ? (
+      <img
+        id={imageId}
+        src={optimizedSrc}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        class="progressive-image"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out;"
+        decoding="async"
+        onload={`this.style.opacity = '1'; this.parentElement.style.filter = 'none';`}
+      />
+    ) : (
+      <img
+        id={imageId}
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        class="progressive-image"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out;"
+        decoding="async"
+        onload={`this.style.opacity = '1'; this.parentElement.style.filter = 'none';`}
+      />
+    )}
+  </div>
+) : isGif ? (
   <img
     src={shouldUseCloudinary ? optimizedSrc : src}
     alt={alt}
