@@ -89,7 +89,7 @@ const wrapperStyle = progressive && defaultPlaceholder
     {isGif ? (
       <img
         id={imageId}
-        src={shouldUseCloudinary ? optimizedSrc : src}
+        src={optimizedSrc}
         alt={alt}
         width={width}
         height={height}
@@ -99,7 +99,7 @@ const wrapperStyle = progressive && defaultPlaceholder
         decoding="async"
         onload={`this.style.opacity = '1'; this.parentElement.style.filter = 'none';`}
       />
-    ) : shouldUseCloudinary && modernFormats ? (
+    ) : modernFormats ? (
       <picture>
         <source srcset={modernFormats.avif} type="image/avif" />
         <source srcset={modernFormats.webp} type="image/webp" />
@@ -116,7 +116,7 @@ const wrapperStyle = progressive && defaultPlaceholder
           onload={`this.style.opacity = '1'; this.parentElement.style.filter = 'none';`}
         />
       </picture>
-    ) : shouldUseCloudinary ? (
+    ) : optimizedSrc !== src ? (
       <img
         id={imageId}
         src={optimizedSrc}
