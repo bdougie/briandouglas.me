@@ -60,7 +60,7 @@ if (cloudinaryUrl === '/images/og-default.png') {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#282a3a" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)" />
     
@@ -105,6 +105,12 @@ if (cloudinaryUrl === '/images/og-default.png') {
     <link rel="canonical" href={canonicalURL} />
     <link rel="sitemap" href="/sitemap.xml" />
     <link rel="manifest" href="/manifest.json" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="bdougie" />
     
     <!-- Debug comment -->
     <!-- OG Image URL: {finalOgImageUrl} -->
@@ -151,11 +157,14 @@ if (cloudinaryUrl === '/images/og-default.png') {
     </script>
   </head>
   <body class="bg-black text-gray-300 min-h-screen" lang="en">
+    <!-- Skip link for keyboard users -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-orange-500 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600 z-50">Skip to main content</a>
+    
     <div class="max-w-4xl mx-auto px-6 py-12">
       <header class="mb-16">
         <Navigation />
       </header>
-      <main>
+      <main id="main-content" tabindex="-1">
         <slot />
       </main>
       <Footer />
@@ -187,5 +196,29 @@ if (cloudinaryUrl === '/images/og-default.png') {
   h1, h2, h3, h4, h5, h6 {
     color: #fff;
     font-weight: 600;
+  }
+
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: initial;
+    margin: initial;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
   }
 </style>

@@ -2,15 +2,15 @@
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="mt-20 pt-12 border-t border-gray-800">
+<footer class="mt-20 pt-12 border-t border-gray-800" role="contentinfo">
   <div class="flex flex-col items-center gap-6">
     <!-- Social Links -->
-    <div class="flex gap-4 flex-wrap justify-center">
+    <div class="flex gap-4 flex-wrap justify-center" role="list" aria-label="Social media links">
       <a 
         href="https://github.com/bdougie" 
         target="_blank" 
         rel="noopener noreferrer"
-        class="text-gray-500 hover:text-orange-500 transition-colors"
+        class="text-gray-500 hover:text-orange-500 focus:text-orange-500 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-black rounded-md p-1"
         aria-label="GitHub"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -21,7 +21,7 @@ const currentYear = new Date().getFullYear();
         href="https://x.com/bdougieyo" 
         target="_blank" 
         rel="noopener noreferrer"
-        class="text-gray-500 hover:text-orange-500 transition-colors"
+        class="text-gray-500 hover:text-orange-500 focus:text-orange-500 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-black rounded-md p-1"
         aria-label="X (Twitter)"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -32,7 +32,7 @@ const currentYear = new Date().getFullYear();
         href="https://www.linkedin.com/in/brianldouglas/" 
         target="_blank" 
         rel="noopener noreferrer"
-        class="text-gray-500 hover:text-orange-500 transition-colors"
+        class="text-gray-500 hover:text-orange-500 focus:text-orange-500 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-black rounded-md p-1"
         aria-label="LinkedIn"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -43,7 +43,7 @@ const currentYear = new Date().getFullYear();
         href="https://youtube.com/@bdougie" 
         target="_blank" 
         rel="noopener noreferrer"
-        class="text-gray-500 hover:text-orange-500 transition-colors"
+        class="text-gray-500 hover:text-orange-500 focus:text-orange-500 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-black rounded-md p-1"
         aria-label="YouTube"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -54,7 +54,7 @@ const currentYear = new Date().getFullYear();
         href="https://bsky.app/profile/bizza.pizza" 
         target="_blank" 
         rel="noopener noreferrer"
-        class="text-gray-500 hover:text-orange-500 transition-colors"
+        class="text-gray-500 hover:text-orange-500 focus:text-orange-500 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-black rounded-md p-1"
         aria-label="Bluesky"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 600 530" fill="currentColor">
@@ -65,7 +65,7 @@ const currentYear = new Date().getFullYear();
         href="https://instagram.com/bdougieyo" 
         target="_blank" 
         rel="noopener noreferrer"
-        class="text-gray-500 hover:text-orange-500 transition-colors"
+        class="text-gray-500 hover:text-orange-500 focus:text-orange-500 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-black rounded-md p-1"
         aria-label="Instagram"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -76,7 +76,7 @@ const currentYear = new Date().getFullYear();
       </a>
       <a 
         href="https://bdougie.substack.com" 
-        class="text-gray-500 hover:text-orange-500 transition-colors"
+        class="text-gray-500 hover:text-orange-500 focus:text-orange-500 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-black rounded-md p-1"
         aria-label="Substack"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -87,7 +87,7 @@ const currentYear = new Date().getFullYear();
     
     <!-- Copyright -->
     <div class="text-center text-sm text-gray-500">
-      Built with <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="text-orange-500 hover:text-orange-400 underline underline-offset-2">Astro</a> by <a href="https://b.dougie.dev" target="_blank" rel="noopener noreferrer" class="text-orange-500 hover:text-orange-400 underline underline-offset-2">b.dougie.dev</a>
+      Built with <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="text-orange-500 hover:text-orange-400 focus:text-orange-400 underline underline-offset-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-black rounded-md">Astro</a> by <a href="https://b.dougie.dev" target="_blank" rel="noopener noreferrer" class="text-orange-500 hover:text-orange-400 focus:text-orange-400 underline underline-offset-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-black rounded-md">b.dougie.dev</a>
     </div>
   </div>
 </footer>
