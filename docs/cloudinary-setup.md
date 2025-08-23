@@ -31,7 +31,7 @@ That's it! The system will automatically:
 
 ## Testing
 
-Visit `/test-cloudinary` to see the integration in action and verify your setup.
+Visit `/social-card` to see the integration in action and verify your setup.
 
 ## Customization Options
 

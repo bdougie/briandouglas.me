@@ -2,9 +2,9 @@
 import Layout from '../layouts/Layout.astro';
 import { generateSimpleCloudinaryOG } from '../utils/cloudinary';
 
-// Test the Cloudinary integration with sample data
-const sampleTitle = "Testing Cloudinary Dynamic Social Cards";
-const sampleDescription = "This is a test page to verify that our Cloudinary integration is working correctly for dynamic OG image generation.";
+// Test the social card generation
+const sampleTitle = "Social Card Preview";
+const sampleDescription = "Preview how your social cards appear when shared on social media platforms.";
 
 const cloudinaryUrl = generateSimpleCloudinaryOG({
   title: sampleTitle,
@@ -16,9 +16,9 @@ const cloudinaryUrl = generateSimpleCloudinaryOG({
 
 <Layout title={sampleTitle} description={sampleDescription} isBlogPost={false}>
   <article class="max-w-none prose prose-lg prose-invert">
-    <h1>Cloudinary Integration Test</h1>
+    <h1>Social Card Preview</h1>
     
-    <p>This page tests the Cloudinary dynamic social card generation.</p>
+    <p>This page shows how your social cards appear when shared on Twitter, LinkedIn, and other platforms.</p>
     
     <div class="bg-gray-800 p-6 rounded-lg">
       <h2 class="text-white mb-4">Generated Cloudinary URL:</h2>
