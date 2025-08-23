@@ -233,24 +233,29 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
   // Join lines with %0A (URL encoded newline) and limit to 3 lines
   const titleText = lines.slice(0, 3).join('%0A');
   
-  // Create a pure black social card without any base image
-  // Uses Cloudinary's text endpoint to generate the entire card
+  // Use Cloudinary's fetch to load the black background from your site
+  // This avoids needing to upload anything to Cloudinary
   
   // Format the title for display
   const displayTitle = lines.join(' ').toUpperCase();
   
-  // Create the card using Cloudinary's text generation
-  // This creates text on a solid background without needing any base image
-  const baseUrl = `https://res.cloudinary.com/${cloudName}/image/text`;
+  // The URL of the black background image on your site
+  // This will be served from your public folder
+  const blackBgUrl = 'https://briandouglas.me/images/black-social-bg.png';
+  const encodedBgUrl = encodeURIComponent(blackBgUrl);
   
-  // Build the text string with line breaks
-  // Using %20 for spaces and %0A for line breaks
-  const cardText = `${encodeText(displayTitle)}%0A%0A%0A%0A%0A%0A%0A%0A${encodeText(site)}`;
+  // Use Cloudinary's fetch endpoint to load and transform the image
+  const baseUrl = `https://res.cloudinary.com/${cloudName}/image/fetch`;
   
-  // Create the URL with text on black background
-  // Format: /text:font_family_size:text_content/transformations
-  return `${baseUrl}:Arial_60:${cardText}/` +
-    'w_1200,h_630,c_pad,' +  // Card dimensions with padding
-    'b_black,' +              // Black background
-    'co_white';               // White text color
+  // Build transformations
+  const transformations = [
+    'w_1200,h_630,c_fill',  // Ensure correct dimensions
+    `l_text:Arial_72_bold:${encodeText(displayTitle)},co_white,w_900,c_fit`,  // White title
+    'fl_layer_apply,g_center',  // Apply and center the title
+    `l_text:Arial_36:${encodeText(site)},co_white`,  // White site URL
+    'fl_layer_apply,g_south,y_80'  // Apply and position at bottom
+  ].join('/');
+  
+  // Return the complete URL
+  return `${baseUrl}/${transformations}/${encodedBgUrl}`;
 }
