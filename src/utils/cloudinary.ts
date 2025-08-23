@@ -3,8 +3,6 @@
  * Replaces static OG image generation with dynamic Cloudinary URLs
  */
 
-import { getCldOgImageUrl } from 'astro-cloudinary/helpers';
-
 // Cloudinary configuration
 const CLOUDINARY_CLOUD_NAME = 'bdougie';
 const CLOUDINARY_BASE_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}`;
