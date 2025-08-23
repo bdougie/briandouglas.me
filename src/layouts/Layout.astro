@@ -60,7 +60,7 @@ if (cloudinaryUrl === '/images/og-default.png') {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
     <meta name="theme-color" content="#282a3a" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)" />
     
@@ -160,7 +160,7 @@ if (cloudinaryUrl === '/images/og-default.png') {
     <!-- Skip link for keyboard users -->
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-orange-500 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600 z-50">Skip to main content</a>
     
-    <div class="max-w-4xl mx-auto px-6 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       <header class="mb-16">
         <Navigation />
       </header>
@@ -179,6 +179,11 @@ if (cloudinaryUrl === '/images/og-default.png') {
     box-sizing: border-box;
   }
 
+  html {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: #000;
@@ -186,6 +191,8 @@ if (cloudinaryUrl === '/images/og-default.png') {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    width: 100%;
   }
 
   a {
@@ -196,6 +203,29 @@ if (cloudinaryUrl === '/images/og-default.png') {
   h1, h2, h3, h4, h5, h6 {
     color: #fff;
     font-weight: 600;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Prevent horizontal overflow from code blocks and pre elements */
+  pre, code {
+    max-width: 100%;
+    overflow-x: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Ensure images don't overflow */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Ensure tables are responsive */
+  table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   /* Screen reader only utility */
