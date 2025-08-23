@@ -216,22 +216,16 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
 
   const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload`;
   
-  // Create a pure black background using a 1x1 black pixel stretched to size
-  // This is the most reliable way to create a solid color background in Cloudinary
+  // Create a pure black background using Cloudinary's text generation
+  // This creates text on a solid background color
   
-  // Build the complete transformation string
-  const urlPath = [
-    `w_1200,h_630,c_scale`, // Scale to social card dimensions
-    `b_rgb:000000`, // Ensure black background
-    `l_text:Arial_72_bold:${encodeText(truncatedTitle)},co_rgb:FFFFFF,w_1000,c_fit`, // Title
-    `fl_layer_apply,g_center`, // Center the title
-    `l_text:Arial_36:${encodeText(site)},co_rgb:888888`, // Site URL
-    `fl_layer_apply,g_south,y_60` // Position site URL at bottom
-  ].join('/');
-
-  // Use Cloudinary's fetch to load a 1x1 black pixel data URI and transform it
-  const blackPixelDataUri = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
-  const encodedDataUri = encodeURIComponent(blackPixelDataUri);
+  // Create the main title text with proper formatting
+  const mainText = encodeText(truncatedTitle);
+  const siteText = encodeText(site);
   
-  return `https://res.cloudinary.com/${cloudName}/image/fetch/${urlPath}/${encodedDataUri}`;
+  // Use Cloudinary's text generation with a black background
+  // Format: /text:font_size_style:text_content/transformations
+  return `https://res.cloudinary.com/${cloudName}/image/text:Arial_72_bold:${mainText}/` +
+    `w_1200,h_630,c_pad,b_black,co_white/` +
+    `l_text:Arial_36:${siteText},co_rgb:888888,g_south,y_60`;
 }
