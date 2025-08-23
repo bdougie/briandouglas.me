@@ -31,18 +31,40 @@ const {
 } = Astro.props;
 
 const isGif = src.endsWith('.gif');
+const isExternalUrl = src.startsWith('http://') || src.startsWith('https://');
+const isGitHubAvatar = src.includes('github.com') || src.includes('avatars.githubusercontent.com');
 
-// Use Cloudinary if enabled and src starts with /images, /gifs, or /img/uploads
-// But only if it's not a local development environment
-const shouldUseCloudinary = false; // Temporarily disable Cloudinary until properly configured
-const optimizedSrc = shouldUseCloudinary 
-  ? getCloudinaryImageUrl(src, { width, height, quality, format })
-  : src;
+// Special handling for GitHub avatars - use Cloudinary fetch to optimize them
+let optimizedSrc = src;
+if (isGitHubAvatar && !useCloudinary) {
+  // Use Cloudinary's fetch feature to optimize GitHub avatars
+  const encodedUrl = encodeURIComponent(src);
+  const transformations = [
+    'f_auto',
+    'q_auto',
+    width ? `w_${width}` : '',
+    height ? `h_${height}` : '',
+    'c_fill',
+    'g_face'
+  ].filter(Boolean).join(',');
+  
+  optimizedSrc = `https://res.cloudinary.com/bdougie/image/fetch/${transformations}/${encodedUrl}`;
+} else if (useCloudinary && !isExternalUrl) {
+  // Use regular Cloudinary for local images
+  optimizedSrc = getCloudinaryImageUrl(src, { width, height, quality, format });
+}
 
-// For modern browsers, get WebP and AVIF variants from Cloudinary
-const modernFormats = shouldUseCloudinary && !isGif
+// For modern browsers, get WebP and AVIF variants
+const modernFormats = (useCloudinary && !isExternalUrl && !isGif)
   ? getModernImageFormatsFromPath(src, { width, height, quality })
   : null;
+
+// Generate modern format URLs for GitHub avatars
+const githubAvatarFormats = isGitHubAvatar && !useCloudinary ? {
+  webp: optimizedSrc.replace('f_auto', 'f_webp'),
+  avif: optimizedSrc.replace('f_auto', 'f_avif'),
+  original: optimizedSrc
+} : null;
 
 // Generate a unique ID for this image instance
 const imageId = `img-${Math.random().toString(36).substr(2, 9)}`;
@@ -124,7 +146,7 @@ const wrapperStyle = progressive && defaultPlaceholder
   </div>
 ) : isGif ? (
   <img
-    src={shouldUseCloudinary ? optimizedSrc : src}
+    src={optimizedSrc}
     alt={alt}
     width={width}
     height={height}
@@ -132,7 +154,21 @@ const wrapperStyle = progressive && defaultPlaceholder
     class={className}
     decoding="async"
   />
-) : shouldUseCloudinary && modernFormats ? (
+) : githubAvatarFormats ? (
+  <picture>
+    <source srcset={githubAvatarFormats.avif} type="image/avif" />
+    <source srcset={githubAvatarFormats.webp} type="image/webp" />
+    <img
+      src={githubAvatarFormats.original}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      class={className}
+      decoding="async"
+    />
+  </picture>
+) : modernFormats ? (
   <picture>
     <source srcset={modernFormats.avif} type="image/avif" />
     <source srcset={modernFormats.webp} type="image/webp" />
@@ -146,7 +182,7 @@ const wrapperStyle = progressive && defaultPlaceholder
       decoding="async"
     />
   </picture>
-) : shouldUseCloudinary ? (
+) : optimizedSrc !== src ? (
   <img
     src={optimizedSrc}
     alt={alt}
