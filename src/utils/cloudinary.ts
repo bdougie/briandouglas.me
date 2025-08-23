@@ -233,30 +233,24 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
   // Join lines with %0A (URL encoded newline) and limit to 3 lines
   const titleText = lines.slice(0, 3).join('%0A');
   
-  // Create a social card using Cloudinary's solid color generation
-  // This works without needing any uploaded assets
+  // Create a pure black social card without any base image
+  // Uses Cloudinary's text endpoint to generate the entire card
   
   // Format the title for display
   const displayTitle = lines.join(' ').toUpperCase();
   
-  // Use Cloudinary's solid color generation feature
-  // This creates a 1x1 pixel that we scale up to card size
-  const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload`;
+  // Create the card using Cloudinary's text generation
+  // This creates text on a solid background without needing any base image
+  const baseUrl = `https://res.cloudinary.com/${cloudName}/image/text`;
   
-  // Create transformations for the card
-  const transformations = [
-    // Create a 1200x630 black rectangle
-    'w_1200,h_630,c_scale',
-    'b_rgb:000000',
-    // Add white title text
-    `co_rgb:FFFFFF,l_text:Arial_72_bold:${encodeText(displayTitle)},w_900,c_fit`,
-    'fl_layer_apply,g_center',
-    // Add white site text at bottom
-    `co_rgb:FFFFFF,l_text:Arial_32:${encodeText(site)}`,
-    'fl_layer_apply,g_south,y_80'
-  ].join('/');
+  // Build the text string with line breaks
+  // Using %20 for spaces and %0A for line breaks
+  const cardText = `${encodeText(displayTitle)}%0A%0A%0A%0A%0A%0A%0A%0A${encodeText(site)}`;
   
-  // Use Cloudinary's sample image as base (usually exists by default)
-  // If sample doesn't exist, this will still generate a valid URL structure
-  return `${baseUrl}/${transformations}/sample`;
+  // Create the URL with text on black background
+  // Format: /text:font_family_size:text_content/transformations
+  return `${baseUrl}:Arial_60:${cardText}/` +
+    'w_1200,h_630,c_pad,' +  // Card dimensions with padding
+    'b_black,' +              // Black background
+    'co_white';               // White text color
 }
