@@ -216,22 +216,22 @@ export function generateSimpleCloudinaryOG(config: SocialCardConfig): string {
 
   const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload`;
   
-  // Create a pure black background without any template image
-  // Using Cloudinary's blank image generation
-  const transformations = [
-    // Create a 1200x630 black rectangle
-    `w_1200,h_630,c_pad,b_rgb:000000`,
-    
-    // Add title in white, centered
-    `l_text:arial_72_bold:${encodeText(truncatedTitle)},co_rgb:FFFFFF,c_fit,w_1000`,
-    `fl_layer_apply,g_center`,
-    
-    // Add site URL at the bottom in a subtle gray
-    `l_text:arial_36:${encodeText(site)},co_rgb:888888`,
-    `fl_layer_apply,g_south,y_60`
-  ];
+  // Create a pure black background using a 1x1 black pixel stretched to size
+  // This is the most reliable way to create a solid color background in Cloudinary
+  
+  // Build the complete transformation string
+  const urlPath = [
+    `w_1200,h_630,c_scale`, // Scale to social card dimensions
+    `b_rgb:000000`, // Ensure black background
+    `l_text:Arial_72_bold:${encodeText(truncatedTitle)},co_rgb:FFFFFF,w_1000,c_fit`, // Title
+    `fl_layer_apply,g_center`, // Center the title
+    `l_text:Arial_36:${encodeText(site)},co_rgb:888888`, // Site URL
+    `fl_layer_apply,g_south,y_60` // Position site URL at bottom
+  ].join('/');
 
-  // Use Cloudinary's blank image feature
-  const transformationString = transformations.join('/');
-  return `${baseUrl}/${transformationString}/v1/blank`;
+  // Use Cloudinary's fetch to load a 1x1 black pixel data URI and transform it
+  const blackPixelDataUri = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+  const encodedDataUri = encodeURIComponent(blackPixelDataUri);
+  
+  return `https://res.cloudinary.com/${cloudName}/image/fetch/${urlPath}/${encodedDataUri}`;
 }
