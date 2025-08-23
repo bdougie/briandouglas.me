@@ -34,7 +34,7 @@ const isGif = src.endsWith('.gif');
 const isExternalUrl = src.startsWith('http://') || src.startsWith('https://');
 const isGitHubAvatar = src.includes('github.com') || src.includes('avatars.githubusercontent.com');
 
-// Special handling for GitHub avatars - use Cloudinary fetch to optimize them
+// Special handling for different image types
 let optimizedSrc = src;
 if (isGitHubAvatar && !useCloudinary) {
   // Use Cloudinary's fetch feature to optimize GitHub avatars
@@ -49,10 +49,11 @@ if (isGitHubAvatar && !useCloudinary) {
   ].filter(Boolean).join(',');
   
   optimizedSrc = `https://res.cloudinary.com/bdougie/image/fetch/${transformations}/${encodedUrl}`;
-} else if (useCloudinary && !isExternalUrl) {
-  // Use regular Cloudinary for local images
+} else if (useCloudinary && !isExternalUrl && !isGif) {
+  // Use regular Cloudinary for local images (except GIFs)
   optimizedSrc = getCloudinaryImageUrl(src, { width, height, quality, format });
 }
+// GIFs and other local files are served directly unless useCloudinary is explicitly true
 
 // For modern browsers, get WebP and AVIF variants
 const modernFormats = (useCloudinary && !isExternalUrl && !isGif)
