@@ -4,12 +4,14 @@ import BlueskyInteractions from '../../components/BlueskyInteractions.astro';
 import { formatDateLong } from '../../utils/dateFormatting';
 
 export async function getStaticPaths() {
-  const posts = await Astro.glob('./*.md');
+  const mdPosts = await Astro.glob('./*.md');
+  const mdxPosts = await Astro.glob('./*.mdx');
+  const posts = [...mdPosts, ...mdxPosts];
   const publishedPosts = posts.filter(post => !post.frontmatter.draft);
   
   return publishedPosts.map(post => {
     const filename = post.file.split('/').pop();
-    const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+    const [year, month, day, ...titleParts] = filename.replace(/\.(md|mdx)$/, '').split('-');
     
     return {
       params: { 
@@ -38,7 +40,7 @@ const { Content } = post;
 >
   <article class="max-w-3xl mx-auto">
     <header class="mb-12">
-      <a href="/posts" class="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors mb-8 group">
+      <a href="/posts" class="inline-flex items-center text-sm text-gray-300 hover:text-white transition-colors mb-8 group">
         <svg class="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -49,7 +51,7 @@ const { Content } = post;
         {post.frontmatter.title}
       </h1>
       
-      <div class="flex items-center gap-4 text-sm text-gray-500">
+      <div class="flex items-center gap-4 text-sm text-gray-400">
         <time>
           {formatDateLong(post.frontmatter.date)}
         </time>
@@ -65,7 +67,7 @@ const { Content } = post;
                 prose-code:text-orange-400 prose-code:bg-gray-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
                 prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-800 prose-pre:text-gray-300
                 [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-gray-300
-                prose-blockquote:border-orange-500/30 prose-blockquote:text-gray-400
+                prose-blockquote:border-orange-500/30 prose-blockquote:text-gray-300
                 prose-ul:text-gray-300 prose-ol:text-gray-300
                 prose-li:text-gray-300
                 prose-hr:border-gray-800">

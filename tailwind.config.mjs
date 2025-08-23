@@ -18,7 +18,7 @@ export default {
       typography: {
         DEFAULT: {
           css: {
-            maxWidth: '100ch',
+            maxWidth: 'none',
             color: '#4B5563', // Change this line to use the new gray color
             '.dark &': {
               color: '#E5E7EB',

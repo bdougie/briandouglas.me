@@ -5,4 +5,4 @@ Sitemap: https://briandouglas.me/sitemap.xml
 
 # LLMs.txt for AI agents
 # See: https://llmstxt.org/
-LLMs-Txt: https://briandouglas.me/llms.txt
+# Available at: https://briandouglas.me/llms.txt

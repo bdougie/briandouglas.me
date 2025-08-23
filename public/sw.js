@@ -1,21 +1,27 @@
-// Service Worker for Image Caching
-const CACHE_NAME = 'briandouglas-images-v1';
+// Service Worker for Offline Support and Image Caching
+const CACHE_NAME = 'briandouglas-v2';
+const IMAGE_CACHE_NAME = 'briandouglas-images-v2';
 const CLOUDINARY_ORIGIN = 'https://res.cloudinary.com';
 
-// Preload critical images
-const CRITICAL_IMAGES = [
+// Preload critical resources
+const CRITICAL_RESOURCES = [
+  '/',
+  '/posts',
+  '/manifest.json',
   '/images/favicon.svg',
   '/images/favicon.png',
-  '/images/apple-touch-icon.png'
+  '/images/apple-touch-icon.png',
+  '/images/icon-192x192.png',
+  '/images/icon-512x512.png'
 ];
 
-// Install event - cache critical images
+// Install event - cache critical resources
 self.addEventListener('install', event => {
   console.log('Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('Caching critical images');
-      return cache.addAll(CRITICAL_IMAGES);
+      console.log('Caching critical resources');
+      return cache.addAll(CRITICAL_RESOURCES);
     })
   );
   self.skipWaiting();
@@ -28,7 +34,7 @@ self.addEventListener('activate', event => {
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME && cacheName.includes('briandouglas-images')) {
+          if (cacheName !== CACHE_NAME && cacheName !== IMAGE_CACHE_NAME && cacheName.includes('briandouglas')) {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -39,42 +45,75 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch event - handle image requests with caching strategy
+// Fetch event - handle requests with caching strategy
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
   
-  // Only handle image requests
-  if (!isImageRequest(request)) {
+  // Skip non-GET requests
+  if (request.method !== 'GET') {
     return;
   }
   
-  // Handle Cloudinary images with cache-first strategy
-  if (url.origin === CLOUDINARY_ORIGIN) {
+  // Handle navigation requests (pages)
+  if (request.mode === 'navigate') {
     event.respondWith(
       caches.match(request).then(cachedResponse => {
         if (cachedResponse) {
-          // Serve from cache and update in background
-          fetchAndCache(request);
           return cachedResponse;
         }
         
-        // Fetch and cache
-        return fetchAndCache(request);
+        return fetch(request).then(response => {
+          // Cache successful responses
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        }).catch(() => {
+          // Fallback to cached home page for offline navigation
+          return caches.match('/');
+        });
       })
     );
     return;
   }
   
-  // Handle local images with cache-first strategy
-  if (url.origin === self.location.origin && isImagePath(url.pathname)) {
+  // Handle image requests
+  if (isImageRequest(request)) {
+    const cacheToUse = url.origin === CLOUDINARY_ORIGIN ? IMAGE_CACHE_NAME : IMAGE_CACHE_NAME;
+    
     event.respondWith(
       caches.match(request).then(cachedResponse => {
         if (cachedResponse) {
+          // Serve from cache and update in background for external images
+          if (url.origin === CLOUDINARY_ORIGIN) {
+            fetchAndCacheImage(request);
+          }
           return cachedResponse;
         }
         
-        return fetchAndCache(request);
+        return fetchAndCacheImage(request);
+      })
+    );
+    return;
+  }
+  
+  // Handle other static resources (CSS, JS, etc.)
+  if (url.origin === self.location.origin) {
+    event.respondWith(
+      caches.match(request).then(cachedResponse => {
+        return cachedResponse || fetch(request).then(response => {
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        });
       })
     );
   }
@@ -107,13 +146,13 @@ function isImagePath(pathname) {
   );
 }
 
-// Fetch and cache helper function
-async function fetchAndCache(request) {
+// Fetch and cache helper function for images
+async function fetchAndCacheImage(request) {
   try {
     const response = await fetch(request);
     
     if (response.ok) {
-      const cache = await caches.open(CACHE_NAME);
+      const cache = await caches.open(IMAGE_CACHE_NAME);
       // Clone the response before caching
       cache.put(request, response.clone());
       console.log('Cached image:', request.url);
