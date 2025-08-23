@@ -1,6 +1,7 @@
 ---
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import { generateSimpleCloudinaryOG } from '../utils/cloudinary';
 
 interface Props {
   title?: string;
@@ -30,30 +31,31 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://briandou
 // Ensure we have a site URL for OG images
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') || 'https://briandouglas.me';
 
-// Generate OG image URL that exactly matches the route structure
-let ogImageURL;
-if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
-  // Extract the post path after /posts/
-  const postPath = Astro.url.pathname.replace(/^\/posts\//, '').replace(/\/$/, '');
-  
-  if (postPath) {
-    // Use the exact same path structure for OG images
-    ogImageURL = `${siteUrl}/og-image/${postPath}/`;
-    console.log('Generated blog post OG URL:', ogImageURL);
+// Generate dynamic Cloudinary OG image URL
+const cloudinaryImageUrl = generateSimpleCloudinaryOG({
+  title: pageTitle,
+  description: pageDescription,
+  author: 'Brian Douglas',
+  site: 'briandouglas.me'
+});
+
+// Fallback to static image if Cloudinary fails
+let finalOgImageUrl = cloudinaryImageUrl;
+
+// If Cloudinary URL generation failed (no cloud name), use static fallback
+if (cloudinaryImageUrl === '/images/og-default.png') {
+  // Use the existing static OG image system as fallback
+  if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
+    const postPath = Astro.url.pathname.replace(/^\/posts\//, '').replace(/\/$/, '');
+    if (postPath) {
+      finalOgImageUrl = `${siteUrl}/og-image/${postPath}/`;
+    } else {
+      finalOgImageUrl = `${siteUrl}/og-image/home/`;
+    }
   } else {
-    // Fallback for unusual path structure
-    ogImageURL = `${siteUrl}/og-image/home/`;  // Change to match dynamic route format
+    finalOgImageUrl = `${siteUrl}/og-image/home/`;
   }
-} else {
-  // Home page or other pages - use the home slug in dynamic route
-  ogImageURL = `${siteUrl}/og-image/home/`;  // Change to match dynamic route format
 }
-
-// Static fallback if needed
-const fallbackImageUrl = `${siteUrl}/static-og/`;
-
-// Final URL for meta tags
-const finalOgImageUrl = ogImageURL || fallbackImageUrl;
 ---
 
 <!doctype html>
