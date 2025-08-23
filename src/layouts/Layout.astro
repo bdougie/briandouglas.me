@@ -31,20 +31,18 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://briandou
 // Ensure we have a site URL for OG images
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') || 'https://briandouglas.me';
 
-// Generate dynamic Cloudinary OG image URL
-const cloudinaryImageUrl = generateSimpleCloudinaryOG({
+// Try to use Cloudinary for social cards if configured
+const cloudinaryUrl = generateSimpleCloudinaryOG({
   title: pageTitle,
   description: pageDescription,
-  author: 'Brian Douglas',
   site: 'briandouglas.me'
 });
 
-// Fallback to static image if Cloudinary fails
-let finalOgImageUrl = cloudinaryImageUrl;
+// Use Cloudinary if available, otherwise fall back to static OG images
+let finalOgImageUrl = cloudinaryUrl;
 
-// If Cloudinary URL generation failed (no cloud name), use static fallback
-if (cloudinaryImageUrl === '/images/og-default.png') {
-  // Use the existing static OG image system as fallback
+if (cloudinaryUrl === '/images/og-default.png') {
+  // Fallback to static OG image system if Cloudinary not configured
   if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
     const postPath = Astro.url.pathname.replace(/^\/posts\//, '').replace(/\/$/, '');
     if (postPath) {
@@ -67,9 +65,9 @@ if (cloudinaryImageUrl === '/images/og-default.png') {
     <meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)" />
     
     
-    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
-    <link rel="icon" type="image/png" href="/images/favicon.png" />
-    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="https://res.cloudinary.com/briandouglas/image/upload/f_auto,q_auto/briandouglas-me/favicon" />
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/briandouglas/image/upload/f_auto,q_auto,w_32,h_32/briandouglas-me/favicon-png" />
+    <link rel="apple-touch-icon" href="https://res.cloudinary.com/briandouglas/image/upload/f_auto,q_auto,w_180,h_180/briandouglas-me/apple-touch-icon" />
     
     <!-- RSS Feed -->
     <link rel="alternate" type="application/rss+xml" title="Brian Douglas" href="/rss.xml" />
@@ -135,6 +133,21 @@ if (cloudinaryImageUrl === '/images/og-default.png') {
           }
         })
       })}
+    </script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
     </script>
   </head>
   <body class="bg-black text-gray-300 min-h-screen" lang="en">
