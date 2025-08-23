@@ -4,12 +4,14 @@ import BlueskyInteractions from '../../components/BlueskyInteractions.astro';
 import { formatDateLong } from '../../utils/dateFormatting';
 
 export async function getStaticPaths() {
-  const posts = await Astro.glob('./*.md');
+  const mdPosts = await Astro.glob('./*.md');
+  const mdxPosts = await Astro.glob('./*.mdx');
+  const posts = [...mdPosts, ...mdxPosts];
   const publishedPosts = posts.filter(post => !post.frontmatter.draft);
   
   return publishedPosts.map(post => {
     const filename = post.file.split('/').pop();
-    const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+    const [year, month, day, ...titleParts] = filename.replace(/\.(md|mdx)$/, '').split('-');
     
     return {
       params: { 

@@ -1,11 +1,13 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
+import mdx from '@astrojs/mdx';
 
 export default defineConfig({
   // Add your site URL here to ensure absolute URLs for social media
   site: 'https://briandouglas.me',
   integrations: [
+    mdx(),
     tailwind({
       config: { path: './tailwind.config.mjs' },
       applyBaseStyles: true

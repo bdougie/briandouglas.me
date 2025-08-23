@@ -2,7 +2,9 @@
 import Layout from '../../layouts/Layout.astro';
 import { formatDateShort } from '../../utils/dateFormatting';
 
-const posts = await Astro.glob('./**/*.md');
+const mdPosts = await Astro.glob('./**/*.md');
+const mdxPosts = await Astro.glob('./**/*.mdx');
+const posts = [...mdPosts, ...mdxPosts];
 const sortedPosts = posts
   .filter(post => !post.frontmatter.draft)
   .sort((a, b) => 
@@ -31,7 +33,7 @@ const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
           {postsByYear[Number(year)].map((post) => {
             // Extract the filename and create complex slug
             const filename = post.file.split('/').pop();
-            const [y, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+            const [y, month, day, ...titleParts] = filename.replace(/\.(md|mdx)$/, '').split('-');
             const complexSlug = `${y}/${month}/${day}/${titleParts.join('-')}`;
             
             return (

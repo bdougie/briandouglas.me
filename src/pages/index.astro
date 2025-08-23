@@ -3,7 +3,9 @@ import Layout from '../layouts/Layout.astro';
 import OptimizedImage from '../components/OptimizedImage.astro';
 import { formatDateShort } from '../utils/dateFormatting';
 
-const posts = await Astro.glob('./posts/**/*.md');
+const mdPosts = await Astro.glob('./posts/**/*.md');
+const mdxPosts = await Astro.glob('./posts/**/*.mdx');
+const posts = [...mdPosts, ...mdxPosts];
 const sortedPosts = posts
   .filter(post => !post.frontmatter.draft)
   .sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime())
@@ -75,7 +77,7 @@ const sortedPosts = posts
         {sortedPosts.map((post) => {
           // Extract the filename
           const filename = post.file.split('/').pop();
-          const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+          const [year, month, day, ...titleParts] = filename.replace(/\.(md|mdx)$/, '').split('-');
           const complexSlug = `${year}/${month}/${day}/${titleParts.join('-')}`;
           
           return (
