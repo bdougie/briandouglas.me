@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # Local Netlify folder
 .netlify
+
+# MCP configuration (contains sensitive keys)
+.mcp.json
