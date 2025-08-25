@@ -1,220 +1,131 @@
 ---
-title: "Building UI with Storybook-First Development: How AI and Component Sandboxes Speed Up Development"
-description: "A pragmatic approach to UI development using Storybook as the primary development environment, enhanced with AI assistance to remove unknowns and accelerate the development process."
+title: "Implementing Workspace Dashboard UI Components Using Storybook"
+description: "A comprehensive guide to implementing workspace dashboard UI components using Storybook-first development methodology with real-world examples and technical decisions."
 date: 2025-08-25
-tags: ["storybook", "ui", "development", "ai", "components", "react"]
+tags: ["storybook", "ui", "development", "workspace", "components", "react", "uplot", "tanstack"]
 ---
 
-I recently worked on a substantial workspace UI overhaul that fundamentally changed how I approach component development. Instead of building components within the full application context, I shifted to a Storybook-first methodology that dramatically improved my development speed and component quality. When combined with AI assistance, this approach eliminates the guesswork that typically slows down UI development.
+# Implementing Workspace Dashboard UI Components Using Storybook
 
-## The Problem with Traditional Component Development
+## Introduction
 
-In traditional development workflows, I'd build components directly within the application, constantly switching between different pages and states to see how they looked and behaved. This process was frustrating for several reasons:
+In the recent pull request, I embarked on a significant project to implement the workspace dashboard UI components, aiming for a seamless user experience and robust performance. This effort was part of our ongoing work on issue #394 and set the foundation for the `/workspaces/:workspaceId` route, which will be implemented in a follow-up PR. The development approach I employed prioritized using Storybook for component development to prevent disruptions to the existing UI.
 
-- **Context switching overhead**: Moving between different app routes to test component variations
-- **State management complexity**: Getting the component into the right state for testing required complex setup
-- **Integration dependencies**: Components would break due to missing props, context, or data
-- **Visual regression risks**: Changes to one component could unknowingly affect others in different contexts
+![](/tmp/github-images/image-1756126895043-0.png)
 
-When working with AI to generate or modify components, these problems became even more pronounced. I'd describe what I wanted, get generated code, paste it into my app, and then spend significant time debugging integration issues rather than focusing on the actual component logic and design.
+## Purpose and Context
 
-## Storybook-First Development: A Better Approach
+The goal was to create a comprehensive set of UI components for the workspace dashboard, providing interactive and responsive elements that cater to various user needs and access levels. This implementation supports features like dark mode, interactive charts, and tier-based access controls. By using Storybook, I ensured that the components were developed in isolation, minimizing the risk of breaking changes to the main application and allowing for easy testing and iteration.
 
-The workspace UI project changed my perspective entirely. Instead of building components in the application first, I started with Storybook as my primary development environment. Here's how this approach works:
+## Technical Implementation
 
-### 1. Component Specification in Isolation
+### Core Components
 
-I begin by creating a Storybook story that defines the component's interface, props, and various states. This forces me to think through the component's API before implementation:
+1. **WorkspaceDashboard**: Acts as the main container using a responsive grid layout.
+2. **MetricCard**: Displays key metrics with trends and smart formatting.
+3. **TrendChart**: Utilizes `uPlot` for performance-optimized line charts.
+4. **ActivityChart**: Implements candlestick visualization for code activity patterns.
+5. **RepositoryList**: Built with TanStack Table for sorting, filtering, and pinning capabilities.
+6. **TimeRangeSelector**: Offers a time period selector paired with tier-based access control.
 
-```typescript
-// Button.stories.tsx
-export const Primary = {
-  args: {
-    variant: 'primary',
-    size: 'medium',
-    children: 'Click me'
+### Key Features
+
+- **Dark Mode Support**: Automatic theme detection ensures a seamless transition between light and dark modes.
+- **Interactive Charts**: Charts feature expand/collapse functionality and custom tooltips for detailed metrics.
+- **Tier-Based Features**: Provides functionality tailored to different user tiers (free/pro/enterprise).
+- **Smooth Transitions**: GPU-accelerated transitions enhance user experience.
+
+### Technical Decisions
+
+- **uPlot vs. Recharts**: I opted for `uPlot` over `recharts` due to its superior performance, especially beneficial for rendering complex charts with large datasets.
+  
+  ```typescript
+  import uPlot from 'uplot';
+
+  const options = {
+    width: 800,
+    height: 300,
+    series: [
+      {},
+      {
+        label: "Trend",
+        stroke: "blue",
+      },
+    ],
+  };
+
+  const data = [
+    [new Date('2025-08-23').getTime(), 10],
+    [new Date('2025-08-24').getTime(), 15],
+  ];
+
+  new uPlot(options, data, document.body);
+  ```
+
+- **TanStack Table**: Leveraged for its enterprise-grade capabilities in managing complex data tables.
+
+  ```typescript
+  import { useTable } from 'tanstack/react-table';
+
+  const columns = [
+    {
+      Header: 'Repository',
+      accessor: 'repo',
+    },
+    {
+      Header: 'Activity',
+      accessor: 'activity',
+    },
+  ];
+
+  const data = useMemo(() => [/* ...data */], []);
+  const tableInstance = useTable({ columns, data });
+  ```
+
+- **SVG Sprites**: Implemented an optimized icon loading system via SVG sprites, improving load times and reducing HTTP requests.
+
+### Challenges and Solutions
+
+- **Icon Inconsistencies**: Some icons were unavailable in the sprite system. I addressed this by mapping unavailable icons to existing alternatives, ensuring consistent visual feedback.
+
+  ```typescript
+  const iconMapping = {
+    'CircleDot': 'Circle',
+    'CircleX': 'XCircle',
+  };
+  
+  function getIcon(name: string) {
+    return iconMapping[name] || name;
   }
-}
+  ```
 
-export const Loading = {
-  args: {
-    ...Primary.args,
-    isLoading: true
-  }
-}
+- **Responsive Design**: Ensuring the dashboard components were responsive was crucial. I applied CSS grid layouts and media queries to achieve a flexible design that adapts to different screen sizes.
 
-export const Disabled = {
-  args: {
-    ...Primary.args,
-    disabled: true
-  }
-}
-```
+## Key Code Changes
 
-### 2. AI-Enhanced Component Development
+- **Component Implementation**: The components were implemented with TypeScript, ensuring full type safety across the board.
+- **Dark Mode Detection**: A custom hook `useIsDarkMode` was created for theme detection, integrating seamlessly with React's context API to manage theme state.
 
-With the story defined, I can now work with AI more effectively. Instead of describing a component in the abstract, I can:
+  ```typescript
+  const useIsDarkMode = (): boolean => {
+    const [isDark, setIsDark] = useState(false);
 
-- Show the AI the specific story requirements
-- Ask for implementation that matches exact prop specifications
-- Request variations for each story state
-- Generate edge cases I might not have considered
+    useEffect(() => {
+      const matchMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      setIsDark(matchMedia.matches);
+      const listener = (e: MediaQueryListEvent) => setIsDark(e.matches);
+      matchMedia.addEventListener('change', listener);
+      return () => matchMedia.removeEventListener('change', listener);
+    }, []);
 
-The AI has a clear specification to work against, reducing hallucinated props or incorrect assumptions about the component's intended behavior.
+    return isDark;
+  };
+  ```
 
-### 3. Visual Development and Testing
+## Impact and Benefits
 
-Storybook provides immediate visual feedback for every component state. I can:
+The implementation of these components provides a robust foundation for future development on the workspace dashboard. By using a Storybook-first approach, I was able to deliver high-quality, isolated components that enhance the user experience with improved performance, responsiveness, and maintainability. This work will significantly expedite the integration process in the next PR, where routing and real data integration will be tackled.
 
-- See all component variations simultaneously
-- Test responsive behavior across different viewport sizes
-- Validate accessibility features with built-in tools
-- Document component behavior for the team
+## Conclusion
 
-## Real-World Example: Dashboard Component Evolution
-
-During the workspace UI development, I built a complex dashboard component that displays user metrics with charts, tables, and interactive filters. Here's how the Storybook-first approach played out:
-
-### Initial Story Definition
-
-I started by defining the core stories:
-
-```typescript
-export const EmptyState = {
-  args: {
-    data: [],
-    isLoading: false,
-    error: null
-  }
-}
-
-export const LoadingState = {
-  args: {
-    data: [],
-    isLoading: true,
-    error: null
-  }
-}
-
-export const WithData = {
-  args: {
-    data: mockDashboardData,
-    isLoading: false,
-    error: null
-  }
-}
-
-export const ErrorState = {
-  args: {
-    data: [],
-    isLoading: false,
-    error: 'Failed to load dashboard data'
-  }
-}
-```
-
-### AI-Assisted Implementation
-
-With these stories in place, I could work with AI to:
-
-1. **Generate the base component structure** that handled all defined states
-2. **Create sophisticated data visualization** using libraries like uPlot and TanStack Table
-3. **Build responsive layouts** that worked across different screen sizes
-4. **Implement error boundaries** and loading states
-
-The AI had clear requirements and could focus on implementation rather than guessing at requirements.
-
-### Iterative Refinement
-
-The visual sandbox made iteration incredibly fast. I could:
-
-- Adjust styling and immediately see results across all states
-- Test edge cases (like very long data sets or error messages)
-- Refine animations and transitions in isolation
-- Validate color schemes and typography choices
-
-## Benefits of This Approach
-
-### Speed and Focus
-
-Development speed increased significantly because I eliminated the feedback loop delays. Instead of:
-1. Write component code
-2. Navigate to app page
-3. Set up correct state
-4. See result
-5. Make changes
-6. Repeat
-
-I could:
-1. Write component code in Storybook
-2. See immediate result across all states
-3. Make changes with instant feedback
-
-### Better Component Design
-
-Designing in isolation forced me to create truly reusable components. When you can't rely on parent component context or global state, you naturally build more self-contained, well-designed components.
-
-### Documentation by Default
-
-Every story becomes living documentation. New team members can understand component behavior, see all available props, and understand intended usage patterns without reading code.
-
-### AI Collaboration Enhancement
-
-AI assistance became dramatically more effective because:
-- **Clear specifications**: Stories provide unambiguous requirements
-- **Immediate validation**: Generated code can be tested instantly in all defined scenarios
-- **Focused iteration**: AI can focus on implementation rather than guessing requirements
-- **Better context**: AI can see exactly how components should behave in different states
-
-## The Workspace UI Implementation Results
-
-This approach led to a robust, performant dashboard implementation that balanced cutting-edge technology with practical usability:
-
-- **Performance optimized**: Used uPlot for high-performance charting
-- **Data handling**: Implemented TanStack Table for complex data scenarios
-- **User experience**: Created smooth interactions and responsive design
-- **Maintainable**: Components were well-documented and easily testable
-
-The development process was faster, the code quality was higher, and the final result was more polished than previous approaches.
-
-## Challenges and Considerations
-
-This approach isn't without challenges:
-
-### Initial Setup Overhead
-
-Setting up comprehensive stories takes time upfront. However, this investment pays dividends throughout the development process and especially during maintenance.
-
-### Integration Testing
-
-Components still need integration testing within the application context. Storybook-first development doesn't eliminate this need, but it reduces the debugging required during integration.
-
-### Story Maintenance
-
-Stories need to be maintained alongside components. Outdated stories can be misleading and counterproductive.
-
-## Practical Implementation Tips
-
-### Start Small
-
-Begin with simple components to establish the workflow. Complex components can be overwhelming when you're learning the approach.
-
-### Use Story Controls
-
-Leverage Storybook's controls feature to make stories interactive. This allows for real-time experimentation with prop values.
-
-### Mock Data Strategy
-
-Develop a robust mock data strategy. Good mock data makes stories realistic and useful for design validation.
-
-### Integrate with Design Systems
-
-If you have a design system, ensure your stories reflect design tokens and component specifications.
-
-## Looking Forward
-
-The Storybook-first approach, enhanced with AI assistance, represents a significant shift in how I approach UI development. By removing the unknowns—seeing components in their intended states immediately—and leveraging AI for focused implementation rather than requirement guessing, development becomes both faster and more reliable.
-
-This methodology doesn't just improve individual productivity; it creates better components, better documentation, and ultimately better user experiences. The workspace UI project demonstrated that sophisticated interfaces can be built efficiently when you have the right development workflow and tools working together.
-
-The future of UI development isn't just about better frameworks or faster build tools—it's about creating development environments where iteration is instant, requirements are clear, and AI assistance is precisely targeted. Storybook-first development gets us there.
+This pull request marks a substantial step forward in our UI development process, establishing a scalable, performant, and visually appealing workspace dashboard. The decisions made here reflect a balance between cutting-edge technology and practical usability, setting the stage for future enhancements. The transition to using tools like `uPlot` and TanStack Table demonstrates a commitment to performance and user experience, which will continue to drive our development efforts.
