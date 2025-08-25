@@ -1,0 +1,77 @@
+---
+// Temporarily disable Cloudinary helper until properly configured
+// import { getCldImageUrl } from 'astro-cloudinary/helpers';
+import { Image } from 'astro:assets';
+
+export interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  caption?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const { 
+  src, 
+  alt, 
+  width = 800, 
+  height = 450,
+  caption,
+  loading = 'lazy'
+} = Astro.props;
+
+// Check if the image is already a Cloudinary URL
+const isCloudinaryUrl = src.includes('res.cloudinary.com');
+
+// For local images, upload to Cloudinary public folder
+// For production, these should be pre-uploaded to Cloudinary
+let imageUrl = src;
+
+if (!isCloudinaryUrl) {
+  // If it's a local path, convert to Cloudinary URL
+  // Assumes images are uploaded to Cloudinary with the same path structure
+  const publicId = src
+    .replace(/^\//, '') // Remove leading slash
+    .replace(/\.(png|jpg|jpeg|gif|webp)$/i, ''); // Remove extension
+  
+  // Build Cloudinary URL manually
+  imageUrl = `https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto,w_${width},h_${height},c_fill,g_auto/blog/${publicId}`;
+} else {
+  // If already a Cloudinary URL, apply optimizations
+  imageUrl = src.replace('/upload/', '/upload/f_auto,q_auto/');
+}
+---
+
+<figure class="blog-image">
+  <img
+    src={imageUrl}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding="async"
+  />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .blog-image {
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .blog-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .blog-image figcaption {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    font-style: italic;
+  }
+</style>

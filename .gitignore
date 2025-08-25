@@ -25,3 +25,24 @@ pnpm-debug.log*
 
 # Local Netlify folder
 .netlify
+
+# MCP configuration (contains sensitive keys)
+.mcp.json
+
+# Cloudinary upload cache
+.cloudinary-uploads.json
+
+# Images that should be served from Cloudinary
+# (Keep favicon and PWA icons that need to be served locally)
+public/images/*.png
+public/images/*.jpg
+public/images/*.jpeg
+public/images/*.webp
+!public/images/favicon*.png
+!public/images/icon-*.png
+!public/images/apple-touch-icon.png
+!public/images/og-default.png
+!public/images/black-social-bg.png
+
+# GIFs should be served from Cloudinary
+public/gifs/*.gif
