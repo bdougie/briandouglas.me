@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # MCP configuration (contains sensitive keys)
 .mcp.json
+
+# Cloudinary upload cache
+.cloudinary-uploads.json
