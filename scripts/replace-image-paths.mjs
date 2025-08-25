@@ -91,6 +91,7 @@ function replaceImagePaths(filePath) {
       
       // Check if the image exists in public/images
       if (imageExists(imageName) || imageExists(imagePath)) {
+        // Use image name without extension for Cloudinary URL
         const cloudinaryUrl = `${CLOUDINARY_BASE_URL}/${imageName}`;
         
         replacements.push({
