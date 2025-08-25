@@ -3,9 +3,10 @@ title: "Optimizing Bundle Splitting: A Deep Dive into Reducing the Main Bundle b
 description: "Learn how I reduced the main JavaScript bundle from 1,158KB to 204KB through advanced chunking strategies, improving LCP from 5.9 seconds while maintaining full functionality."
 date: 2025-08-23
 tags: ["performance", "optimization", "vite", "javascript", "bundling"]
+blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3lx3jlqkt522z"
 ---
 
-As I mentioned in my [previous post about Supabase avatar caching performance](/posts/2025-08-22-supabase-avatar-caching-performance), I've been on a performance optimization journey with my application. Continuing this quest to improve my application's performance and address the critical issue documented in #463, I embarked on a comprehensive bundle splitting optimization strategy. This initiative aimed to significantly reduce our main JavaScript bundle size, which was a hefty 1,158KB, causing prolonged load times and impacting the Largest Contentful Paint (LCP) metric, which was hovering around 5.9 seconds. By implementing an advanced chunking strategy, I successfully reduced the main bundle to 204KB, an 82% reduction, while maintaining full functionality and stability. This post outlines the technical journey, challenges faced, and the solutions implemented.
+As I mentioned in my [previous post about Supabase avatar caching performance](/posts/2025-08-22-supabase-avatar-caching-performance), I've been on a performance optimization journey with my application. In my recent [pull request #19](https://github.com/bdougie/briandouglas.me/pull/19), I continued this quest to improve my application's performance and address the critical issue documented in [#463](https://github.com/bdougie/briandouglas.me/issues/463). I embarked on a comprehensive bundle splitting optimization strategy that aimed to significantly reduce our main JavaScript bundle size, which was a hefty 1,158KB, causing prolonged load times and impacting the Largest Contentful Paint (LCP) metric, which was hovering around 5.9 seconds. By implementing an advanced chunking strategy, I successfully reduced the main bundle to 204KB, an 82% reduction, while maintaining full functionality and stability. This post outlines the technical journey, challenges faced, and the solutions implemented.
 
 ## Purpose and Context
 
@@ -66,7 +67,7 @@ One of the significant challenges was managing dependencies and initialization o
 
 #### The React Ecosystem Constraint
 
-Through multiple iterations, I discovered that React's architecture fundamentally constrains how you can split bundles. As Claude noted in the PR review:
+Through multiple iterations, I discovered that React's architecture fundamentally constrains how you can split bundles. As Claude noted in [the PR review](https://github.com/bdougie/briandouglas.me/pull/19):
 
 > "The React ecosystem's interdependencies create a web of initialization requirements that make aggressive code splitting challenging. React-dependent libraries must be initialized together - attempting to split them causes cascading initialization errors."
 
@@ -87,7 +88,7 @@ An unexpected deployment issue arose with Netlify's post-processing, which confl
 
 ## The Iterative Journey
 
-What started as a straightforward bundle optimization task evolved into a deep exploration of modern JavaScript bundling constraints. The PR discussion reveals the iterative nature of this optimization:
+What started as a straightforward bundle optimization task evolved into a deep exploration of modern JavaScript bundling constraints. [The PR discussion](https://github.com/bdougie/briandouglas.me/pull/19) reveals the iterative nature of this optimization:
 
 ### Iteration Timeline
 
@@ -113,6 +114,22 @@ While the headline "82% reduction" didn't materialize due to React constraints, 
 - **LCP:** Improved from 5.9s to 4.1s
 - **Cache Hit Rate:** Vendor bundles cached effectively across pages
 
+![Performance metrics showing improved LCP from 5.9s to 4.1s](https://private-user-images.githubusercontent.com/5713670/481322690-c2d960c8-6d30-4565-86d9-19ab9c6226ee.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTYxMjg2NDMsIm5iZiI6MTc1NjEyODM0MywicGF0aCI6Ii81NzEzNjcwLzQ4MTMyMjY5MC1jMmQ5NjBjOC02ZDMwLTQ1NjUtODZkOS0xOWFiOWM2MjI2ZWUucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MDgyNSUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTA4MjVUMTMyNTQzWiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9OWFhMjQyODc5MWJjMjhlMGM1OTMzM2FkOTg4MDM1YTM1NWY0Y2M2ZmE5MjVkODNlOWMzOWVkNTk4NWI0NmFhZCZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.TyG0SW8jGvlTXfVclpcrNmetgA6DVZQ2gqkKNrViET8)
+
+### Performance Win with uPlot
+
+One notable performance improvement that emerged from this optimization journey was the adoption of uPlot for charting functionality. Moving away from heavier charting libraries to uPlot resulted in significant performance gains:
+
+- **Bundle Size Reduction:** uPlot is only ~40KB compared to alternatives that often exceed 200KB
+- **Rendering Performance:** Near-zero overhead for rendering large datasets
+- **Memory Efficiency:** Minimal memory footprint even with thousands of data points
+
+This shift to uPlot represents a key focus area moving forward - prioritizing lightweight, performance-first libraries that deliver essential functionality without the bloat. The performance characteristics of uPlot align perfectly with our optimization goals:
+
+- **Query Optimization:** Efficient Supabase queries with proper selects work seamlessly with uPlot's lean data requirements
+- **Lazy Loading:** uPlot components only load when authenticated users access analytics features
+- **Caching:** Auth state change listeners properly implemented ensure chart data is cached appropriately
+
 ## Lessons Learned
 
 ### Technical Insights
@@ -134,7 +151,7 @@ While the headline "82% reduction" didn't materialize due to React constraints, 
 
 ### Process Insights
 
-As Claude reflected in the PR:
+As Claude reflected in [the PR](https://github.com/bdougie/briandouglas.me/pull/19):
 
 > "This PR demonstrates the importance of iterative optimization. Each failed attempt provided valuable data about the constraints of the system. The final solution may not match the initial ambition, but it represents a pragmatic balance between ideal and practical."
 
@@ -146,9 +163,10 @@ Based on this experience, future optimization efforts should consider:
 2. **Progressive Enhancement:** Load core functionality first, enhance with features
 3. **Server-Side Rendering:** Reduce client-side JavaScript requirements
 4. **Module Federation:** For micro-frontend architectures
+5. **Continued Focus on Lightweight Libraries:** Following the uPlot example, prioritize performance-first alternatives
 
 ## Conclusion
 
 This optimization journey taught me that performance optimization is rarely about achieving perfect metrics. It's about understanding system constraints, making pragmatic trade-offs, and delivering real improvements to users. The 26% reduction we achieved, while less dramatic than initially hoped, provides tangible benefits through improved load times and better caching.
 
-The detailed documentation and learnings from this PR will serve as a valuable reference for future optimization efforts, helping others avoid the same pitfalls and understand the fundamental constraints of modern JavaScript bundling.
+The detailed documentation and learnings from [this PR](https://github.com/bdougie/briandouglas.me/pull/19) will serve as a valuable reference for future optimization efforts, helping others avoid the same pitfalls and understand the fundamental constraints of modern JavaScript bundling.
