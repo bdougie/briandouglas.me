@@ -1,5 +1,6 @@
 ---
-import { getCldImageUrl } from 'astro-cloudinary/helpers';
+// Temporarily disable Cloudinary helper until properly configured
+// import { getCldImageUrl } from 'astro-cloudinary/helpers';
 import { Image } from 'astro:assets';
 
 export interface Props {
@@ -34,15 +35,8 @@ if (!isCloudinaryUrl) {
     .replace(/^\//, '') // Remove leading slash
     .replace(/\.(png|jpg|jpeg|gif|webp)$/i, ''); // Remove extension
   
-  imageUrl = getCldImageUrl({
-    src: `blog/${publicId}`,
-    width: width,
-    height: height,
-    format: 'auto',
-    quality: 'auto',
-    crop: 'fill',
-    gravity: 'auto'
-  });
+  // Build Cloudinary URL manually
+  imageUrl = `https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto,w_${width},h_${height},c_fill,g_auto/blog/${publicId}`;
 } else {
   // If already a Cloudinary URL, apply optimizations
   imageUrl = src.replace('/upload/', '/upload/f_auto,q_auto/');
