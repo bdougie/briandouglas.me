@@ -2,6 +2,10 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
+import { execSync } from 'child_process';
+
+// Get the last 5 characters of the current commit SHA for cache busting
+const commitSHA = execSync('git rev-parse --short=5 HEAD').toString().trim();
 
 export default defineConfig({
   // Add your site URL here to ensure absolute URLs for social media
@@ -16,7 +20,8 @@ export default defineConfig({
   ],
   build: {
     format: 'directory',
-    inlineStylesheets: 'auto'
+    inlineStylesheets: 'auto',
+    assets: `assets-${commitSHA}`
   },
   routing: {
     prefixDefaultLocale: false
@@ -61,7 +66,20 @@ export default defineConfig({
       cssCodeSplit: true,
       rollupOptions: {
         output: {
-          manualChunks: undefined
+          manualChunks: undefined,
+          assetFileNames: (assetInfo) => {
+            const info = assetInfo.name.split('.');
+            let extType = info[info.length - 1];
+            if (/css/i.test(extType)) {
+              return `assets/css/[name]-${commitSHA}.[ext]`;
+            }
+            if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+              return `assets/images/[name]-${commitSHA}.[ext]`;
+            }
+            return `assets/[name]-${commitSHA}.[ext]`;
+          },
+          chunkFileNames: `assets/js/[name]-${commitSHA}.js`,
+          entryFileNames: `assets/js/[name]-${commitSHA}.js`
         }
       }
     },
