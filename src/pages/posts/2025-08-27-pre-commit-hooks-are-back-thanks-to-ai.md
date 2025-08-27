@@ -2,6 +2,7 @@
 title: "Pre-commit hooks are back thanks to AI"
 date: 2025-08-27
 description: "How pre-commit hooks help AI assistants ship better code by focusing on implementation instead of formatting debates"
+blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3lxfu2tegvs2j"
 ---
 
 ## The Problem: AI Gets Lost in the Weeds
