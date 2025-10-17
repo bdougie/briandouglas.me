@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-10-17T22:36:59.067Z",
+  "bundle": {
+    "totalJsSize": 767119,
+    "totalCssSize": 43718,
+    "totalSize": 810837,
+    "jsFiles": 48,
+    "cssFiles": 1
+  },
+  "optimizations": {
+    "score": 100,
+    "passedChecks": 8,
+    "totalChecks": 8
+  },
+  "recommendations": [
+    "Consider implementing code splitting or removing unused dependencies",
+    "JavaScript bundle is large - consider lazy loading components"
+  ]
+}

@@ -1,0 +1,310 @@
+---
+// Static performance dashboard page - data loaded client-side
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Dashboard - Brian Douglas</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .header {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .metric-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .metric-card h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+    .metric-value {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .metric-value.good { color: #10b981; }
+    .metric-value.needs-improvement { color: #f59e0b; }
+    .metric-value.poor { color: #ef4444; }
+    .metric-label {
+      color: #666;
+      font-size: 0.9em;
+    }
+    .chart-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .error {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+    .refresh-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .refresh-btn:hover {
+      background: #2563eb;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Performance Dashboard</h1>
+      <p>Real User Monitoring for briandouglas.me</p>
+      <button class="refresh-btn" onclick="loadPerformanceData()">Refresh Data</button>
+    </div>
+
+    <div id="error-container" class="error">
+      <h3>Error Loading Performance Data</h3>
+      <p id="error-message"></p>
+    </div>
+
+    <div id="loading-container" class="loading">
+      <p>Loading performance data...</p>
+    </div>
+
+    <div id="metrics-container" class="hidden">
+      <div class="metrics-grid" id="metrics-grid">
+        <!-- Metrics will be populated by JavaScript -->
+      </div>
+
+      <div class="chart-container" id="trends-container">
+        <h3>Daily Performance Trends</h3>
+        <div id="trends-table"></div>
+      </div>
+
+      <div class="chart-container" id="no-data-container" class="hidden">
+        <h3>No Data Available</h3>
+        <p>Performance data will appear here once your site starts receiving traffic with the Web Vitals tracking enabled.</p>
+        <p>Make sure to include the Web Vitals script in your site's layout.</p>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <h3>Core Web Vitals Thresholds</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Good</th>
+            <th>Needs Improvement</th>
+            <th>Poor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>LCP (Largest Contentful Paint)</td>
+            <td style="color: #10b981;">≤ 2.5s</td>
+            <td style="color: #f59e0b;">2.5s - 4s</td>
+            <td style="color: #ef4444;">> 4s</td>
+          </tr>
+          <tr>
+            <td>FID (First Input Delay)</td>
+            <td style="color: #10b981;">≤ 100ms</td>
+            <td style="color: #f59e0b;">100ms - 300ms</td>
+            <td style="color: #ef4444;">> 300ms</td>
+          </tr>
+          <tr>
+            <td>CLS (Cumulative Layout Shift)</td>
+            <td style="color: #10b981;">≤ 0.1</td>
+            <td style="color: #f59e0b;">0.1 - 0.25</td>
+            <td style="color: #ef4444;">> 0.25</td>
+          </tr>
+          <tr>
+            <td>INP (Interaction to Next Paint)</td>
+            <td style="color: #10b981;">≤ 200ms</td>
+            <td style="color: #f59e0b;">200ms - 500ms</td>
+            <td style="color: #ef4444;">> 500ms</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function loadPerformanceData() {
+      const loadingContainer = document.getElementById('loading-container');
+      const errorContainer = document.getElementById('error-container');
+      const metricsContainer = document.getElementById('metrics-container');
+      const noDataContainer = document.getElementById('no-data-container');
+      
+      // Show loading state
+      loadingContainer.style.display = 'block';
+      errorContainer.style.display = 'none';
+      metricsContainer.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/performance?days=7');
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch data: ${response.status}`);
+        }
+
+        const performanceData = await response.json();
+        
+        // Hide loading
+        loadingContainer.style.display = 'none';
+        
+        if (!performanceData.summary || performanceData.summary.totalSessions === 0) {
+          noDataContainer.style.display = 'block';
+          metricsContainer.style.display = 'block';
+          return;
+        }
+
+        // Show metrics container
+        metricsContainer.style.display = 'block';
+        
+        // Populate metrics
+        populateMetrics(performanceData.summary);
+        
+        // Populate trends table
+        populateTrends(performanceData.aggregated);
+
+      } catch (error) {
+        loadingContainer.style.display = 'none';
+        errorContainer.style.display = 'block';
+        document.getElementById('error-message').textContent = error.message;
+      }
+    }
+
+    function populateMetrics(summary) {
+      const metricsGrid = document.getElementById('metrics-grid');
+      
+      const lcpRating = summary.avgLCP <= 2500 ? 'good' : summary.avgLCP <= 4000 ? 'needs-improvement' : 'poor';
+      const clsRating = summary.avgCLS <= 0.1 ? 'good' : summary.avgCLS <= 0.25 ? 'needs-improvement' : 'poor';
+      const fidRating = summary.avgFID <= 100 ? 'good' : summary.avgFID <= 300 ? 'needs-improvement' : 'poor';
+      
+      metricsGrid.innerHTML = `
+        <div class="metric-card">
+          <h3>Largest Contentful Paint (LCP)</h3>
+          <div class="metric-value ${lcpRating}">
+            ${summary.avgLCP ? Math.round(summary.avgLCP) : 'N/A'}ms
+          </div>
+          <div class="metric-label">7-day average (P75)</div>
+        </div>
+
+        <div class="metric-card">
+          <h3>Cumulative Layout Shift (CLS)</h3>
+          <div class="metric-value ${clsRating}">
+            ${summary.avgCLS ? summary.avgCLS.toFixed(3) : 'N/A'}
+          </div>
+          <div class="metric-label">7-day average (P75)</div>
+        </div>
+
+        <div class="metric-card">
+          <h3>First Input Delay (FID)</h3>
+          <div class="metric-value ${fidRating}">
+            ${summary.avgFID ? Math.round(summary.avgFID) : 'N/A'}ms
+          </div>
+          <div class="metric-label">7-day average (P75)</div>
+        </div>
+
+        <div class="metric-card">
+          <h3>Total Sessions</h3>
+          <div class="metric-value" style="color: #6b7280;">
+            ${summary.totalSessions || 0}
+          </div>
+          <div class="metric-label">Last 7 days</div>
+        </div>
+      `;
+    }
+
+    function populateTrends(aggregated) {
+      const trendsTable = document.getElementById('trends-table');
+      
+      if (!aggregated || aggregated.length === 0) {
+        trendsTable.innerHTML = '<p>No trend data available</p>';
+        return;
+      }
+
+      const tableHtml = `
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Sessions</th>
+              <th>LCP (P75)</th>
+              <th>CLS (P75)</th>
+              <th>FID (P75)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${aggregated.map(day => `
+              <tr>
+                <td>${day.date}</td>
+                <td>${day.count}</td>
+                <td>${day.metrics.LCP ? Math.round(day.metrics.LCP.p75) + 'ms' : 'N/A'}</td>
+                <td>${day.metrics.CLS ? day.metrics.CLS.p75.toFixed(3) : 'N/A'}</td>
+                <td>${day.metrics.FID ? Math.round(day.metrics.FID.p75) + 'ms' : 'N/A'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      
+      trendsTable.innerHTML = tableHtml;
+    }
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', loadPerformanceData);
+
+    // Auto-refresh every 5 minutes
+    setInterval(loadPerformanceData, 5 * 60 * 1000);
+  </script>
+</body>
+</html>

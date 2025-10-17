@@ -15,7 +15,14 @@
     "upload:images": "node scripts/upload-blog-images.mjs",
     "replace:paths": "node scripts/replace-image-paths.mjs",
     "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "lighthouse:ci": "lhci autorun",
+    "lighthouse:collect": "lhci collect --url=http://localhost:4321",
+    "lighthouse:assert": "lhci assert",
+    "performance:analyze": "npm run build && npm run lighthouse:ci",
+    "performance:dashboard": "open http://localhost:4321/performance-dashboard",
+    "performance:report": "node scripts/analyze-performance.mjs",
+    "performance:full": "npm run build && npm run performance:report && npm run lighthouse:ci"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.4",
@@ -29,8 +36,12 @@
     "tailwindcss": "^3.4.1"
   },
   "devDependencies": {
+    "@astrojs/netlify": "^6.5.13",
     "@astrojs/prefetch": "^0.4.1",
     "@astrojs/sitemap": "^3.5.0",
+    "@lhci/cli": "^0.15.1",
+    "@netlify/functions": "^5.0.0",
+    "@netlify/vite-plugin": "^2.7.3",
     "@squoosh/lib": "^0.3.1",
     "@vitest/ui": "^3.2.4",
     "happy-dom": "^18.0.1",
@@ -43,6 +54,7 @@
     "playwright": "^1.55.0",
     "sharp": "^0.34.3",
     "sitemap": "^8.0.0",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "web-vitals": "^5.1.0"
   }
 }

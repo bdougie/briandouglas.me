@@ -158,6 +158,17 @@ if (cloudinaryUrl === '/images/og-default.png') {
         });
       }
     </script>
+    
+    <!-- Web Vitals Performance Monitoring -->
+    <script type="module">
+      import { initWebVitals, initPerformanceObserver } from '/src/utils/webVitals.ts';
+      
+      // Initialize Web Vitals tracking
+      if (typeof window !== 'undefined') {
+        initWebVitals();
+        initPerformanceObserver();
+      }
+    </script>
   </head>
   <body class="bg-black text-gray-200 min-h-screen" lang="en">
     <!-- Skip link for keyboard users -->

@@ -1,0 +1,156 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  sizes?: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  quality?: number;
+  format?: 'webp' | 'avif' | 'auto';
+  fit?: 'contain' | 'cover' | 'fill';
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'center';
+}
+
+const {
+  src,
+  alt,
+  width = 800,
+  height,
+  sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
+  class: className = '',
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  quality = 85,
+  format = 'auto',
+  fit = 'cover',
+  position = 'center'
+} = Astro.props;
+
+// Check if the image is already optimized (from Cloudinary) or local
+const isCloudinaryImage = src.includes('res.cloudinary.com');
+const isLocalImage = src.startsWith('/') && !src.startsWith('/.netlify');
+
+// Function to generate Netlify Image CDN URL
+function generateNetlifyImageUrl(originalSrc: string, width: number, height?: number, quality = 85, format = 'auto') {
+  const params = new URLSearchParams();
+  
+  // Encode the original URL
+  params.set('url', originalSrc);
+  params.set('w', width.toString());
+  if (height) params.set('h', height.toString());
+  params.set('q', quality.toString());
+  if (format !== 'auto') params.set('fm', format);
+  params.set('fit', fit);
+  if (position !== 'center') params.set('position', position);
+  
+  return `/.netlify/images?${params.toString()}`;
+}
+
+// Generate responsive image URLs
+const responsiveWidths = [320, 640, 768, 1024, 1280, 1536];
+let srcset = '';
+let optimizedSrc = src;
+
+if (isLocalImage && !isCloudinaryImage) {
+  // Use Netlify Image CDN for local images
+  optimizedSrc = generateNetlifyImageUrl(src, width, height, quality, format);
+  
+  srcset = responsiveWidths
+    .filter(w => w <= width)
+    .map(w => {
+      const scaledHeight = height ? Math.round((height * w) / width) : undefined;
+      return `${generateNetlifyImageUrl(src, w, scaledHeight, quality, format)} ${w}w`;
+    })
+    .join(', ');
+} else if (isCloudinaryImage) {
+  // Cloudinary images are already optimized
+  optimizedSrc = src;
+} else {
+  // External images - use Netlify Image CDN
+  optimizedSrc = generateNetlifyImageUrl(src, width, height, quality, format);
+  
+  srcset = responsiveWidths
+    .filter(w => w <= width)
+    .map(w => {
+      const scaledHeight = height ? Math.round((height * w) / width) : undefined;
+      return `${generateNetlifyImageUrl(src, w, scaledHeight, quality, format)} ${w}w`;
+    })
+    .join(', ');
+}
+
+// Generate blur placeholder for better perceived performance
+const blurDataUrl = isLocalImage ? 
+  generateNetlifyImageUrl(src, 40, height ? Math.round((height * 40) / width) : 30, 20, 'jpg') : 
+  undefined;
+---
+
+<img
+  src={optimizedSrc}
+  srcset={srcset}
+  sizes={sizes}
+  alt={alt}
+  width={width}
+  height={height}
+  loading={loading}
+  fetchpriority={fetchpriority}
+  class={`transition-opacity duration-300 ${className}`}
+  style={blurDataUrl ? `background-image: url(${blurDataUrl}); background-size: cover; background-position: center;` : undefined}
+  onload="this.style.backgroundImage='none'"
+/>
+
+<style>
+  img {
+    /* Prevent layout shift */
+    aspect-ratio: attr(width) / attr(height);
+    object-fit: cover;
+    
+    /* Improve rendering performance */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+  }
+  
+  /* Progressive image loading effect */
+  img:not([loading="eager"]) {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  img[loading="lazy"].loaded,
+  img[loading="eager"] {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  // Progressive loading enhancement
+  document.addEventListener('DOMContentLoaded', () => {
+    const images = document.querySelectorAll('img[loading="lazy"]');
+    
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target as HTMLImageElement;
+          
+          img.addEventListener('load', () => {
+            img.classList.add('loaded');
+          });
+          
+          // If image is already loaded
+          if (img.complete) {
+            img.classList.add('loaded');
+          }
+          
+          observer.unobserve(img);
+        }
+      });
+    }, {
+      rootMargin: '50px 0px',
+      threshold: 0.01
+    });
+    
+    images.forEach(img => imageObserver.observe(img));
+  });
+</script>
