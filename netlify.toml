@@ -1,0 +1,63 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Performance optimizations
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    # Enable compression
+    Content-Encoding = "br"
+
+# Image optimization settings
+[images]
+  remote_images = ["https://res.cloudinary.com/.*"]
+
+# Function settings for performance monitoring
+[functions]
+  directory = "netlify/functions"
+
+# Redirect settings for performance
+[[redirects]]
+  from = "/api/performance"
+  to = "/.netlify/functions/performance-metrics"
+  status = 200
+
+# Build plugins for performance monitoring
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+  
+  [plugins.inputs]
+    performance_budget = 90
+    accessibility_budget = 90
+    best_practices_budget = 90
+    seo_budget = 90
+    output_path = "lighthouse-reports"

@@ -2,6 +2,8 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
+import netlify from '@netlify/vite-plugin';
+import netlifyAdapter from '@astrojs/netlify';
 import { execSync } from 'child_process';
 
 // Get the last 5 characters of the current commit SHA for cache busting
@@ -10,6 +12,7 @@ const commitSHA = execSync('git rev-parse --short=5 HEAD').toString().trim();
 export default defineConfig({
   // Add your site URL here to ensure absolute URLs for social media
   site: 'https://briandouglas.me',
+  output: 'static',
   integrations: [
     mdx(),
     tailwind({
@@ -62,6 +65,7 @@ export default defineConfig({
   },
   compressHTML: true,
   vite: {
+    plugins: [netlify()],
     build: {
       cssCodeSplit: true,
       rollupOptions: {
