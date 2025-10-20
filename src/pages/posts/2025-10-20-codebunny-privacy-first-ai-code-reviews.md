@@ -70,9 +70,9 @@ These rules apply automatically to every PR. Define standards for security, test
 
 Beyond automatic reviews, comment on any PR to request specific feedback:
 
-- `@continue-agent check for security issues`
-- `@continue-agent review the TypeScript types`
-- `@continue-agent explain the architecture changes`
+- `@codebunny check for security issues`
+- `@codebunny review the TypeScript types`
+- `@codebunny explain the architecture changes`
 
 ## Why It Matters
 
