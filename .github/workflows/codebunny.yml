@@ -24,11 +24,11 @@ jobs:
 
       - name: Generate App Token
         id: app-token
-        if: vars.GITHUB_APP_ID != ''
+        if: vars.APP_ID != ''
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ vars.GITHUB_APP_ID }}
-          private-key: ${{ secrets.GITHUB_APP_PRIVATE_KEY }}
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: CodeBunny Review
         uses: ./actions/codebunny
