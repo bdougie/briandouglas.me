@@ -4,8 +4,6 @@ date: 2025-10-20
 description: AI code reviews that run in your GitHub Actions environment, keeping your code in your repository. Built on Continue for flexible, privacy-focused code analysis.
 ---
 
-# CodeBunny: Privacy-First AI Code Reviews with Continue
-
 Getting AI to generate code has never been easier. With a simple prompt, you can scaffold entire features, generate boilerplate, or refactor complex functions. It's no surprise we're seeing a rise in AI code review tools for GitHub pull requests—if AI can write code, it should be able to review it too. But here's the question no one's asking: how much control do you have over your data when using these tools? Most AI code review services require sending your code to third-party servers. CodeBunny takes a different approach: it runs entirely in your GitHub Actions environment, keeping your code in your repository.
 
 ## What It Does
