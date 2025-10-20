@@ -84,7 +84,7 @@ The workflow requires the following repository secrets and variables:
 
 ### Usage
 
-CodeBunny automatically reviews PRs when they are opened, synchronized, or marked ready for review. You can also trigger a review by commenting `@continue-agent` on any PR.
+CodeBunny automatically reviews PRs when they are opened, synchronized, or marked ready for review. You can also trigger a review by commenting `@codebunny` on any PR.
 
 ## 🏗️ Deployment
 
