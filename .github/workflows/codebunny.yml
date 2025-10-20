@@ -31,7 +31,7 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: CodeBunny Review
-        uses: ./actions/codebunny
+        uses: bdougie/codebunny/actions/codebunny@main
         with:
           github-token: ${{ steps.app-token.outputs.token || github.token }}
           continue-api-key: ${{ secrets.CONTINUE_API_KEY }}
