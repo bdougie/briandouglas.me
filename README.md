@@ -65,6 +65,27 @@ The site uses Tailwind CSS with a custom color scheme:
 
 The typography is enhanced with the `@tailwindcss/typography` plugin for rich text styling in blog posts.
 
+## 🤖 CodeBunny AI Code Reviews
+
+This repository uses [CodeBunny](https://github.com/bdougie/codebunny) for automated AI-powered code reviews on pull requests.
+
+### Configuration
+
+The workflow requires the following repository secrets and variables:
+
+**Secrets:**
+- `CONTINUE_API_KEY` - Your Continue API key
+- `APP_PRIVATE_KEY` - (Optional) GitHub App private key for enhanced authentication
+
+**Variables:**
+- `CONTINUE_ORG` - Your Continue Hub organization name
+- `CONTINUE_CONFIG` - Your Continue assistant slug (format: `owner/package-name`)
+- `APP_ID` - (Optional) GitHub App ID for enhanced authentication
+
+### Usage
+
+CodeBunny automatically reviews PRs when they are opened, synchronized, or marked ready for review. You can also trigger a review by commenting `@codebunny` on any PR.
+
 ## 🏗️ Deployment
 
 This site is deployed on Netlify, which automatically builds and deploys the site when changes are pushed to the main branch.

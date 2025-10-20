@@ -1,0 +1,40 @@
+name: CodeBunny Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@codebunny'))
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate App Token
+        id: app-token
+        if: vars.APP_ID != ''
+        continue-on-error: true
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: CodeBunny Review
+        uses: bdougie/codebunny/actions/codebunny@main
+        with:
+          github-token: ${{ steps.app-token.outputs.token || github.token }}
+          continue-api-key: ${{ secrets.CONTINUE_API_KEY }}
+          continue-org: ${{ vars.CONTINUE_ORG }}
+          continue-config: ${{ vars.CONTINUE_CONFIG }}
