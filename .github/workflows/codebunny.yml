@@ -25,6 +25,7 @@ jobs:
       - name: Generate App Token
         id: app-token
         if: vars.APP_ID != ''
+        continue-on-error: true
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ vars.APP_ID }}
