@@ -47,7 +47,7 @@ jobs:
 
 ## The Continue Integration
 
-CodeBunny is built on Continue, the open-source AI code assistant. This gives you flexibility: use Continue's hosted service or self-host your own instance. The integration leverages Continue's agent mode for deep code analysis while keeping everything in your control.
+CodeBunny is built on Continue, the open-source platform for building custome coding agents. This gives you flexibility: use Continue's hosted service or self-host your own instance. The integration leverages Continue's agent mode for deep code analysis while keeping everything in your control.
 
 ## Custom Rules: Your Standards
 
