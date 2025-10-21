@@ -2,6 +2,7 @@
 title: "CodeBunny: Privacy-First AI Code Reviews with Continue"
 date: 2025-10-20
 description: AI code reviews that run in your GitHub Actions environment, keeping your code in your repository. Built on Continue for flexible, privacy-focused code analysis.
+blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3m3o3sstnmk2w"
 ---
 
 ![CodeBunny AI code review in progress](https://res.cloudinary.com/bdougie/image/upload/v1761006218/blog/codebun_idkj3a.png)
