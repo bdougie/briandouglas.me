@@ -100,4 +100,8 @@ CodeBunny makes sense when privacy matters, you have team-specific conventions t
 
 CodeBunny represents a shift in AI developer tools—bringing AI to your infrastructure instead of sending code to external services. It's pragmatic, leveraging Continue's power while maintaining data ownership. For teams serious about code quality but unwilling to compromise on privacy, it's a compelling alternative.
 
+## Future Exploration
+
+Looking ahead, I'm exploring the use of SQLite or vector databases to persist PR review data. This would enable tracking review patterns over time, building custom analytics on code quality trends, and potentially training specialized models on your team's specific feedback patterns. The goal is to make code reviews not just automated, but continuously improving based on historical context.
+
 **Try it:** [github.com/bdougie/codebunny](https://github.com/bdougie/codebunny)
