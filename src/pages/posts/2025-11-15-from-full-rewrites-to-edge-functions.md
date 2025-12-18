@@ -4,13 +4,13 @@ date: 2025-11-15
 description: "How moving to edge functions improved performance without a full rewrite."
 ---
 
-A few weeks ago, I posted about [contributor.info's performance challenges](https://x.com/bdougieYO/status/2001071257056632944), particularly the 5.6 second Largest Contentful Paint (LCP) that was killing our SEO-critical pages. The responses pointed me toward modern frameworks—React Router v7 was hot, TanStack Start looked promising, and inevitably someone suggested "just rewrite it in Next.js."
+Two days ago, I posted about [contributor.info's performance challenges](https://x.com/bdougieYO/status/2001071257056632944), particularly the 5.6 second Largest Contentful Paint (LCP) that was killing my SEO-critical pages. The responses pointed me toward modern frameworks—React Router v7 was hot, TanStack Start looked promising, and inevitably someone suggested "just rewrite it in Next.js."
 
 I tried them. I really did. But here's the thing: contributor.info is a functioning product with real users, and I wasn't ready to bet weeks of development time on a complete architectural overhaul when I only needed to optimize three routes.
 
 ## The Exploration Phase
 
-Following the X thread, I spent a day with React Router v7 (documented in PR #1374). The new framework features looked great, but migrating our entire routing setup felt like using a sledgehammer for a thumbtack. TanStack Start had similar appeal—and similar migration complexity.
+Following the X thread, I spent a day with React Router v7 (documented in [PR #1374](https://github.com/yourusername/contributor.info/pull/1374)). The new framework features looked great, but migrating my entire routing setup felt like using a sledgehammer for a thumbtack. TanStack Start had similar appeal—and similar migration complexity.
 
 The pattern became clear: every "modern" solution wanted me to rethink my entire application architecture. But contributor.info didn't need rethinking. It needed faster paint times on the home page, trending page, and repository pages.
 
@@ -26,11 +26,11 @@ The approach was pragmatic:
 
 ### The Implementation
 
-I created three targeted edge functions for our critical routes:
+I created three targeted edge functions for my critical routes:
 
 **`ssr-home.ts`** handles the landing page—hero card, repo stats, search input. All the above-the-fold content users and crawlers need.
 
-**`ssr-trending.ts`** renders the trending repositories list, which is our second-highest traffic page.
+**`ssr-trending.ts`** renders the trending repositories list, which is my second-highest traffic page.
 
 **`ssr-repo.ts`** generates individual repository pages with detailed stats and contributor information.
 
@@ -64,7 +64,7 @@ The edge functions use aggressive but smart caching:
 - Trending page: 2-minute cache, 10-minute stale-while-revalidate
 - Repository pages: 5-minute cache, 1-hour stale-while-revalidate
 
-And crucially, if SSR fails for any reason, we fall back to the existing SPA:
+And crucially, if SSR fails for any reason, I fall back to the existing SPA:
 
 ```typescript
 try {
@@ -81,7 +81,7 @@ try {
 
 ## The Results
 
-LCP dropped from 5.6 seconds to under 2.5 seconds. That's the headline number, but the real win is what we *didn't* do:
+LCP dropped from 5.6 seconds to under 2.5 seconds. That's the headline number, but the real win is what I *didn't* do:
 
 - Didn't rewrite the entire routing system
 - Didn't migrate to a new framework
@@ -94,13 +94,13 @@ LCP dropped from 5.6 seconds to under 2.5 seconds. That's the headline number, b
 
 **2. Edge functions are underrated for selective SSR.** Everyone talks about Vercel, Cloudflare Workers, or full framework SSR. But edge functions for just your critical paths? That's a sweet spot a lot of developers miss.
 
-**3. Measure what matters.** We didn't need every page to be fast. We needed the pages Google crawls and users land on to be fast. That focused scope made the solution feasible.
+**3. Measure what matters.** I didn't need every page to be fast. I needed the pages Google crawls and users land on to be fast. That focused scope made the solution feasible.
 
-**4. Progressive enhancement still works.** The SPA fallback means we never break the user experience, even if edge rendering fails. That's not just good architecture—it's respecting your users.
+**4. Progressive enhancement still works.** The SPA fallback means I never break the user experience, even if edge rendering fails. That's not just good architecture—it's respecting your users.
 
 ## What's Next
 
-This approach scales well for our use case. As contributor.info grows, we might add SSR to more routes, but we'll do it selectively, measuring impact at each step.
+This approach scales well for my use case. As contributor.info grows, I might add SSR to more routes, but I'll do it selectively, measuring impact at each step.
 
 If you're facing similar performance challenges, don't let the framework hype train convince you that you need a full rewrite. Sometimes the best solution is the one that solves your specific problem without creating ten new ones.
 
