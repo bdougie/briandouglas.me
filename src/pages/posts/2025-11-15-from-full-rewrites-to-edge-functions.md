@@ -4,7 +4,7 @@ date: 2025-11-15
 description: "How moving to edge functions improved performance without a full rewrite."
 ---
 
-![Tweet about Next.js vs Astro for SSR](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/edge-ssr-x)
+![Tweet about Next.js vs Astro for SSR](/images/edge-ssr-x.png)
 
 Two days ago, I posted about [contributor.info's performance challenges](https://x.com/bdougieYO/status/2001071257056632944), particularly the 5.6 second Largest Contentful Paint (LCP) that was killing my SEO-critical pages. The responses pointed me toward modern frameworks—React Router v7 was hot, TanStack Start looked promising, and inevitably someone suggested "just rewrite it in Next.js."
 
