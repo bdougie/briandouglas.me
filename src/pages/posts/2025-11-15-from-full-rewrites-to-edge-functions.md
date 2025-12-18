@@ -102,7 +102,9 @@ LCP dropped from 5.6 seconds to under 2.5 seconds. That's the headline number, b
 
 ## What's Next
 
-This approach scales well for my use case. As contributor.info grows, I might add SSR to more routes, but I'll do it selectively, measuring impact at each step.
+The edge SSR approach paid off—I'm now at a [98 Lighthouse performance score](https://github.com/bdougie/contributor.info/pull/1411), up from the 5.6 second LCP that started this journey. Moving forward, I'm sticking with this pattern while upgrading to React Router v7 for better routing primitives.
+
+I'll also explore TanStack Start, mostly out of curiosity and as a chance to support and contribute to the growing ecosystem. But the core lesson stands: you don't always need to chase the newest framework.
 
 If you're facing similar performance challenges, don't let the framework hype train convince you that you need a full rewrite. Sometimes the best solution is the one that solves your specific problem without creating ten new ones.
 
