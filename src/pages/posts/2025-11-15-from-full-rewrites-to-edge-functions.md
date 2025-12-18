@@ -1,5 +1,5 @@
 ---
-title: "From Full Rewrites to Edge Functions: A Performance Journey"
+title: "I Tried Edge SSR in My React Vite App"
 date: 2025-11-15
 description: "How moving to edge functions improved performance without a full rewrite."
 ---
