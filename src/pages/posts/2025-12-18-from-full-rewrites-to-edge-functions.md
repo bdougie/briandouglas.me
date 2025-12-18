@@ -1,6 +1,6 @@
 ---
 title: "I Tried Edge SSR in My React Vite App"
-date: 2025-11-15
+date: 2025-12-18
 description: "How moving to edge functions improved performance without a full rewrite."
 blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3mabnv3y3ak2k"
 ---
