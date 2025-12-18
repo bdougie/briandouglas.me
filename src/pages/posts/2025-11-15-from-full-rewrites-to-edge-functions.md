@@ -2,6 +2,7 @@
 title: "I Tried Edge SSR in My React Vite App"
 date: 2025-11-15
 description: "How moving to edge functions improved performance without a full rewrite."
+blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3mabnv3y3ak2k"
 ---
 
 <img src="/images/edge-ssr-x.png" alt="Tweet about Next.js vs Astro for SSR" width="600" height="340" />
