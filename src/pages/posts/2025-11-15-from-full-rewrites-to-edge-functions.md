@@ -12,7 +12,7 @@ I tried them. I really did. But here's the thing: contributor.info is a function
 
 ## The Exploration Phase
 
-Following the X thread, I spent a day with React Router v7 (documented in [PR #1374](https://github.com/yourusername/contributor.info/pull/1374)). The new framework features looked great, but migrating my entire routing setup felt like using a sledgehammer for a thumbtack. TanStack Start had similar appeal—and similar migration complexity.
+Following the X thread, I spent a day with React Router v7 (documented in [PR #1374](https://github.com/bdougie/contributor.info/pull/1374)). The new framework features looked great, but migrating my entire routing setup felt like using a sledgehammer for a thumbtack. TanStack Start had similar appeal—and similar migration complexity.
 
 The pattern became clear: every "modern" solution wanted me to rethink my entire application architecture. But contributor.info didn't need rethinking. It needed faster paint times on the home page, trending page, and repository pages.
 
@@ -28,7 +28,7 @@ The approach was pragmatic:
 
 ### The Implementation
 
-I created three targeted edge functions for my critical routes:
+The full implementation is in [PR #1379](https://github.com/bdougie/contributor.info/pull/1379). I created three targeted edge functions for my critical routes:
 
 **`ssr-home.ts`** handles the landing page—hero card, repo stats, search input. All the above-the-fold content users and crawlers need.
 
@@ -106,7 +106,7 @@ This approach scales well for my use case. As contributor.info grows, I might ad
 
 If you're facing similar performance challenges, don't let the framework hype train convince you that you need a full rewrite. Sometimes the best solution is the one that solves your specific problem without creating ten new ones.
 
-The code is open source in the [contributor.info repo](https://github.com/yourusername/contributor.info)—check out the `netlify/edge-functions` directory if you want to see the implementation details.
+The code is open source in the [contributor.info repo](https://github.com/bdougie/contributor.info)—check out the `netlify/edge-functions` directory if you want to see the implementation details.
 
 ---
 
