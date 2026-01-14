@@ -1,8 +1,24 @@
 # Cache control headers for briandouglas.me
 
-# Don't cache HTML pages - always fetch fresh content
-/*
+# HTML pages - don't cache, ensure charset is declared
+/*.html
+  Content-Type: text/html; charset=UTF-8
   Cache-Control: no-cache, no-store, must-revalidate
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+
+# Root and directory index pages
+/
+  Content-Type: text/html; charset=UTF-8
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/*/
+  Content-Type: text/html; charset=UTF-8
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Default security headers for all routes
+/*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   X-XSS-Protection: 1; mode=block
