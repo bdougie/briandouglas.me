@@ -20,8 +20,9 @@ export default defineConfig({
   ],
   build: {
     format: 'directory',
-    inlineStylesheets: 'auto',
-    assets: `assets-${commitSHA}`
+    inlineStylesheets: 'auto'
+    // File-level cache busting via commitSHA in filenames is sufficient
+    // Don't rename the assets folder as it conflicts with Vite's hardcoded paths
   },
   routing: {
     prefixDefaultLocale: false
