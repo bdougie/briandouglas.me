@@ -43,6 +43,7 @@ public/images/*.webp
 !public/images/apple-touch-icon.png
 !public/images/og-default.png
 !public/images/black-social-bg.png
+!public/images/edge-ssr-x.png
 
 # GIFs should be served from Cloudinary
 public/gifs/*.gif
