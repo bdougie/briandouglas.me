@@ -30,8 +30,8 @@ export default defineConfig({
   base: '/',
   trailingSlash: 'ignore',
   prefetch: {
-    prefetchAll: true,
-    defaultStrategy: 'viewport'
+    prefetchAll: false,
+    defaultStrategy: 'tap'
   },
   image: {
     service: {

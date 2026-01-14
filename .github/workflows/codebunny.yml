@@ -15,7 +15,7 @@ jobs:
   review:
     runs-on: ubuntu-latest
     if: |
-      github.event_name == 'pull_request' ||
+      (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]') ||
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@codebunny'))
     steps:
       - uses: actions/checkout@v4

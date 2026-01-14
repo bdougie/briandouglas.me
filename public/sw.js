@@ -1,6 +1,6 @@
 // Service Worker for Offline Support and Image Caching
-const CACHE_NAME = 'briandouglas-v2';
-const IMAGE_CACHE_NAME = 'briandouglas-images-v2';
+const CACHE_NAME = 'briandouglas-v3';
+const IMAGE_CACHE_NAME = 'briandouglas-images-v3';
 const CLOUDINARY_ORIGIN = 'https://res.cloudinary.com';
 
 // Preload critical resources
@@ -55,25 +55,20 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // Handle navigation requests (pages)
+  // Handle navigation requests (pages) - Network First strategy
   if (request.mode === 'navigate') {
     event.respondWith(
-      caches.match(request).then(cachedResponse => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        
-        return fetch(request).then(response => {
-          // Cache successful responses
-          if (response.ok) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(request, responseClone);
-            });
+      fetch(request).then(response => {
+        // Don't cache HTML pages - always fetch fresh
+        return response;
+      }).catch(() => {
+        // Fallback to cached version only when offline
+        return caches.match(request).then(cachedResponse => {
+          if (cachedResponse) {
+            console.log('Serving cached page (offline):', request.url);
+            return cachedResponse;
           }
-          return response;
-        }).catch(() => {
-          // Fallback to cached home page for offline navigation
+          // Ultimate fallback to cached home page
           return caches.match('/');
         });
       })
