@@ -1,12 +1,11 @@
 // Service Worker for Offline Support and Image Caching
-const CACHE_NAME = 'briandouglas-a842363';
-const IMAGE_CACHE_NAME = 'briandouglas-images-a842363';
+const CACHE_NAME = 'briandouglas-v4';
+const IMAGE_CACHE_NAME = 'briandouglas-images-v4';
 const CLOUDINARY_ORIGIN = 'https://res.cloudinary.com';
 
-// Cache start_url for PWA offline support (version auto-updates each deploy)
-// Other HTML pages use network-first without pre-caching
+// Critical resources to pre-cache (excludes HTML pages to ensure fresh content)
+// HTML pages use network-first strategy and are only cached for offline fallback
 const CRITICAL_RESOURCES = [
-  '/',
   '/manifest.json',
   '/images/favicon.svg',
   '/images/favicon.png',
