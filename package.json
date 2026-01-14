@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "npm run prebuild && npm run optimize:images && astro build",
     "build:prod": "npm run prebuild && npm run optimize:images:all && astro build",
-    "prebuild": "npm run upload:images && npm run replace:paths",
+    "prebuild": "node scripts/update-sw-version.mjs && npm run upload:images && npm run replace:paths",
     "preview": "astro preview",
     "astro": "astro",
     "optimize:images": "node scripts/optimize-images.mjs",

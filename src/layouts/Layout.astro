@@ -144,17 +144,39 @@ if (cloudinaryUrl === '/images/og-default.png') {
       })}
     </script>
     
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration with Auto-Update -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
             .then(registration => {
               console.log('SW registered: ', registration);
+
+              // Check for updates periodically (every 60 seconds)
+              setInterval(() => registration.update(), 60000);
+
+              // Handle new service worker waiting to activate
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                  newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                      // New content available - refresh to get latest
+                      console.log('New content available, refreshing...');
+                      window.location.reload();
+                    }
+                  });
+                }
+              });
             })
             .catch(registrationError => {
               console.log('SW registration failed: ', registrationError);
             });
+        });
+
+        // Refresh when the controlling service worker changes
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
         });
       }
     </script>
