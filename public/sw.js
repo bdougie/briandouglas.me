@@ -1,6 +1,6 @@
 // Service Worker for Offline Support and Image Caching
-const CACHE_NAME = 'briandouglas-a4049e1';
-const IMAGE_CACHE_NAME = 'briandouglas-images-a4049e1';
+const CACHE_NAME = 'briandouglas-a842363';
+const IMAGE_CACHE_NAME = 'briandouglas-images-a842363';
 const CLOUDINARY_ORIGIN = 'https://res.cloudinary.com';
 
 // Cache start_url for PWA offline support (version auto-updates each deploy)

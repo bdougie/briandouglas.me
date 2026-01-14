@@ -8,12 +8,18 @@
   X-Frame-Options: DENY
   X-XSS-Protection: 1; mode=block
 
-# Root and directory index pages
+# Root index page
 /
   Content-Type: text/html; charset=UTF-8
   Cache-Control: no-cache, no-store, must-revalidate
 
-/*/
+# Blog post pages (directory-style URLs)
+/posts/*
+  Content-Type: text/html; charset=UTF-8
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Other HTML pages
+/subscribe
   Content-Type: text/html; charset=UTF-8
   Cache-Control: no-cache, no-store, must-revalidate
 
