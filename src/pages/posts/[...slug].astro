@@ -2,16 +2,14 @@
 import Layout from '../../layouts/Layout.astro';
 import BlueskyInteractions from '../../components/BlueskyInteractions.astro';
 import { formatDateLong } from '../../utils/dateFormatting';
+import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const mdPosts = await Astro.glob('./*.md');
-  const mdxPosts = await Astro.glob('./*.mdx');
-  const posts = [...mdPosts, ...mdxPosts];
-  const publishedPosts = posts.filter(post => !post.frontmatter.draft);
+  const posts = await getCollection('posts');
+  const publishedPosts = posts.filter(post => !post.data.draft);
   
   return publishedPosts.map(post => {
-    const filename = post.file.split('/').pop();
-    const [year, month, day, ...titleParts] = filename.replace(/\.(md|mdx)$/, '').split('-');
+    const [year, month, day, ...titleParts] = post.slug.split('-');
     
     return {
       params: { 
@@ -28,15 +26,15 @@ const { slug } = Astro.params;
 // Get the post from props
 const { post } = Astro.props;
 
-// Access Content component directly
-const { Content } = post;
+// Render content using Content Collection API
+const { Content } = await render(post);
 ---
 
 <Layout 
-  title={post.frontmatter.title}
-  description={post.frontmatter.description}
+  title={post.data.title}
+  description={post.data.description}
   isBlogPost={true}
-  frontmatter={post.frontmatter}
+  frontmatter={post.data}
 >
   <article class="max-w-3xl mx-auto">
     <header class="mb-12">
@@ -48,12 +46,12 @@ const { Content } = post;
       </a>
       
       <h1 class="text-4xl font-bold text-white mb-4">
-        {post.frontmatter.title}
+        {post.data.title}
       </h1>
       
       <div class="flex items-center gap-4 text-sm text-gray-400">
         <time>
-          {formatDateLong(post.frontmatter.date)}
+          {formatDateLong(post.data.date)}
         </time>
       </div>
     </header>
@@ -75,10 +73,10 @@ const { Content } = post;
     </div>
     
     {/* Add Bluesky interactions if URL or URI is present in frontmatter */}
-    {(post.frontmatter.blueskyUrl || post.frontmatter.blueskyUri) && (
+    {(post.data.blueskyUrl || post.data.blueskyUri) && (
       <BlueskyInteractions 
-        postUrl={post.frontmatter.blueskyUrl} 
-        postUri={post.frontmatter.blueskyUri} 
+        postUrl={post.data.blueskyUrl}
+        postUri={post.data.blueskyUri}
       />
     )}
     
