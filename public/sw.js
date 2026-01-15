@@ -1,12 +1,10 @@
 // Service Worker for Offline Support and Image Caching
-const CACHE_NAME = 'briandouglas-v3';
+const CACHE_NAME = 'briandouglas-v4';
 const IMAGE_CACHE_NAME = 'briandouglas-images-v3';
 const CLOUDINARY_ORIGIN = 'https://res.cloudinary.com';
 
 // Preload critical resources
 const CRITICAL_RESOURCES = [
-  '/',
-  '/posts',
   '/manifest.json',
   '/images/favicon.svg',
   '/images/favicon.png',
