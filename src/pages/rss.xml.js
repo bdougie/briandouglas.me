@@ -1,57 +1,65 @@
 import rss from '@astrojs/rss';
 
 export async function GET(context) {
-  const posts = import.meta.glob('./posts/*.md', { eager: true });
+  const posts = import.meta.glob('./posts/*.md');
   
   const validItems = [];
+  const entries = Object.entries(posts);
+  const BATCH_SIZE = 50;
   
-  for (const [path, post] of Object.entries(posts)) {
-    const filename = path.split('/').pop();
+  for (let i = 0; i < entries.length; i += BATCH_SIZE) {
+    const batch = entries.slice(i, i + BATCH_SIZE);
     
-    // Skip special files
-    if (filename.includes('.html.md')) {
-      continue;
-    }
-    
-    // Type guard - ensure post has frontmatter
-    if (!post || typeof post !== 'object' || !('frontmatter' in post)) {
-      continue;
-    }
-    
-    const frontmatter = post.frontmatter;
-    
-    // Skip drafts
-    if (frontmatter.draft) {
-      continue;
-    }
-    
-    // Ensure all required fields are present and valid
-    if (!frontmatter.title || !frontmatter.date) {
-      continue;
-    }
-    
-    const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
-    const slug = `${year}/${month}/${day}/${titleParts.join('-')}`;
-    
-    // Handle description - use title as fallback
-    let description = frontmatter.description || frontmatter.title;
-    if (typeof description !== 'string' || description === '>-' || description.trim() === '') {
-      description = frontmatter.title;
-    }
-    
-    const pubDate = new Date(frontmatter.date);
-    
-    const item = {
-      title: String(frontmatter.title).trim(),
-      description: String(description).trim(),
-      link: `https://briandouglas.me/posts/${slug}/`,
-      pubDate: pubDate
-    };
-    
-    // Validate the item has all required fields
-    if (item.title && item.description && item.link && item.pubDate && !isNaN(item.pubDate.getTime())) {
-      validItems.push(item);
-    }
+    await Promise.all(batch.map(async ([path, loadPost]) => {
+      const filename = path.split('/').pop();
+
+      // Skip special files
+      if (filename.includes('.html.md')) {
+        return;
+      }
+
+      const post = await loadPost();
+
+      // Type guard - ensure post has frontmatter
+      if (!post || typeof post !== 'object' || !('frontmatter' in post)) {
+        return;
+      }
+
+      const frontmatter = post.frontmatter;
+
+      // Skip drafts
+      if (frontmatter.draft) {
+        return;
+      }
+
+      // Ensure all required fields are present and valid
+      if (!frontmatter.title || !frontmatter.date) {
+        return;
+      }
+
+      const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+      const slug = `${year}/${month}/${day}/${titleParts.join('-')}`;
+
+      // Handle description - use title as fallback
+      let description = frontmatter.description || frontmatter.title;
+      if (typeof description !== 'string' || description === '>-' || description.trim() === '') {
+        description = frontmatter.title;
+      }
+
+      const pubDate = new Date(frontmatter.date);
+
+      const item = {
+        title: String(frontmatter.title).trim(),
+        description: String(description).trim(),
+        link: `https://briandouglas.me/posts/${slug}/`,
+        pubDate: pubDate
+      };
+
+      // Validate the item has all required fields
+      if (item.title && item.description && item.link && item.pubDate && !isNaN(item.pubDate.getTime())) {
+        validItems.push(item);
+      }
+    }));
   }
   
   const items = validItems.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
