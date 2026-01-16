@@ -27,7 +27,14 @@ const { slug } = Astro.params;
 const { post } = Astro.props;
 
 // Render content using Content Collection API
-const { Content } = await render(post);
+let Content;
+try {
+  const rendered = await render(post);
+  Content = rendered.Content;
+} catch (error) {
+  console.error(`Failed to render post ${post.slug}:`, error);
+  return Astro.redirect('/404');
+}
 ---
 
 <Layout 

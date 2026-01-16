@@ -40,10 +40,7 @@ export async function getStaticPaths() {
   ];
 }
 
-// Log both the requested path and the props for debugging
 const { title, description } = Astro.props;
-const routePath = Astro.url.pathname;
-console.log(`Rendering OG image at path: ${routePath} for: "${title}"`);
 ---
 
 <SocialCard title={title} description={description} />

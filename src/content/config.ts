@@ -7,7 +7,10 @@ const posts = defineCollection({
     description: z.string().optional(),
     date: z.coerce.date(),
     draft: z.boolean().optional(),
-    tags: z.any().optional(),
+    tags: z.union([
+      z.array(z.string()),
+      z.string().transform((val) => [val]),
+    ]).nullable().optional(),
     category: z.string().optional(),
     blueskyUrl: z.string().optional(),
     blueskyUri: z.string().optional(),
