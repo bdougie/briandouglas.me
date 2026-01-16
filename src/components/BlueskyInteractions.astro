@@ -52,34 +52,35 @@ if (did && postId) {
   const atUri = `at://${did}/app.bsky.feed.post/${postId}`;
   
   try {
-    // Fetch post data
-    const apiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(atUri)}&depth=1`;
-    const postResponse = await fetch(apiUrl, {
-      headers: {
-        'Accept': 'application/json',
-      }
+    // Performance optimization: Fetch post thread and likes in parallel
+    // instead of sequentially to reduce wait time
+    const postApiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(atUri)}&depth=1`;
+    const likesApiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getLikes?uri=${encodeURIComponent(atUri)}&limit=10`;
+
+    const postPromise = fetch(postApiUrl, {
+      headers: { 'Accept': 'application/json' }
     });
+
+    // Handle likes fetch separately so it doesn't block or fail the main post fetch
+    const likesPromise = fetch(likesApiUrl, {
+      headers: { 'Accept': 'application/json' }
+    }).then(async res => {
+      if (res.ok) return res.json();
+      return null;
+    }).catch(e => {
+      console.error('Could not fetch likes:', e);
+      return null;
+    });
+
+    const [postResponse, likesResult] = await Promise.all([
+      postPromise,
+      likesPromise
+    ]);
     
     if (postResponse.ok) {
       threadData = await postResponse.json();
       postData = threadData.thread?.post;
-      
-      // Fetch likes data
-      try {
-        const likesUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getLikes?uri=${encodeURIComponent(atUri)}&limit=10`;
-        const likesResponse = await fetch(likesUrl, {
-          headers: {
-            'Accept': 'application/json',
-          }
-        });
-        
-        if (likesResponse.ok) {
-          likesData = await likesResponse.json();
-        }
-      } catch (likesError) {
-        // Silently fail for likes, show post without them
-        console.error('Could not fetch likes:', likesError);
-      }
+      likesData = likesResult;
     } else {
       error = 'Failed to fetch post data';
     }
