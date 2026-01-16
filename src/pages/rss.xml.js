@@ -3,26 +3,32 @@ import { getCollection } from 'astro:content';
 
 export async function GET(context) {
   const posts = await getCollection('posts');
-  
+
   const items = posts
     .filter(post => !post.data.draft)
     .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
     .map(post => {
-      const [year, month, day, ...titleParts] = post.slug.split('-');
-      const slug = `${year}/${month}/${day}/${titleParts.join('-')}`;
+      try {
+        const [year, month, day, ...titleParts] = post.slug.split('-');
+        const slug = `${year}/${month}/${day}/${titleParts.join('-')}`;
 
-      let description = post.data.description || post.data.title;
-      if (typeof description !== 'string' || description === '>-' || description.trim() === '') {
-        description = post.data.title;
+        let description = post.data.description || post.data.title;
+        if (typeof description !== 'string' || description === '>-' || description.trim() === '') {
+          description = post.data.title;
+        }
+
+        return {
+          title: post.data.title,
+          description: description,
+          link: `/posts/${slug}/`,
+          pubDate: new Date(post.data.date),
+        };
+      } catch (error) {
+        console.warn(`Failed to process post ${post.slug}:`, error);
+        return null;
       }
-
-      return {
-        title: post.data.title,
-        description: description,
-        link: `/posts/${slug}/`,
-        pubDate: new Date(post.data.date),
-      };
-    });
+    })
+    .filter(item => item !== null);
 
   return rss({
     title: 'Brian Douglas',
