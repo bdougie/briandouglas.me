@@ -1,73 +1,34 @@
 import rss from '@astrojs/rss';
+import { getCollection } from 'astro:content';
 
 export async function GET(context) {
-  const posts = import.meta.glob('./posts/*.md');
-  
-  const validItems = [];
-  const entries = Object.entries(posts);
-  const BATCH_SIZE = 50;
-  
-  for (let i = 0; i < entries.length; i += BATCH_SIZE) {
-    const batch = entries.slice(i, i + BATCH_SIZE);
-    
-    await Promise.all(batch.map(async ([path, loadPost]) => {
+  const posts = await getCollection('posts');
+
+  const items = posts
+    .filter(post => !post.data.draft)
+    .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+    .map(post => {
       try {
-        const filename = path.split('/').pop();
-
-        // Skip special files
-        if (filename.includes('.html.md')) {
-          return;
-        }
-
-        const post = await loadPost();
-
-        // Type guard - ensure post has frontmatter
-        if (!post || typeof post !== 'object' || !('frontmatter' in post)) {
-          return;
-        }
-
-        const frontmatter = post.frontmatter;
-
-        // Skip drafts
-        if (frontmatter.draft) {
-          return;
-        }
-
-        // Ensure all required fields are present and valid
-        if (!frontmatter.title || !frontmatter.date) {
-          return;
-        }
-
-        const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+        const [year, month, day, ...titleParts] = post.slug.split('-');
         const slug = `${year}/${month}/${day}/${titleParts.join('-')}`;
 
-        // Handle description - use title as fallback
-        let description = frontmatter.description || frontmatter.title;
+        let description = post.data.description || post.data.title;
         if (typeof description !== 'string' || description === '>-' || description.trim() === '') {
-          description = frontmatter.title;
+          description = post.data.title;
         }
 
-        const pubDate = new Date(frontmatter.date);
-
-        const item = {
-          title: String(frontmatter.title).trim(),
-          description: String(description).trim(),
-          link: `https://briandouglas.me/posts/${slug}/`,
-          pubDate: pubDate
+        return {
+          title: post.data.title,
+          description: description,
+          link: `/posts/${slug}/`,
+          pubDate: new Date(post.data.date),
         };
-
-        // Validate the item has all required fields
-        if (item.title && item.description && item.link && item.pubDate && !isNaN(item.pubDate.getTime())) {
-          validItems.push(item);
-        }
       } catch (error) {
-        console.warn(`Failed to process ${path}:`, error);
-        // Continue processing other posts
+        console.warn(`Failed to process post ${post.slug}:`, error);
+        return null;
       }
-    }));
-  }
-  
-  const items = validItems.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
+    })
+    .filter(item => item !== null);
 
   return rss({
     title: 'Brian Douglas',
