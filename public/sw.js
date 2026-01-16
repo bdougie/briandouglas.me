@@ -1,12 +1,10 @@
 // Service Worker for Offline Support and Image Caching
-const CACHE_NAME = 'briandouglas-v3';
+const CACHE_NAME = 'briandouglas-v4';
 const IMAGE_CACHE_NAME = 'briandouglas-images-v3';
 const CLOUDINARY_ORIGIN = 'https://res.cloudinary.com';
 
 // Preload critical resources
 const CRITICAL_RESOURCES = [
-  '/',
-  '/posts',
   '/manifest.json',
   '/images/favicon.svg',
   '/images/favicon.png',
@@ -59,7 +57,11 @@ self.addEventListener('fetch', event => {
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request).then(response => {
-        // Don't cache HTML pages - always fetch fresh
+        // Cache the fresh version for offline support
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(request, responseClone);
+        });
         return response;
       }).catch(() => {
         // Fallback to cached version only when offline
