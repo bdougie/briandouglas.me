@@ -1,14 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import OptimizedImage from '../components/OptimizedImage.astro';
+import { getCollection } from 'astro:content';
 import { formatDateShort } from '../utils/dateFormatting';
 
-const mdPosts = await Astro.glob('./posts/**/*.md');
-const mdxPosts = await Astro.glob('./posts/**/*.mdx');
-const posts = [...mdPosts, ...mdxPosts];
+const posts = await getCollection('posts');
 const sortedPosts = posts
-  .filter(post => !post.frontmatter.draft)
-  .sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime())
+  .filter(post => !post.data.draft)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 5);
 ---
 
@@ -75,9 +74,7 @@ const sortedPosts = posts
       <h2 class="text-xl font-bold text-white mb-8">Latest Posts</h2>
       <div class="space-y-4">
         {sortedPosts.map((post) => {
-          // Extract the filename
-          const filename = post.file.split('/').pop();
-          const [year, month, day, ...titleParts] = filename.replace(/\.(md|mdx)$/, '').split('-');
+          const [year, month, day, ...titleParts] = post.slug.split('-');
           const complexSlug = `${year}/${month}/${day}/${titleParts.join('-')}`;
           
           return (
@@ -85,15 +82,15 @@ const sortedPosts = posts
               <div class="flex items-start justify-between mb-2">
                 <h3 class="text-base font-medium">
                   <a href={`/posts/${complexSlug}/`} class="text-gray-200 group-hover:text-white transition-colors">
-                    {post.frontmatter.title}
+                    {post.data.title}
                   </a>
                 </h3>
               </div>
               <time class="text-xs text-gray-400 block mb-2">
-                {formatDateShort(post.frontmatter.date)}
+                {formatDateShort(post.data.date)}
               </time>
               <p class="text-sm text-gray-300 leading-relaxed line-clamp-2">
-                {post.frontmatter.description}
+                {post.data.description}
               </p>
             </article>
           );

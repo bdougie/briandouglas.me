@@ -1,19 +1,18 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { formatDateShort } from '../../utils/dateFormatting';
+import { getCollection } from 'astro:content';
 
-const mdPosts = await Astro.glob('./**/*.md');
-const mdxPosts = await Astro.glob('./**/*.mdx');
-const posts = [...mdPosts, ...mdxPosts];
+const posts = await getCollection('posts');
 const sortedPosts = posts
-  .filter(post => !post.frontmatter.draft)
+  .filter(post => !post.data.draft)
   .sort((a, b) => 
-    new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+    new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
   );
 
 // Group posts by year
 const postsByYear = sortedPosts.reduce((acc, post) => {
-  const year = new Date(post.frontmatter.date).getFullYear();
+  const year = new Date(post.data.date).getFullYear();
   if (!acc[year]) acc[year] = [];
   acc[year].push(post);
   return acc;
@@ -31,9 +30,7 @@ const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
         <h2 class="text-lg font-semibold text-gray-500 mb-6">{year}</h2>
         <div class="space-y-4">
           {postsByYear[Number(year)].map((post) => {
-            // Extract the filename and create complex slug
-            const filename = post.file.split('/').pop();
-            const [y, month, day, ...titleParts] = filename.replace(/\.(md|mdx)$/, '').split('-');
+            const [y, month, day, ...titleParts] = post.slug.split('-');
             const complexSlug = `${y}/${month}/${day}/${titleParts.join('-')}`;
             
             return (
@@ -42,15 +39,15 @@ const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
                   <div class="flex-1">
                     <h3 class="text-base font-medium mb-2">
                       <a href={`/posts/${complexSlug}/`} class="text-gray-200 group-hover:text-white transition-colors">
-                        {post.frontmatter.title}
+                        {post.data.title}
                       </a>
                     </h3>
                     <p class="text-sm text-gray-400 leading-relaxed line-clamp-2">
-                      {post.frontmatter.description}
+                      {post.data.description}
                     </p>
                   </div>
                   <time class="text-xs text-gray-500 ml-4 whitespace-nowrap">
-                    {formatDateShort(post.frontmatter.date)}
+                    {formatDateShort(post.data.date)}
                   </time>
                 </div>
               </article>

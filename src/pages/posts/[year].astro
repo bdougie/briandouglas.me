@@ -1,22 +1,23 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { formatDateShort } from '../../utils/dateFormatting';
+import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const posts = await Astro.glob('./**/*.md');
-  const publishedPosts = posts.filter(post => !post.frontmatter.draft);
+  const posts = await getCollection('posts');
+  const publishedPosts = posts.filter(post => !post.data.draft);
   
   const years = [...new Set(publishedPosts.map(post => 
-    new Date(post.frontmatter.date).getFullYear().toString()
+    new Date(post.data.date).getFullYear().toString()
   ))];
   
   return years.map(year => ({
     params: { year },
     props: { 
       posts: publishedPosts.filter(post => 
-        new Date(post.frontmatter.date).getFullYear().toString() === year
+        new Date(post.data.date).getFullYear().toString() === year
       ).sort((a, b) => 
-        new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+        new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
       )
     }
   }));
@@ -30,7 +31,7 @@ if (!posts || posts.length === 0) {
 }
 
 const postsByMonth = posts.reduce((acc, post) => {
-  const month = new Date(post.frontmatter.date).toLocaleDateString('en-US', { month: 'long' });
+  const month = new Date(post.data.date).toLocaleDateString('en-US', { month: 'long' });
   if (!acc[month]) acc[month] = [];
   acc[month].push(post);
   return acc;
@@ -52,8 +53,7 @@ const months = Object.keys(postsByMonth);
         <h2 class="text-lg font-semibold text-gray-500 mb-6">{month} {year}</h2>
         <div class="space-y-4">
           {postsByMonth[month].map((post) => {
-            const filename = post.file.split('/').pop();
-            const [y, m, day, ...titleParts] = filename.replace('.md', '').split('-');
+            const [y, m, day, ...titleParts] = post.slug.split('-');
             const complexSlug = `${y}/${m}/${day}/${titleParts.join('-')}`;
             
             return (
@@ -62,15 +62,15 @@ const months = Object.keys(postsByMonth);
                   <div class="flex-1">
                     <h3 class="text-base font-medium mb-2">
                       <a href={`/posts/${complexSlug}/`} class="text-gray-200 group-hover:text-white transition-colors">
-                        {post.frontmatter.title}
+                        {post.data.title}
                       </a>
                     </h3>
                     <p class="text-sm text-gray-400 leading-relaxed line-clamp-2">
-                      {post.frontmatter.description}
+                      {post.data.description}
                     </p>
                   </div>
                   <time class="text-xs text-gray-500 ml-4 whitespace-nowrap">
-                    {formatDateShort(post.frontmatter.date)}
+                    {formatDateShort(post.data.date)}
                   </time>
                 </div>
               </article>

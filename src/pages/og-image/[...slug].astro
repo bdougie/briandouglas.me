@@ -1,13 +1,14 @@
 ---
 import SocialCard from '../../components/SocialCard.astro';
+import { getCollection } from 'astro:content';
 
 // Add cache headers to prevent caching issues
 Astro.response.headers.set('Content-Type', 'text/html; charset=utf-8');
 Astro.response.headers.set('Cache-Control', 'public, max-age=31536000');
 
 export async function getStaticPaths() {
-  const posts = await Astro.glob('../posts/**/*.md');
-  const publishedPosts = posts.filter(post => !post.frontmatter.draft);
+  const posts = await getCollection('posts');
+  const publishedPosts = posts.filter(post => !post.data.draft);
   
   // Important: We need to exactly mirror the URL structure of the posts
   return [
@@ -21,9 +22,7 @@ export async function getStaticPaths() {
     },
     // Generate social cards for each blog post with the complex structure
     ...publishedPosts.map(post => {
-      const filename = post.file.split('/').pop();
-      // Parse the filename to get year/month/day/title parts
-      const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+      const [year, month, day, ...titleParts] = post.slug.split('-');
       
       // The key fix: Use the exact same slug pattern as your blog post routes
       // This should match what's in posts/[...slug].astro
@@ -33,18 +32,15 @@ export async function getStaticPaths() {
           slug: `${year}/${month}/${day}/${titleParts.join('-')}`
         },
         props: { 
-          title: post.frontmatter.title,
-          description: post.frontmatter.description
+          title: post.data.title,
+          description: post.data.description
         }
       };
     })
   ];
 }
 
-// Log both the requested path and the props for debugging
 const { title, description } = Astro.props;
-const routePath = Astro.url.pathname;
-console.log(`Rendering OG image at path: ${routePath} for: "${title}"`);
 ---
 
 <SocialCard title={title} description={description} />
