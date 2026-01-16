@@ -11,53 +11,58 @@ export async function GET(context) {
     const batch = entries.slice(i, i + BATCH_SIZE);
     
     await Promise.all(batch.map(async ([path, loadPost]) => {
-      const filename = path.split('/').pop();
+      try {
+        const filename = path.split('/').pop();
 
-      // Skip special files
-      if (filename.includes('.html.md')) {
-        return;
-      }
+        // Skip special files
+        if (filename.includes('.html.md')) {
+          return;
+        }
 
-      const post = await loadPost();
+        const post = await loadPost();
 
-      // Type guard - ensure post has frontmatter
-      if (!post || typeof post !== 'object' || !('frontmatter' in post)) {
-        return;
-      }
+        // Type guard - ensure post has frontmatter
+        if (!post || typeof post !== 'object' || !('frontmatter' in post)) {
+          return;
+        }
 
-      const frontmatter = post.frontmatter;
+        const frontmatter = post.frontmatter;
 
-      // Skip drafts
-      if (frontmatter.draft) {
-        return;
-      }
+        // Skip drafts
+        if (frontmatter.draft) {
+          return;
+        }
 
-      // Ensure all required fields are present and valid
-      if (!frontmatter.title || !frontmatter.date) {
-        return;
-      }
+        // Ensure all required fields are present and valid
+        if (!frontmatter.title || !frontmatter.date) {
+          return;
+        }
 
-      const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
-      const slug = `${year}/${month}/${day}/${titleParts.join('-')}`;
+        const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
+        const slug = `${year}/${month}/${day}/${titleParts.join('-')}`;
 
-      // Handle description - use title as fallback
-      let description = frontmatter.description || frontmatter.title;
-      if (typeof description !== 'string' || description === '>-' || description.trim() === '') {
-        description = frontmatter.title;
-      }
+        // Handle description - use title as fallback
+        let description = frontmatter.description || frontmatter.title;
+        if (typeof description !== 'string' || description === '>-' || description.trim() === '') {
+          description = frontmatter.title;
+        }
 
-      const pubDate = new Date(frontmatter.date);
+        const pubDate = new Date(frontmatter.date);
 
-      const item = {
-        title: String(frontmatter.title).trim(),
-        description: String(description).trim(),
-        link: `https://briandouglas.me/posts/${slug}/`,
-        pubDate: pubDate
-      };
+        const item = {
+          title: String(frontmatter.title).trim(),
+          description: String(description).trim(),
+          link: `https://briandouglas.me/posts/${slug}/`,
+          pubDate: pubDate
+        };
 
-      // Validate the item has all required fields
-      if (item.title && item.description && item.link && item.pubDate && !isNaN(item.pubDate.getTime())) {
-        validItems.push(item);
+        // Validate the item has all required fields
+        if (item.title && item.description && item.link && item.pubDate && !isNaN(item.pubDate.getTime())) {
+          validItems.push(item);
+        }
+      } catch (error) {
+        console.warn(`Failed to process ${path}:`, error);
+        // Continue processing other posts
       }
     }));
   }
