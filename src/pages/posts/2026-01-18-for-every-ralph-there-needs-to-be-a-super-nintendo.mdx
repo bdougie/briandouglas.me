@@ -130,7 +130,7 @@ When Ralph fails after 12 hours, you have no idea why. Was it a malformed prompt
 
 ### No Replay
 
-You can't reproduce the failure. Even if you had logs, Ralph's nondeterminism means running the same prompt won't give you the same result. Without a complete conversation record, you're guessing at what actually happened.
+You can't reproduce the failure. Even if you had logs, Ralph's nondeterminism means running the same prompt won't give you the same result. Without a complete conversation record—a tamper-proof audit trail of every message exchanged—you're guessing at what actually happened.
 
 ### Safety Gaps
 
@@ -146,7 +146,7 @@ How do you justify autonomous coding budgets to management without metrics? "It 
 
 *Diagram: John McBride, [johncodes.com](https://johncodes.com/archive/2026/01-16-a-glimpse-into-the-future/)*
 
-The solution exists, we just haven't applied it yet. We need infrastructure that captures every conversation, stores it immutably, and lets you replay any session exactly as it happened.
+The solution exists, we just haven't applied it yet. We need infrastructure that captures every conversation, stores it in tamper-proof logs, and lets you replay any session exactly as it happened. Content-addressable storage means identical conversation prefixes deduplicate automatically—no wasted space, no data drift.
 
 OpenTelemetry has spent years standardizing observability for distributed systems. Traces, metrics, spans, context propagation. Now there's a [Gen AI SIG](https://github.com/open-telemetry/community/blob/main/projects/gen-ai.md) working on semantic conventions for LLM applications.
 
