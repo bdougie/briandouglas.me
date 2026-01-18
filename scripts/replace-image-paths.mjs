@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 // Configuration
 const CLOUDINARY_BASE_URL = 'https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog';
-const POSTS_DIR = path.join(__dirname, '../src/pages/posts');
+const POSTS_DIR = path.join(__dirname, '../src/content/posts');
 const PUBLIC_IMAGES_DIR = path.join(__dirname, '../public/images');
 
 // Track replacements for reporting
@@ -58,65 +58,132 @@ function getImageName(imagePath) {
 }
 
 /**
+ * Check if a hostname is a valid Cloudinary domain
+ */
+function isCloudinaryHostname(hostname) {
+  return hostname === 'res.cloudinary.com' || hostname.endsWith('.cloudinary.com');
+}
+
+/**
+ * Check if a markdown image URL is already a remote or Cloudinary URL
+ * Extracts the URL from ![alt](url) syntax and checks the URL itself
+ */
+function isRemoteOrCloudinaryUrl(markdownImage) {
+  // Extract the URL from markdown image syntax ![...](url)
+  const urlMatch = markdownImage.match(/\]\(([^)]+)\)/);
+  if (!urlMatch) return false;
+
+  const url = urlMatch[1];
+
+  // Check if it's already a Cloudinary URL or any remote HTTP(S) URL
+  if (url.startsWith(CLOUDINARY_BASE_URL)) return true;
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    try {
+      const parsedUrl = new URL(url);
+      return isCloudinaryHostname(parsedUrl.hostname) || true; // Any remote URL should be skipped
+    } catch {
+      return false; // Invalid URL, treat as local
+    }
+  }
+  return false;
+}
+
+/**
+ * Check if an image path (from HTML src attribute) is a remote or Cloudinary URL
+ */
+function isRemoteOrCloudinaryPath(imagePath) {
+  // If not an absolute URL, it's a local path - not remote
+  if (!imagePath.startsWith('http://') && !imagePath.startsWith('https://')) {
+    return false;
+  }
+
+  // It's an absolute URL - parse it to check the host
+  try {
+    const url = new URL(imagePath);
+    // Check if it's specifically Cloudinary or any remote host
+    return isCloudinaryHostname(url.hostname) || true; // Any absolute URL should be skipped
+  } catch {
+    // If URL parsing fails, treat as local (conservative approach)
+    return false;
+  }
+}
+
+/**
  * Replace local image paths with Cloudinary URLs in a file
  */
 function replaceImagePaths(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
-  const originalContent = content;
   const fileName = path.basename(filePath);
-  
-  // Patterns to match:
-  // 1. /public/images/something.png
-  // 2. /images/something.png
-  // 3. ./something.png or ../images/something.png (relative paths)
-  
-  const patterns = [
-    // Match markdown images with /public/images/ or /images/ paths
-    /!\[([^\]]*)\]\((\/public\/images\/|\/images\/)([^)]+)\)/g,
-    // Match markdown images with relative paths
-    /!\[([^\]]*)\]\((\.\/|\.\.\/images\/)([^)]+\.(png|jpg|jpeg|gif|webp))\)/g,
-  ];
-  
+
   let changesMade = false;
-  
-  for (const pattern of patterns) {
-    content = content.replace(pattern, (match, altText, pathPrefix, imagePath) => {
-      // Skip if already a Cloudinary URL or external URL
-      if (match.includes('cloudinary.com') || match.includes('http')) {
+
+  // Pattern 1: Markdown images with /public/images/ or /images/ paths
+  content = content.replace(
+    /!\[([^\]]*)\]\((\/public\/images\/|\/images\/)([^)]+)\)/g,
+    (match, altText, pathPrefix, imagePath) => {
+      if (isRemoteOrCloudinaryUrl(match)) {
         return match;
       }
-      
-      // Extract the image name
       const imageName = getImageName(imagePath);
-      
-      // Check if the image exists in public/images
       if (imageExists(imageName) || imageExists(imagePath)) {
-        // Use image name without extension for Cloudinary URL
         const cloudinaryUrl = `${CLOUDINARY_BASE_URL}/${imageName}`;
-        
-        replacements.push({
-          file: fileName,
-          original: match,
-          replaced: `![${altText}](${cloudinaryUrl})`
-        });
-        
+        replacements.push({ file: fileName, original: match, replaced: `![${altText}](${cloudinaryUrl})` });
         changesMade = true;
         return `![${altText}](${cloudinaryUrl})`;
       }
-      
-      // If image doesn't exist, leave it unchanged
       console.log(`⚠️  Image not found in public/images: ${imagePath} (in ${fileName})`);
       return match;
-    });
-  }
-  
+    }
+  );
+
+  // Pattern 2: Markdown images with relative paths
+  content = content.replace(
+    /!\[([^\]]*)\]\((\.\/|\.\.\/images\/)([^)]+\.(png|jpg|jpeg|gif|webp))\)/gi,
+    (match, altText, pathPrefix, imagePath) => {
+      if (isRemoteOrCloudinaryUrl(match)) {
+        return match;
+      }
+      const imageName = getImageName(imagePath);
+      if (imageExists(imageName) || imageExists(imagePath)) {
+        const cloudinaryUrl = `${CLOUDINARY_BASE_URL}/${imageName}`;
+        replacements.push({ file: fileName, original: match, replaced: `![${altText}](${cloudinaryUrl})` });
+        changesMade = true;
+        return `![${altText}](${cloudinaryUrl})`;
+      }
+      console.log(`⚠️  Image not found in public/images: ${imagePath} (in ${fileName})`);
+      return match;
+    }
+  );
+
+  // Pattern 3: HTML <img> tags with /images/ src
+  content = content.replace(
+    /<img\s+([^>]*?)src=["'](\/images\/)([^"']+)["']([^>]*?)\/?>/gi,
+    (match, before, pathPrefix, imagePath, after) => {
+      // Construct the full src path and check if it's already remote/Cloudinary
+      const fullSrcPath = pathPrefix + imagePath;
+      if (isRemoteOrCloudinaryPath(fullSrcPath)) {
+        return match;
+      }
+      const imageName = getImageName(imagePath);
+      if (imageExists(imageName) || imageExists(imagePath)) {
+        const cloudinaryUrl = `${CLOUDINARY_BASE_URL}/${imageName}`;
+        const replaced = `<img ${before}src="${cloudinaryUrl}"${after} />`;
+        replacements.push({ file: fileName, original: match, replaced });
+        changesMade = true;
+        return replaced;
+      }
+      console.log(`⚠️  Image not found in public/images: ${imagePath} (in ${fileName})`);
+      return match;
+    }
+  );
+
   // Only write if changes were made
   if (changesMade) {
     fs.writeFileSync(filePath, content, 'utf8');
     console.log(`✅ Updated ${fileName}`);
     return true;
   }
-  
+
   return false;
 }
 
