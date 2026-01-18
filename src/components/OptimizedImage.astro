@@ -67,6 +67,9 @@ const githubAvatarFormats = isGitHubAvatar && !useCloudinary ? {
   original: optimizedSrc
 } : null;
 
+// Combined formats for template use
+const formats = modernFormats || githubAvatarFormats;
+
 // Generate a unique ID for this image instance
 const imageId = `img-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -100,13 +103,13 @@ const wrapperStyle = progressive && defaultPlaceholder
         decoding="async"
         onload={`this.style.opacity = '1'; this.parentElement.style.filter = 'none';`}
       />
-    ) : modernFormats ? (
+    ) : formats ? (
       <picture>
-        <source srcset={modernFormats.avif} type="image/avif" />
-        <source srcset={modernFormats.webp} type="image/webp" />
+        <source srcset={formats.avif} type="image/avif" />
+        <source srcset={formats.webp} type="image/webp" />
         <img
           id={imageId}
-          src={modernFormats.original}
+          src={formats.original}
           alt={alt}
           width={width}
           height={height}
@@ -155,26 +158,12 @@ const wrapperStyle = progressive && defaultPlaceholder
     class={className}
     decoding="async"
   />
-) : githubAvatarFormats ? (
+) : formats ? (
   <picture>
-    <source srcset={githubAvatarFormats.avif} type="image/avif" />
-    <source srcset={githubAvatarFormats.webp} type="image/webp" />
+    <source srcset={formats.avif} type="image/avif" />
+    <source srcset={formats.webp} type="image/webp" />
     <img
-      src={githubAvatarFormats.original}
-      alt={alt}
-      width={width}
-      height={height}
-      loading={loading}
-      class={className}
-      decoding="async"
-    />
-  </picture>
-) : modernFormats ? (
-  <picture>
-    <source srcset={modernFormats.avif} type="image/avif" />
-    <source srcset={modernFormats.webp} type="image/webp" />
-    <img
-      src={modernFormats.original}
+      src={formats.original}
       alt={alt}
       width={width}
       height={height}
