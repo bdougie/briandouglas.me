@@ -58,6 +58,13 @@ function getImageName(imagePath) {
 }
 
 /**
+ * Check if a hostname is a valid Cloudinary domain
+ */
+function isCloudinaryHostname(hostname) {
+  return hostname === 'res.cloudinary.com' || hostname.endsWith('.cloudinary.com');
+}
+
+/**
  * Check if a markdown image URL is already a remote or Cloudinary URL
  * Extracts the URL from ![alt](url) syntax and checks the URL itself
  */
@@ -69,10 +76,16 @@ function isRemoteOrCloudinaryUrl(markdownImage) {
   const url = urlMatch[1];
 
   // Check if it's already a Cloudinary URL or any remote HTTP(S) URL
-  return url.startsWith(CLOUDINARY_BASE_URL) ||
-         url.includes('res.cloudinary.com') ||
-         url.startsWith('http://') ||
-         url.startsWith('https://');
+  if (url.startsWith(CLOUDINARY_BASE_URL)) return true;
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    try {
+      const parsedUrl = new URL(url);
+      return isCloudinaryHostname(parsedUrl.hostname) || true; // Any remote URL should be skipped
+    } catch {
+      return false; // Invalid URL, treat as local
+    }
+  }
+  return false;
 }
 
 /**
@@ -88,12 +101,10 @@ function isRemoteOrCloudinaryPath(imagePath) {
   try {
     const url = new URL(imagePath);
     // Check if it's specifically Cloudinary or any remote host
-    return url.host === 'res.cloudinary.com' ||
-           url.host.endsWith('.cloudinary.com') ||
-           true; // Any absolute URL should be skipped
+    return isCloudinaryHostname(url.hostname) || true; // Any absolute URL should be skipped
   } catch {
-    // If URL parsing fails, check with string methods as fallback
-    return imagePath.includes('res.cloudinary.com');
+    // If URL parsing fails, treat as local (conservative approach)
+    return false;
   }
 }
 
