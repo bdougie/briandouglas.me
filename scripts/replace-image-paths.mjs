@@ -62,61 +62,75 @@ function getImageName(imagePath) {
  */
 function replaceImagePaths(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
-  const originalContent = content;
   const fileName = path.basename(filePath);
-  
-  // Patterns to match:
-  // 1. /public/images/something.png
-  // 2. /images/something.png
-  // 3. ./something.png or ../images/something.png (relative paths)
-  
-  const patterns = [
-    // Match markdown images with /public/images/ or /images/ paths
-    /!\[([^\]]*)\]\((\/public\/images\/|\/images\/)([^)]+)\)/g,
-    // Match markdown images with relative paths
-    /!\[([^\]]*)\]\((\.\/|\.\.\/images\/)([^)]+\.(png|jpg|jpeg|gif|webp))\)/g,
-  ];
-  
+
   let changesMade = false;
-  
-  for (const pattern of patterns) {
-    content = content.replace(pattern, (match, altText, pathPrefix, imagePath) => {
-      // Skip if already a Cloudinary URL or external URL
+
+  // Pattern 1: Markdown images with /public/images/ or /images/ paths
+  content = content.replace(
+    /!\[([^\]]*)\]\((\/public\/images\/|\/images\/)([^)]+)\)/g,
+    (match, altText, pathPrefix, imagePath) => {
       if (match.includes('cloudinary.com') || match.includes('http')) {
         return match;
       }
-      
-      // Extract the image name
       const imageName = getImageName(imagePath);
-      
-      // Check if the image exists in public/images
       if (imageExists(imageName) || imageExists(imagePath)) {
-        // Use image name without extension for Cloudinary URL
         const cloudinaryUrl = `${CLOUDINARY_BASE_URL}/${imageName}`;
-        
-        replacements.push({
-          file: fileName,
-          original: match,
-          replaced: `![${altText}](${cloudinaryUrl})`
-        });
-        
+        replacements.push({ file: fileName, original: match, replaced: `![${altText}](${cloudinaryUrl})` });
         changesMade = true;
         return `![${altText}](${cloudinaryUrl})`;
       }
-      
-      // If image doesn't exist, leave it unchanged
       console.log(`⚠️  Image not found in public/images: ${imagePath} (in ${fileName})`);
       return match;
-    });
-  }
-  
+    }
+  );
+
+  // Pattern 2: Markdown images with relative paths
+  content = content.replace(
+    /!\[([^\]]*)\]\((\.\/|\.\.\/images\/)([^)]+\.(png|jpg|jpeg|gif|webp))\)/gi,
+    (match, altText, pathPrefix, imagePath) => {
+      if (match.includes('cloudinary.com') || match.includes('http')) {
+        return match;
+      }
+      const imageName = getImageName(imagePath);
+      if (imageExists(imageName) || imageExists(imagePath)) {
+        const cloudinaryUrl = `${CLOUDINARY_BASE_URL}/${imageName}`;
+        replacements.push({ file: fileName, original: match, replaced: `![${altText}](${cloudinaryUrl})` });
+        changesMade = true;
+        return `![${altText}](${cloudinaryUrl})`;
+      }
+      console.log(`⚠️  Image not found in public/images: ${imagePath} (in ${fileName})`);
+      return match;
+    }
+  );
+
+  // Pattern 3: HTML <img> tags with /images/ src
+  content = content.replace(
+    /<img\s+([^>]*?)src=["'](\/images\/)([^"']+)["']([^>]*?)\/?>/gi,
+    (match, before, pathPrefix, imagePath, after) => {
+      if (match.includes('cloudinary.com') || match.includes('http')) {
+        return match;
+      }
+      const imageName = getImageName(imagePath);
+      if (imageExists(imageName) || imageExists(imagePath)) {
+        const cloudinaryUrl = `${CLOUDINARY_BASE_URL}/${imageName}`;
+        const replaced = `<img ${before}src="${cloudinaryUrl}"${after} />`;
+        replacements.push({ file: fileName, original: match, replaced });
+        changesMade = true;
+        return replaced;
+      }
+      console.log(`⚠️  Image not found in public/images: ${imagePath} (in ${fileName})`);
+      return match;
+    }
+  );
+
   // Only write if changes were made
   if (changesMade) {
     fs.writeFileSync(filePath, content, 'utf8');
     console.log(`✅ Updated ${fileName}`);
     return true;
   }
-  
+
   return false;
 }
 

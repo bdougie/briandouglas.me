@@ -5,7 +5,7 @@ description: "How moving to edge functions improved performance without a full r
 blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3mabnv3y3ak2k"
 ---
 
-<img src="/images/edge-ssr-x.png" alt="Tweet about Next.js vs Astro for SSR" width="600" height="340" />
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/edge-ssr-x" alt="Tweet about Next.js vs Astro for SSR" width="600" height="340"  />
 
 Two days ago, I posted about [contributor.info's performance challenges](https://x.com/bdougieYO/status/2001071257056632944), particularly the 5.6 second Largest Contentful Paint (LCP) that was killing my SEO-critical pages. The responses pointed me toward modern frameworks—React Router v7 was hot, TanStack Start looked promising, and inevitably someone suggested "just rewrite it in Next.js."
 

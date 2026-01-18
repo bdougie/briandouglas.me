@@ -4,7 +4,7 @@ date: 2026-01-18
 description: "The Ralph Loop is having a moment. Developers are shipping code while they sleep. But there's a problem we're not talking about: nobody knows what Ralph learned along the way."
 ---
 
-<img src="/images/ralph-superintendent.png" alt="Superintendent Chalmers and Ralph Wiggum from The Simpsons" width="600" height="340" />
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/ralph-superintendent" alt="Superintendent Chalmers and Ralph Wiggum from The Simpsons" width="600" height="340"  />
 
 *Image: Superintendent Chalmers and Ralph Wiggum from The Simpsons. Source: [ScreenRant](https://screenrant.com/simpsons-season-10-show-nintendo-chalmer-joke-art/)*
 
@@ -79,7 +79,7 @@ That's exactly the visibility Ralph lacks in production.
 
 My colleague John McBride recently wrote about [observability challenges in multi-agent orchestration](https://johncodes.com/archive/2026/01-16-a-glimpse-into-the-future/). His insight applies directly here: ungoverned agent systems are leaky abstractions. Tool calls, reasoning traces, file modifications—all lost. You get the artifact but not the journey.
 
-<img src="/images/ungoverned-orchestration.png" alt="Diagram showing ungoverned agent orchestration as a leaky abstraction" width="600" />
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/ungoverned-orchestration" alt="Diagram showing ungoverned agent orchestration as a leaky abstraction" width="600"  />
 
 *Diagram: John McBride, [johncodes.com](https://johncodes.com/archive/2026/01-16-a-glimpse-into-the-future/)*
 
@@ -142,7 +142,7 @@ How do you justify autonomous coding budgets to management without metrics? "It 
 
 ## Telemetry for Agents, not agents for telemetry
 
-<img src="/images/governed-orchestration.png" alt="Diagram showing governed agent orchestration with proper observability" width="600" />
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/governed-orchestration" alt="Diagram showing governed agent orchestration with proper observability" width="600"  />
 
 *Diagram: John McBride, [johncodes.com](https://johncodes.com/archive/2026/01-16-a-glimpse-into-the-future/)*
 
@@ -154,25 +154,7 @@ OpenTelemetry has spent years standardizing observability for distributed system
 
 Imagine every Ralph iteration emitting OpenTelemetry spans:
 
-```
-                    ┌─────────┐
-                    │ Tokens  │
-                    └────▲────┘
-                         │
-┌──────────────────┐     │     ┌─────────┐
-│ Ralph Iteration  │────►│────►│  Model  │
-└──────────────────┘     │     └─────────┘
-                         │
-                    ┌────▼────┐
-                    │  Span   │
-                    └────┬────┘
-                         │
-         ┌───────────────┼───────────────┐
-         │               │               │
-    ┌────▼────┐    ┌─────▼─────┐   ┌─────▼─────┐
-    │Tool Calls│    │  Status   │   │   Cost    │
-    └─────────┘    └───────────┘   └───────────┘
-```
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/ralphloop-otel" alt="Diagram showing Ralph iteration emitting OpenTelemetry spans with Tokens, Model, Span, Tool Calls, Status, and Cost" width="600"  />
 
 Ship these to your observability backend to Honeycomb, Datadog, Grafana and suddenly you can answer questions:
 
