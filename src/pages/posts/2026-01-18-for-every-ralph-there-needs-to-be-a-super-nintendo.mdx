@@ -44,58 +44,63 @@ The math can work favorably, trading compute cost for developer time often makes
 
 ## A Real Example: 1000+ Lint Errors
 
-To test this, I have let a React codebase that has accumulated over 1,000+ linting errors, TypeScript strict mode violations, formatting issues, unused variables, and the works. Then I ran Ralph twice to see what different configurations would cost.
+I ran Ralph against a React codebase that had accumulated over 1,000 linting errors—TypeScript strict mode violations, formatting issues, unused variables, the works. I tested two configurations to see how model choice affects cost and iteration count.
 
-**Test 1: Sonnet with 20 iterations** I capped the loop at 20 iterations using Claude Sonnet 4 and let it work through the TODO list methodically. It burned through prettier formatting, converted `@ts-ignore` to `@ts-expect-error`, fixed 'any' types in scripts and mocks, and updated database query patterns from `.single()` to `.maybeSingle()`.
+**Test 1: Sonnet with a task checklist**
+Claude Sonnet 4.5 worked through the TODO list methodically: prettier formatting, converting `@ts-ignore` to `@ts-expect-error`, fixing `any` types, updating `.single()` to `.maybeSingle()` patterns.
 
-**Test 2: Haiku with unlimited iterations** Then I reset and ran the same task with Claude Haiku 4.5, removing the iteration limit entirely to see if the cheaper model could handle it given enough time.
+**Test 2: Haiku with the same tasks**
+Claude Haiku 4.5 tackled the identical checklist. Cheaper per token, but would it need more iterations?
 
-The 55-minute session across both tests generated:
+### The Results
 
+| Metric | Sonnet 4.5 | Haiku 4.5 |
+|--------|------------|-----------|
+| **Sessions** | 111 | 160 |
+| **Input Tokens** | 5.4M | 6.1M |
+| **Output Tokens** | 8,546 | 14,894 |
+| **Total Cost** | $16.48 | $6.15 |
+| **Cost per Session** | $0.15 | $0.04 |
+
+Haiku needed **44% more sessions** and processed **12% more input tokens**—but cost **63% less**. The cheaper model iterated more but burned fewer dollars doing it.
+
+The 55-minute session across both tests:
 - **11.5M tokens** processed
-- **$22.63** in total costs
-- **551 sessions** (some overlapping with other work)
-- **127 tool calls** split between bash (50%), file reads (22.7%), and edits (19.7%)
-
-The Sonnet run alone hit 140,131 input tokens and cost $0.42 to complete its checklist. Haiku processed 6M+ tokens at $6.15 total—cheaper per token but needed more iterations to achieve the same result.
+- **$22.63** total cost
+- **127 tool calls**: bash (50%), file reads (22.7%), edits (19.7%)
 
 **Here's the thing: I only know this because I captured it.**
 
-Without telemetry, I would have just seen "lint errors fixed" and moved on. I wouldn't know that Sonnet completed faster but Haiku was more cost-efficient at scale. I wouldn't see that 50% of tool usage was bash commands or that the agent spent most of its time reading files to understand context before making edits.
+Without telemetry, I'd have seen "lint errors fixed" and moved on. I wouldn't know Sonnet completed faster while Haiku was more cost-efficient at scale. I wouldn't see that half the tool usage was bash commands, or that the agent spent most of its time reading files to rebuild context before making edits.
 
 That's exactly the visibility Ralph lacks in production.
 
-## Gas Town and the Observability Gap
+## The Observability Gap
 
-My colleague and cohost John McBride recently wrote about [Gas Town](https://johncodes.com/archive/2026/01-16-a-glimpse-into-the-future/), Steve Yegge's multi-agent orchestration system. His key insight: we're drastically lacking infrastructure for safety, governance, and observability.
-
-I mention this because both are dominating the zeitgeist right now, and the correlation between Ralph and Gas Town methods is striking: both trade visibility for velocity.  
-
-John's diagram from the article is useful here, ungoverned agent orchestration is a leaky abstraction. Tool calls, reasoning blocks, file modifications, all lost to the ether. You get the final artifact but not the journey.
+My colleague John McBride recently wrote about [observability challenges in multi-agent orchestration](https://johncodes.com/archive/2026/01-16-a-glimpse-into-the-future/). His insight applies directly here: ungoverned agent systems are leaky abstractions. Tool calls, reasoning traces, file modifications—all lost. You get the artifact but not the journey.
 
 <img src="/images/ungoverned-orchestration.png" alt="Diagram showing ungoverned agent orchestration as a leaky abstraction" width="600" />
 
-Ralph amplifies this exact problem.
+*Diagram: John McBride, [johncodes.com](https://johncodes.com/archive/2026/01-16-a-glimpse-into-the-future/)*
 
-When your agent runs for eight hours overnight, committing code every iteration, you wake up to working software. Great! But:
+Ralph amplifies this problem. When your agent runs eight hours overnight, you wake up to working software. But:
 
 - Which iterations failed and why?
 - Where did the token budget go?
 - What patterns led to success vs. dead ends?
-- Did the agent learn the wrong lesson somewhere?
 - How many times did it redo the same work?
 
-Without observability, you're flying blind. And blind automation at scale is how you burn money without understanding ROI.
+Without observability, you're flying blind. Blind automation at scale is how you burn money without understanding ROI.
 
 ## Enter the Superintendent
 
-In a world where the principals are filling up their bags, you need a superintendent.
+In a world where [the principals are filling up their bags](https://x.com/GeoffreyHuntley/status/2009883461474205802), you need a superintendent.
 
 Think Superintendent Chalmers from The Simpsons. He doesn't intervene in Principal Skinner's daily operations, he observes. He shows up, checks if things are running properly, and understands what's happening without micromanaging.
 
 **Ralph needs a superintendent.**
 
-Not a controller. Not something that stops the loop or asks for permission. Just an observer that captures what's happening so you can learn from it later.
+Not a controller. Not something that stops the loop or asks for permission. Just an observer that captures what's happening so you can learn from it later. Ideally, something that works without modifying your agent code—a layer that sits between Ralph and the LLM, watching everything pass through.
 
 Here's what a superintendent layer should track:
 
@@ -123,6 +128,10 @@ Agents learn from their own output. If Ralph commits bad patterns early, subsequ
 
 When Ralph fails after 12 hours, you have no idea why. Was it a malformed prompt? A broken test suite? An API change? The reasoning is gone, lost in 300 context resets.
 
+### No Replay
+
+You can't reproduce the failure. Even if you had logs, Ralph's nondeterminism means running the same prompt won't give you the same result. Without a complete conversation record, you're guessing at what actually happened.
+
 ### Safety Gaps
 
 What if Ralph goes rogue? Deletes critical files? Makes breaking changes? Commits secrets? Without monitoring, you won't know until you wake up to production fires.
@@ -135,7 +144,9 @@ How do you justify autonomous coding budgets to management without metrics? "It 
 
 <img src="/images/governed-orchestration.png" alt="Diagram showing governed agent orchestration with proper observability" width="600" />
 
-The solution exists, we just haven't applied it yet.
+*Diagram: John McBride, [johncodes.com](https://johncodes.com/archive/2026/01-16-a-glimpse-into-the-future/)*
+
+The solution exists, we just haven't applied it yet. We need infrastructure that captures every conversation, stores it immutably, and lets you replay any session exactly as it happened.
 
 OpenTelemetry has spent years standardizing observability for distributed systems. Traces, metrics, spans, context propagation. Now there's a [Gen AI SIG](https://github.com/open-telemetry/community/blob/main/projects/gen-ai.md) working on semantic conventions for LLM applications.
 
@@ -170,15 +181,12 @@ Ship these to your observability backend to Honeycomb, Datadog, Grafana and sudd
 - Where do agents get stuck?
 
 ## Building the Superintendent
-We're at that inflection point with agent observability.
 
-Ralph works today. Multi-agent systems work today. But they work in the dark, burning tokens without telemetry, learning patterns we can't inspect, making decisions we can't trace.
+Ralph works today. Multi-agent systems work today. But they work in the dark—burning tokens without telemetry, learning patterns we can't inspect, making decisions we can't trace.
 
-We can build the superintendent now to standardize the traces, establish the semantic conventions, create the tooling or we can bolt it on in two years when companies are spending six figures monthly on autonomous coding and desperately need visibility.
+We can build the superintendent now: standardize the traces, establish the semantic conventions, create the tooling. Or we can bolt it on in two years when companies are spending six figures monthly on autonomous coding and desperately need visibility.
 
-**The platform is here. The infrastructure isn't.**
-
-Let's figure out the superintendent before Ralph gets too far ahead.
+Superintendent Chalmers doesn't make Skinner a better principal by intervening—he does it by watching, measuring, and asking uncomfortable questions. Your autonomous agents deserve the same scrutiny. Build the superintendent. Know what Ralph learned.
 
 ---
 

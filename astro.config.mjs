@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
+import rehypeMermaid from 'rehype-mermaid';
 import { execSync } from 'child_process';
 
 // Get the last 5 characters of the current commit SHA for cache busting
@@ -11,7 +12,9 @@ export default defineConfig({
   // Add your site URL here to ensure absolute URLs for social media
   site: 'https://briandouglas.me',
   integrations: [
-    mdx(),
+    mdx({
+      rehypePlugins: [rehypeMermaid]
+    }),
     tailwind({
       config: { path: './tailwind.config.mjs' },
       applyBaseStyles: true
