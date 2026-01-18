@@ -117,7 +117,7 @@ const wrapperStyle = progressive && defaultPlaceholder
           class={`progressive-image ${className}`}
           style="opacity: 0; transition: opacity 0.5s ease-in-out;"
           decoding="async"
-          onload={`this.style.opacity = '1'; this.parentElement.style.filter = 'none';`}
+          onload={`this.style.opacity = '1'; this.parentElement.parentElement.style.filter = 'none';`}
         />
       </picture>
     ) : optimizedSrc !== src ? (
