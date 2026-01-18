@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 // Configuration
 const CLOUDINARY_BASE_URL = 'https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog';
-const POSTS_DIR = path.join(__dirname, '../src/pages/posts');
+const POSTS_DIR = path.join(__dirname, '../src/content/posts');
 const PUBLIC_IMAGES_DIR = path.join(__dirname, '../public/images');
 
 // Track replacements for reporting
@@ -58,6 +58,46 @@ function getImageName(imagePath) {
 }
 
 /**
+ * Check if a markdown image URL is already a remote or Cloudinary URL
+ * Extracts the URL from ![alt](url) syntax and checks the URL itself
+ */
+function isRemoteOrCloudinaryUrl(markdownImage) {
+  // Extract the URL from markdown image syntax ![...](url)
+  const urlMatch = markdownImage.match(/\]\(([^)]+)\)/);
+  if (!urlMatch) return false;
+
+  const url = urlMatch[1];
+
+  // Check if it's already a Cloudinary URL or any remote HTTP(S) URL
+  return url.startsWith(CLOUDINARY_BASE_URL) ||
+         url.includes('res.cloudinary.com') ||
+         url.startsWith('http://') ||
+         url.startsWith('https://');
+}
+
+/**
+ * Check if an image path (from HTML src attribute) is a remote or Cloudinary URL
+ */
+function isRemoteOrCloudinaryPath(imagePath) {
+  // If not an absolute URL, it's a local path - not remote
+  if (!imagePath.startsWith('http://') && !imagePath.startsWith('https://')) {
+    return false;
+  }
+
+  // It's an absolute URL - parse it to check the host
+  try {
+    const url = new URL(imagePath);
+    // Check if it's specifically Cloudinary or any remote host
+    return url.host === 'res.cloudinary.com' ||
+           url.host.endsWith('.cloudinary.com') ||
+           true; // Any absolute URL should be skipped
+  } catch {
+    // If URL parsing fails, check with string methods as fallback
+    return imagePath.includes('res.cloudinary.com');
+  }
+}
+
+/**
  * Replace local image paths with Cloudinary URLs in a file
  */
 function replaceImagePaths(filePath) {
@@ -70,7 +110,7 @@ function replaceImagePaths(filePath) {
   content = content.replace(
     /!\[([^\]]*)\]\((\/public\/images\/|\/images\/)([^)]+)\)/g,
     (match, altText, pathPrefix, imagePath) => {
-      if (match.includes('cloudinary.com') || match.includes('http')) {
+      if (isRemoteOrCloudinaryUrl(match)) {
         return match;
       }
       const imageName = getImageName(imagePath);
@@ -89,7 +129,7 @@ function replaceImagePaths(filePath) {
   content = content.replace(
     /!\[([^\]]*)\]\((\.\/|\.\.\/images\/)([^)]+\.(png|jpg|jpeg|gif|webp))\)/gi,
     (match, altText, pathPrefix, imagePath) => {
-      if (match.includes('cloudinary.com') || match.includes('http')) {
+      if (isRemoteOrCloudinaryUrl(match)) {
         return match;
       }
       const imageName = getImageName(imagePath);
@@ -108,7 +148,9 @@ function replaceImagePaths(filePath) {
   content = content.replace(
     /<img\s+([^>]*?)src=["'](\/images\/)([^"']+)["']([^>]*?)\/?>/gi,
     (match, before, pathPrefix, imagePath, after) => {
-      if (match.includes('cloudinary.com') || match.includes('http')) {
+      // Construct the full src path and check if it's already remote/Cloudinary
+      const fullSrcPath = pathPrefix + imagePath;
+      if (isRemoteOrCloudinaryPath(fullSrcPath)) {
         return match;
       }
       const imageName = getImageName(imagePath);
