@@ -17,7 +17,8 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "og:generate": "node scripts/generate-og-image.mjs",
-    "og:migrate": "node scripts/migrate-og-images.mjs"
+    "og:migrate": "node scripts/migrate-og-images.mjs",
+    "og:check": "vitest run tests/og-images.test.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.9",
