@@ -15,7 +15,9 @@
     "upload:images": "node scripts/upload-blog-images.mjs",
     "replace:paths": "node scripts/replace-image-paths.mjs",
     "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "og:generate": "node scripts/generate-og-image.mjs",
+    "og:migrate": "node scripts/migrate-og-images.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.9",
@@ -43,6 +45,7 @@
     "imagemin-svgo": "^11.0.1",
     "imagemin-webp": "^8.0.0",
     "playwright": "^1.55.1",
+    "satori": "^0.19.1",
     "sharp": "^0.34.3",
     "sitemap": "^8.0.0",
     "vitest": "^4.0.16"

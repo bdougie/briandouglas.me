@@ -1,7 +1,6 @@
 ---
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
-import { generateSimpleCloudinaryOG } from '../utils/cloudinary';
 
 interface Props {
   title?: string;
@@ -14,8 +13,8 @@ interface Props {
   };
 }
 
-const { 
-  title = "bdougie on the internet", 
+const {
+  title = "bdougie on the internet",
   description = "A blog managed by Brian Douglas",
   isBlogPost = false,
   frontmatter
@@ -28,31 +27,31 @@ const pageDescription = isBlogPost && frontmatter?.description ? frontmatter.des
 // Get the canonical URL for the current page
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://briandouglas.me');
 
-// Ensure we have a site URL for OG images
-const siteUrl = Astro.site?.toString().replace(/\/$/, '') || 'https://briandouglas.me';
+// Cloudinary base URL for OG images
+const CLOUDINARY_OG_BASE = 'https://res.cloudinary.com/bdougie/image/upload/og';
 
-// Try to use Cloudinary for social cards if configured
-const cloudinaryUrl = generateSimpleCloudinaryOG({
-  title: pageTitle,
-  description: pageDescription,
-  site: 'briandouglas.me'
-});
+// Generate OG image URL
+// For blog posts: use pre-generated static images on Cloudinary
+// For other pages: use default OG image
+let finalOgImageUrl: string;
 
-// Use Cloudinary if available, otherwise fall back to static OG images
-let finalOgImageUrl = cloudinaryUrl;
+if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
+  // Extract slug from URL: /posts/2026/01/18/for-every-ralph-there-needs-to-be-a-super-nintendo/
+  // We want: for-every-ralph-there-needs-to-be-a-super-nintendo
+  const pathParts = Astro.url.pathname.replace(/\/$/, '').split('/');
+  const slug = pathParts[pathParts.length - 1]; // Last part is the slug
 
-if (cloudinaryUrl === '/images/og-default.png') {
-  // Fallback to static OG image system if Cloudinary not configured
-  if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
-    const postPath = Astro.url.pathname.replace(/^\/posts\//, '').replace(/\/$/, '');
-    if (postPath) {
-      finalOgImageUrl = `${siteUrl}/og-image/${postPath}/`;
-    } else {
-      finalOgImageUrl = `${siteUrl}/og-image/home/`;
-    }
+  if (slug && slug !== 'posts') {
+    // Use pre-generated OG image from Cloudinary
+    // Short, simple URL: ~80 chars vs 400+ for dynamic URLs
+    finalOgImageUrl = `${CLOUDINARY_OG_BASE}/${slug}.png`;
   } else {
-    finalOgImageUrl = `${siteUrl}/og-image/home/`;
+    // Fallback to default OG image
+    finalOgImageUrl = `${CLOUDINARY_OG_BASE}/default.png`;
   }
+} else {
+  // Non-blog pages use default OG image
+  finalOgImageUrl = `${CLOUDINARY_OG_BASE}/default.png`;
 }
 ---
 

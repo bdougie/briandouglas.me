@@ -56,6 +56,103 @@ To create a new blog post:
 
 4. Posts are automatically routed to `/YYYY/MM/DD/post-title-slug` and will appear on the homepage and blog index page when built.
 
+## 🖼️ Blog Post Images
+
+Blog images are hosted on Cloudinary for automatic optimization and CDN delivery.
+
+### Adding Images to Posts
+
+Use Cloudinary URLs directly in your markdown/MDX:
+
+```md
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/your-image-name" alt="Description" width="600" />
+```
+
+The `f_auto,q_auto` parameters automatically serve the best format (WebP, AVIF) and quality for each browser.
+
+### Uploading New Images
+
+1. Add images to `public/images/`
+2. Run the upload script during build (or manually):
+   ```bash
+   npm run upload:images
+   ```
+3. Images are uploaded to Cloudinary's `blog/` folder
+4. Use the Cloudinary URL in your post
+
+## 🃏 Social Cards (OG Images)
+
+Social cards are pre-generated static images stored on Cloudinary. This ensures fast, reliable previews when sharing posts on LinkedIn, Bluesky, Twitter, etc.
+
+### How It Works
+
+- Each blog post has a static OG image at: `https://res.cloudinary.com/bdougie/image/upload/og/{slug}.png`
+- Images are 1200x630px with the post title on a black background
+- Non-blog pages use a default OG image
+
+### Generating OG Images
+
+**For a new post:**
+```bash
+npm run og:generate -- your-post-slug
+```
+
+**Options:**
+```bash
+npm run og:generate -- your-post-slug --local  # Save locally only, don't upload
+npm run og:generate -- your-post-slug --dry-run  # Preview without saving
+```
+
+**For bulk migration (all posts):**
+```bash
+npm run og:migrate
+```
+
+### Environment Variables
+
+OG image generation requires Cloudinary credentials in `.env`:
+```
+CLOUDINARY_CLOUD_NAME=bdougie
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+## 🦋 Bluesky Comments
+
+Blog posts can display likes, reposts, and replies from a linked Bluesky post.
+
+### Adding Bluesky Comments to a Post
+
+1. Publish your blog post
+2. Create a Bluesky post linking to your article
+3. Add the `blueskyUrl` to your post's frontmatter:
+
+```md
+---
+title: Your Post Title
+date: 2026-01-18
+description: Post description
+blueskyUrl: "https://bsky.app/profile/your-handle/post/abc123"
+---
+```
+
+### Features
+
+- Displays like count with stacked avatars of people who liked
+- Shows reply count and recent replies
+- Repost count
+- Links back to the Bluesky post for engagement
+- Compact mode on homepage, full mode on post pages
+
+### Using DID for Stable URLs
+
+For more stable URLs (handles can change), use the DID format:
+```md
+blueskyUrl: "https://bsky.app/profile/did:plc:abc123/post/xyz789"
+```
+
+You can find your DID by inspecting any of your Bluesky post URLs in the API.
+
 ## 🎨 Styling & Customization
 
 The site uses Tailwind CSS with a custom color scheme:
@@ -99,3 +196,6 @@ This site is deployed on Netlify, which automatically builds and deploys the sit
 | `npm run build`        | Build your production site to `./dist/`          |
 | `npm run preview`      | Preview your build locally, before deploying     |
 | `npm run astro ...`    | Run CLI commands like `astro add`, `astro check` |
+| `npm run og:generate`  | Generate OG image for a single post              |
+| `npm run og:migrate`   | Generate OG images for all posts (one-time)      |
+| `npm run upload:images`| Upload local images to Cloudinary                |
