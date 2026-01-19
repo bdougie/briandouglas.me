@@ -182,8 +182,8 @@ const bskyPostUrl = actualPostUrl || `https://bsky.app/profile/${handle}/post/${
       html += '<div class="avatar-stack flex -space-x-2 hover:space-x-1 transition-all duration-300">';
 
       likers.forEach((liker, index) => {
-        html += `<a href="https://bsky.app/profile/${liker.handle}" target="_blank" rel="noopener noreferrer" class="avatar-item relative transition-all duration-300 block" style="z-index: ${5 - index}" title="@${liker.handle}">`;
-        html += `<img src="${getAvatarUrl(liker.avatar, liker.handle)}" alt="${liker.displayName}" class="w-8 h-8 rounded-full border-2 border-black bg-gray-900 hover:border-orange-500 transition-all duration-200" />`;
+        html += `<a href="https://bsky.app/profile/${encodeURIComponent(liker.handle)}" target="_blank" rel="noopener noreferrer" class="avatar-item relative transition-all duration-300 block" style="z-index: ${5 - index}" title="@${escapeHtml(liker.handle)}">`;
+        html += `<img src="${getAvatarUrl(liker.avatar, liker.handle)}" alt="${escapeHtml(liker.displayName)}" class="w-8 h-8 rounded-full border-2 border-black bg-gray-900 hover:border-orange-500 transition-all duration-200" />`;
         html += '</a>';
       });
 
@@ -224,16 +224,16 @@ const bskyPostUrl = actualPostUrl || `https://bsky.app/profile/${handle}/post/${
 
       replies.forEach((reply) => {
         html += '<div class="flex gap-3 p-3 bg-gray-900/30 border border-gray-800 rounded-lg">';
-        html += `<a href="https://bsky.app/profile/${reply.author.handle}" target="_blank" rel="noopener noreferrer" class="flex-shrink-0">`;
-        html += `<img src="${getAvatarUrl(reply.author.avatar, reply.author.handle)}" alt="${reply.author.displayName}" class="w-8 h-8 rounded-full hover:ring-2 hover:ring-orange-500 transition-all" />`;
+        html += `<a href="https://bsky.app/profile/${encodeURIComponent(reply.author.handle)}" target="_blank" rel="noopener noreferrer" class="flex-shrink-0">`;
+        html += `<img src="${getAvatarUrl(reply.author.avatar, reply.author.handle)}" alt="${escapeHtml(reply.author.displayName)}" class="w-8 h-8 rounded-full hover:ring-2 hover:ring-orange-500 transition-all" />`;
         html += '</a>';
         html += '<div class="flex-1 min-w-0">';
         html += '<div class="flex items-baseline gap-2 mb-1">';
-        html += `<a href="https://bsky.app/profile/${reply.author.handle}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-white truncate hover:text-orange-500 transition-colors">${reply.author.displayName}</a>`;
-        html += `<a href="https://bsky.app/profile/${reply.author.handle}" target="_blank" rel="noopener noreferrer" class="text-xs text-gray-500 hover:text-orange-500 transition-colors">@${reply.author.handle}</a>`;
+        html += `<a href="https://bsky.app/profile/${encodeURIComponent(reply.author.handle)}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-white truncate hover:text-orange-500 transition-colors">${escapeHtml(reply.author.displayName)}</a>`;
+        html += `<a href="https://bsky.app/profile/${encodeURIComponent(reply.author.handle)}" target="_blank" rel="noopener noreferrer" class="text-xs text-gray-500 hover:text-orange-500 transition-colors">@${escapeHtml(reply.author.handle)}</a>`;
         html += '</div>';
         html += `<p class="text-sm text-gray-400 break-words">${escapeHtml(reply.text)}</p>`;
-        html += `<a href="https://bsky.app/profile/${reply.author.handle}/post/${reply.postId}" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 text-xs text-orange-500 hover:text-orange-400 transition-colors">View on Bluesky &rarr;</a>`;
+        html += `<a href="https://bsky.app/profile/${encodeURIComponent(reply.author.handle)}/post/${encodeURIComponent(reply.postId)}" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 text-xs text-orange-500 hover:text-orange-400 transition-colors">View on Bluesky &rarr;</a>`;
         html += '</div></div>';
       });
 
@@ -267,7 +267,7 @@ const bskyPostUrl = actualPostUrl || `https://bsky.app/profile/${handle}/post/${
       html += '<span class="text-gray-500">&middot;</span>';
       html += '<div class="flex -space-x-2">';
       likers.slice(0, 3).forEach((liker, index) => {
-        html += `<img src="${getAvatarUrl(liker.avatar, liker.handle)}" alt="${liker.displayName}" class="w-5 h-5 rounded-full border border-gray-800 bg-gray-900" style="z-index: ${3 - index}" title="@${liker.handle}" />`;
+        html += `<img src="${getAvatarUrl(liker.avatar, liker.handle)}" alt="${escapeHtml(liker.displayName)}" class="w-5 h-5 rounded-full border border-gray-800 bg-gray-900" style="z-index: ${3 - index}" title="@${escapeHtml(liker.handle)}" />`;
       });
       if (likeCount > 3) {
         html += '<div class="w-5 h-5 rounded-full border border-gray-800 bg-gray-900 flex items-center justify-center">';
