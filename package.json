@@ -32,6 +32,7 @@
   "devDependencies": {
     "@astrojs/prefetch": "^0.4.1",
     "@astrojs/sitemap": "^3.5.0",
+    "@netlify/edge-functions": "^3.0.3",
     "@squoosh/lib": "^0.3.1",
     "@vitest/ui": "^4.0.16",
     "happy-dom": "^20.0.11",

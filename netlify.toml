@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Edge function for live Bluesky stats
+[[edge_functions]]
+  path = "/api/bluesky-stats"
+  function = "bluesky-stats"
