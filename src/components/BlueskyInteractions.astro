@@ -9,260 +9,56 @@ export interface Props {
 const { postUrl, blueskyUrl, postUri, compact = false } = Astro.props;
 const actualPostUrl = postUrl || blueskyUrl;
 
-let did = null;
-let postId = null;
+// Extract handle/DID and post ID from URL for the data attribute
 let handle = null;
+let postId = null;
 
-// If we have a regular Bluesky URL, extract handle and post ID
 if (actualPostUrl) {
-  // Format: https://bsky.app/profile/handle/post/postid
   const urlParts = actualPostUrl.match(/bsky\.app\/profile\/([^\/]+)\/post\/(.+)/);
   handle = urlParts?.[1];
   postId = urlParts?.[2];
-  
-  // We'll need to fetch the DID from the handle
-  if (handle) {
-    try {
-      const profileResponse = await fetch(
-        `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${handle}`
-      );
-      if (profileResponse.ok) {
-        const profileData = await profileResponse.json();
-        did = profileData.did;
-      }
-    } catch (e) {
-      console.error('Could not fetch profile DID:', e);
-    }
-  }
 } else if (postUri) {
-  // Backwards compatibility: Extract DID and post ID from AT Protocol URI
-  // Format: at://did:plc:xyz/app.bsky.feed.post/postid
   const uriParts = postUri.match(/at:\/\/(did:plc:[^\/]+)\/app\.bsky\.feed\.post\/(.+)/);
-  did = uriParts?.[1];
+  handle = uriParts?.[1];
   postId = uriParts?.[2];
 }
 
-let postData = null;
-let threadData = null;
-let likesData = null;
-let error = null;
-
-if (did && postId) {
-  // Construct AT Protocol URI for API calls
-  const atUri = `at://${did}/app.bsky.feed.post/${postId}`;
-  
-  try {
-    // Performance optimization: Fetch post thread and likes in parallel
-    // instead of sequentially to reduce wait time
-    const postApiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(atUri)}&depth=1`;
-    const likesApiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getLikes?uri=${encodeURIComponent(atUri)}&limit=10`;
-
-    const postPromise = fetch(postApiUrl, {
-      headers: { 'Accept': 'application/json' }
-    });
-
-    // Handle likes fetch separately so it doesn't block or fail the main post fetch
-    const likesPromise = fetch(likesApiUrl, {
-      headers: { 'Accept': 'application/json' }
-    }).then(async res => {
-      if (res.ok) return res.json();
-      return null;
-    }).catch(e => {
-      console.error('Could not fetch likes:', e);
-      return null;
-    });
-
-    const [postResponse, likesResult] = await Promise.all([
-      postPromise,
-      likesPromise
-    ]);
-    
-    if (postResponse.ok) {
-      threadData = await postResponse.json();
-      postData = threadData.thread?.post;
-      likesData = likesResult;
-    } else {
-      error = 'Failed to fetch post data';
-    }
-  } catch (e) {
-    error = 'Error loading Bluesky data';
-    console.error('Bluesky API error:', e);
-  }
-} else {
-  error = 'Invalid Bluesky URI format';
-}
-
-// Use the provided handle or extract from post data
-if (!handle && postData?.author?.handle) {
-  handle = postData.author.handle;
-}
-const bskyPostUrl = postUrl || `https://bsky.app/profile/${handle || 'bizza.pizza'}/post/${postId}`;
-
-// Get likes and reposts count
-const likeCount = postData?.likeCount || 0;
-const repostCount = postData?.repostCount || 0;
-const replyCount = postData?.replyCount || 0;
-
-// Get replies (limited to first 5 for display)
-const replies = threadData?.thread?.replies?.slice(0, 5) || [];
-
-// Function to extract post ID from reply URI
-const getReplyPostId = (uri: string) => {
-  const match = uri?.match(/app\.bsky\.feed\.post\/(.+)$/);
-  return match ? match[1] : null;
-};
-
-// Get users who liked (limit to 5 for display)
-const likers = likesData?.likes?.slice(0, 5) || [];
-const remainingLikes = Math.max(0, likeCount - likers.length);
+const bskyPostUrl = actualPostUrl || `https://bsky.app/profile/${handle}/post/${postId}`;
 ---
 
-{postData && !compact && (
-  <div class="mt-12 pt-8 border-t border-gray-800">
+{/* Full mode - renders container that gets hydrated client-side */}
+{!compact && handle && postId && (
+  <div
+    class="bluesky-interactions mt-12 pt-8 border-t border-gray-800"
+    data-handle={handle}
+    data-post-id={postId}
+    data-post-url={bskyPostUrl}
+  >
     <h3 class="text-lg font-semibold text-white mb-6">Discuss on Bluesky</h3>
-    
-    {/* Engagement Stats with Stacked Avatars */}
-    <div class="mb-6">
-      {/* Likes with Stacked Avatars */}
-      {likeCount > 0 && (
-        <div class="flex items-center gap-4 mb-4">
-          <div class="flex items-center">
-            {/* Stacked Avatars */}
-            <div class="avatar-stack flex -space-x-2 hover:space-x-1 transition-all duration-300">
-              {likers.map((like: any, index: number) => (
-                <a 
-                  href={`https://bsky.app/profile/${like.actor?.handle}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="avatar-item relative transition-all duration-300 block"
-                  style={`z-index: ${5 - index}`}
-                  title={`@${like.actor?.handle}`}
-                >
-                  <img 
-                    src={like.actor?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${like.actor?.handle}`}
-                    alt={like.actor?.displayName || like.actor?.handle}
-                    class="w-8 h-8 rounded-full border-2 border-black bg-gray-900 hover:border-orange-500 transition-all duration-200"
-                  />
-                </a>
-              ))}
-              {remainingLikes > 0 && (
-                <div class="avatar-item relative z-0 transition-all duration-300">
-                  <div class="w-8 h-8 rounded-full border-2 border-black bg-gray-900 flex items-center justify-center hover:border-orange-500 transition-all duration-200">
-                    <span class="text-xs text-gray-400">+{remainingLikes}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* Like count text */}
-            <a 
-              href={bskyPostUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="ml-3 text-sm text-gray-400 hover:text-orange-500 transition-colors"
-            >
-              {likeCount}{' '}{likeCount === 1 ? 'like' : 'likes'}
-            </a>
-          </div>
-          
-          {/* Reply and Repost counts */}
-          <div class="flex items-center gap-4">
-            <span class="text-sm text-gray-400">
-              {replyCount}{' '}{replyCount === 1 ? 'reply' : 'replies'}
-            </span>
-            
-            <span class="text-sm text-gray-400">
-              {repostCount}{' '}{repostCount === 1 ? 'repost' : 'reposts'}
-            </span>
-          </div>
+
+    {/* Loading skeleton */}
+    <div class="bsky-loading mb-6">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="flex -space-x-2">
+          <div class="w-8 h-8 rounded-full bg-gray-800 animate-pulse"></div>
+          <div class="w-8 h-8 rounded-full bg-gray-800 animate-pulse"></div>
+          <div class="w-8 h-8 rounded-full bg-gray-800 animate-pulse"></div>
         </div>
-      )}
-      
-      {/* If no likes yet, show simple stats */}
-      {likeCount === 0 && (
-        <div class="flex items-center gap-6 mb-4">
-          <span class="text-sm text-gray-400">
-            {likeCount}{' '}likes
-          </span>
-          <span class="text-sm text-gray-400">
-            {replyCount}{' '}{replyCount === 1 ? 'reply' : 'replies'}
-          </span>
-          <span class="text-sm text-gray-400">
-            {repostCount}{' '}{repostCount === 1 ? 'repost' : 'reposts'}
-          </span>
-        </div>
-      )}
-      
-      {/* Call to action to like the post */}
-      <div class="mb-4">
-        <a 
-          href={bskyPostUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-xs text-orange-500 hover:text-orange-400 transition-colors"
-        >
-          Like this post on Bluesky to see your face here →
-        </a>
+        <div class="h-4 w-24 bg-gray-800 rounded animate-pulse"></div>
       </div>
     </div>
 
-    {/* Replies Preview */}
-    {replies.length > 0 && (
-      <div class="space-y-4 mb-6">
-        <h4 class="text-sm font-medium text-gray-400">Recent replies</h4>
-        {replies.map((reply: any) => (
-          <div class="flex gap-3 p-3 bg-gray-900/30 border border-gray-800 rounded-lg">
-            <a 
-              href={`https://bsky.app/profile/${reply.post?.author?.handle}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex-shrink-0"
-            >
-              <img 
-                src={reply.post?.author?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reply.post?.author?.handle}`}
-                alt={reply.post?.author?.displayName || reply.post?.author?.handle}
-                class="w-8 h-8 rounded-full hover:ring-2 hover:ring-orange-500 transition-all"
-              />
-            </a>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-baseline gap-2 mb-1">
-                <a 
-                  href={`https://bsky.app/profile/${reply.post?.author?.handle}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-sm font-medium text-white truncate hover:text-orange-500 transition-colors"
-                >
-                  {reply.post?.author?.displayName || reply.post?.author?.handle}
-                </a>
-                <a 
-                  href={`https://bsky.app/profile/${reply.post?.author?.handle}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-xs text-gray-500 hover:text-orange-500 transition-colors"
-                >
-                  @{reply.post?.author?.handle}
-                </a>
-              </div>
-              <p class="text-sm text-gray-400 break-words">
-                {reply.post?.record?.text}
-              </p>
-              <a 
-                href={`https://bsky.app/profile/${reply.post?.author?.handle}/post/${getReplyPostId(reply.post?.uri)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-block mt-2 text-xs text-orange-500 hover:text-orange-400 transition-colors"
-              >
-                View on Bluesky →
-              </a>
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
+    {/* Content container - populated by JS */}
+    <div class="bsky-content hidden"></div>
+
+    {/* Error container */}
+    <div class="bsky-error hidden">
+      <p class="text-sm text-gray-500">Unable to load Bluesky interactions</p>
+    </div>
 
     {/* Attribution */}
-    <div class="flex items-center">
-      <a 
+    <div class="flex items-center mt-4">
+      <a
         href="https://docs.bsky.app/"
         target="_blank"
         rel="noopener noreferrer"
@@ -275,66 +71,28 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
 )}
 
 {/* Compact mode for homepage */}
-{postData && compact && (
-  <div class="flex items-center gap-4 text-sm">
-    <a 
-      href={bskyPostUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors"
-    >
+{compact && handle && postId && (
+  <div
+    class="bluesky-interactions-compact flex items-center gap-4 text-sm"
+    data-handle={handle}
+    data-post-id={postId}
+    data-post-url={bskyPostUrl}
+  >
+    {/* Loading state */}
+    <div class="bsky-loading flex items-center gap-2 text-gray-500">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 600 530" fill="currentColor">
         <path d="M135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.3797-3.6904-10.832-3.7077-7.8964-0.0174-2.9357-1.1937 0.51669-3.7077 7.8964-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.4491-163.25-81.433-5.9562-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"/>
       </svg>
-      <span>{likeCount} {likeCount === 1 ? 'like' : 'likes'}</span>
-    </a>
-    
-    <span class="text-gray-500">·</span>
-    
-    <a 
-      href={bskyPostUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-gray-400 hover:text-orange-500 transition-colors"
-    >
-      {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
-    </a>
-    
-    {repostCount > 0 && (
-      <>
-        <span class="text-gray-500">·</span>
-        <span class="text-gray-400">
-          {repostCount} {repostCount === 1 ? 'repost' : 'reposts'}
-        </span>
-      </>
-    )}
-    
-    {/* Show first 3 avatars of people who liked */}
-    {likers.length > 0 && (
-      <>
-        <span class="text-gray-500">·</span>
-        <div class="flex -space-x-2">
-          {likers.slice(0, 3).map((like: any, index: number) => (
-            <img 
-              src={like.actor?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${like.actor?.handle}`}
-              alt={like.actor?.displayName || like.actor?.handle}
-              class="w-5 h-5 rounded-full border border-gray-800 bg-gray-900"
-              style={`z-index: ${3 - index}`}
-              title={`@${like.actor?.handle}`}
-            />
-          ))}
-          {likeCount > 3 && (
-            <div class="w-5 h-5 rounded-full border border-gray-800 bg-gray-900 flex items-center justify-center">
-              <span class="text-[10px] text-gray-500">+{likeCount - 3}</span>
-            </div>
-          )}
-        </div>
-      </>
-    )}
+      <span class="animate-pulse">Loading...</span>
+    </div>
+
+    {/* Content container - populated by JS */}
+    <div class="bsky-content hidden"></div>
   </div>
 )}
 
-{error && (
+{/* Show error if no valid URL provided */}
+{!handle && !postId && (
   <div class={compact ? "" : "mt-12 pt-8 border-t border-gray-800"}>
     <p class="text-sm text-gray-500">Unable to load Bluesky interactions</p>
   </div>
@@ -380,3 +138,205 @@ const remainingLikes = Math.max(0, likeCount - likers.length);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 </style>
+
+<script>
+  interface BlueskyStats {
+    likeCount: number;
+    repostCount: number;
+    replyCount: number;
+    likers: Array<{
+      handle: string;
+      displayName: string;
+      avatar: string | null;
+    }>;
+    replies: Array<{
+      author: {
+        handle: string;
+        displayName: string;
+        avatar: string | null;
+      };
+      text: string;
+      postId: string;
+    }>;
+    postUrl: string;
+  }
+
+  function getAvatarUrl(avatar: string | null, handle: string): string {
+    return avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${handle}`;
+  }
+
+  function renderFullMode(container: HTMLElement, stats: BlueskyStats): void {
+    const postUrl = stats.postUrl;
+    const likeCount = stats.likeCount;
+    const replyCount = stats.replyCount;
+    const repostCount = stats.repostCount;
+    const likers = stats.likers;
+    const replies = stats.replies;
+    const remainingLikes = Math.max(0, likeCount - likers.length);
+
+    let html = '<div class="mb-6">';
+
+    // Likes with stacked avatars
+    if (likeCount > 0) {
+      html += '<div class="flex items-center gap-4 mb-4"><div class="flex items-center">';
+      html += '<div class="avatar-stack flex -space-x-2 hover:space-x-1 transition-all duration-300">';
+
+      likers.forEach((liker, index) => {
+        html += `<a href="https://bsky.app/profile/${liker.handle}" target="_blank" rel="noopener noreferrer" class="avatar-item relative transition-all duration-300 block" style="z-index: ${5 - index}" title="@${liker.handle}">`;
+        html += `<img src="${getAvatarUrl(liker.avatar, liker.handle)}" alt="${liker.displayName}" class="w-8 h-8 rounded-full border-2 border-black bg-gray-900 hover:border-orange-500 transition-all duration-200" />`;
+        html += '</a>';
+      });
+
+      if (remainingLikes > 0) {
+        html += '<div class="avatar-item relative z-0 transition-all duration-300">';
+        html += '<div class="w-8 h-8 rounded-full border-2 border-black bg-gray-900 flex items-center justify-center hover:border-orange-500 transition-all duration-200">';
+        html += `<span class="text-xs text-gray-400">+${remainingLikes}</span>`;
+        html += '</div></div>';
+      }
+
+      html += '</div>';
+      html += `<a href="${postUrl}" target="_blank" rel="noopener noreferrer" class="ml-3 text-sm text-gray-400 hover:text-orange-500 transition-colors">${likeCount} ${likeCount === 1 ? 'like' : 'likes'}</a>`;
+      html += '</div>';
+
+      // Reply and repost counts
+      html += '<div class="flex items-center gap-4">';
+      html += `<span class="text-sm text-gray-400">${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}</span>`;
+      html += `<span class="text-sm text-gray-400">${repostCount} ${repostCount === 1 ? 'repost' : 'reposts'}</span>`;
+      html += '</div></div>';
+    } else {
+      // No likes yet
+      html += '<div class="flex items-center gap-6 mb-4">';
+      html += `<span class="text-sm text-gray-400">${likeCount} likes</span>`;
+      html += `<span class="text-sm text-gray-400">${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}</span>`;
+      html += `<span class="text-sm text-gray-400">${repostCount} ${repostCount === 1 ? 'repost' : 'reposts'}</span>`;
+      html += '</div>';
+    }
+
+    // CTA
+    html += '<div class="mb-4">';
+    html += `<a href="${postUrl}" target="_blank" rel="noopener noreferrer" class="text-xs text-orange-500 hover:text-orange-400 transition-colors">Like this post on Bluesky to see your face here &rarr;</a>`;
+    html += '</div></div>';
+
+    // Replies
+    if (replies.length > 0) {
+      html += '<div class="space-y-4 mb-6">';
+      html += '<h4 class="text-sm font-medium text-gray-400">Recent replies</h4>';
+
+      replies.forEach((reply) => {
+        html += '<div class="flex gap-3 p-3 bg-gray-900/30 border border-gray-800 rounded-lg">';
+        html += `<a href="https://bsky.app/profile/${reply.author.handle}" target="_blank" rel="noopener noreferrer" class="flex-shrink-0">`;
+        html += `<img src="${getAvatarUrl(reply.author.avatar, reply.author.handle)}" alt="${reply.author.displayName}" class="w-8 h-8 rounded-full hover:ring-2 hover:ring-orange-500 transition-all" />`;
+        html += '</a>';
+        html += '<div class="flex-1 min-w-0">';
+        html += '<div class="flex items-baseline gap-2 mb-1">';
+        html += `<a href="https://bsky.app/profile/${reply.author.handle}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-white truncate hover:text-orange-500 transition-colors">${reply.author.displayName}</a>`;
+        html += `<a href="https://bsky.app/profile/${reply.author.handle}" target="_blank" rel="noopener noreferrer" class="text-xs text-gray-500 hover:text-orange-500 transition-colors">@${reply.author.handle}</a>`;
+        html += '</div>';
+        html += `<p class="text-sm text-gray-400 break-words">${escapeHtml(reply.text)}</p>`;
+        html += `<a href="https://bsky.app/profile/${reply.author.handle}/post/${reply.postId}" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 text-xs text-orange-500 hover:text-orange-400 transition-colors">View on Bluesky &rarr;</a>`;
+        html += '</div></div>';
+      });
+
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+  }
+
+  function renderCompactMode(container: HTMLElement, stats: BlueskyStats): void {
+    const postUrl = stats.postUrl;
+    const likeCount = stats.likeCount;
+    const replyCount = stats.replyCount;
+    const repostCount = stats.repostCount;
+    const likers = stats.likers;
+
+    let html = '';
+    html += `<a href="${postUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-gray-400 hover:text-orange-500 transition-colors">`;
+    html += '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 600 530" fill="currentColor"><path d="M135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.3797-3.6904-10.832-3.7077-7.8964-0.0174-2.9357-1.1937 0.51669-3.7077 7.8964-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.4491-163.25-81.433-5.9562-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"/></svg>';
+    html += `<span>${likeCount} ${likeCount === 1 ? 'like' : 'likes'}</span></a>`;
+
+    html += '<span class="text-gray-500">&middot;</span>';
+    html += `<a href="${postUrl}" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-orange-500 transition-colors">${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}</a>`;
+
+    if (repostCount > 0) {
+      html += '<span class="text-gray-500">&middot;</span>';
+      html += `<span class="text-gray-400">${repostCount} ${repostCount === 1 ? 'repost' : 'reposts'}</span>`;
+    }
+
+    if (likers.length > 0) {
+      html += '<span class="text-gray-500">&middot;</span>';
+      html += '<div class="flex -space-x-2">';
+      likers.slice(0, 3).forEach((liker, index) => {
+        html += `<img src="${getAvatarUrl(liker.avatar, liker.handle)}" alt="${liker.displayName}" class="w-5 h-5 rounded-full border border-gray-800 bg-gray-900" style="z-index: ${3 - index}" title="@${liker.handle}" />`;
+      });
+      if (likeCount > 3) {
+        html += '<div class="w-5 h-5 rounded-full border border-gray-800 bg-gray-900 flex items-center justify-center">';
+        html += `<span class="text-[10px] text-gray-500">+${likeCount - 3}</span>`;
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+  }
+
+  function escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  async function loadBlueskyStats(): Promise<void> {
+    // Handle full mode containers
+    const fullContainers = document.querySelectorAll<HTMLElement>('.bluesky-interactions');
+    // Handle compact mode containers
+    const compactContainers = document.querySelectorAll<HTMLElement>('.bluesky-interactions-compact');
+
+    const allContainers = [...fullContainers, ...compactContainers];
+
+    for (const container of allContainers) {
+      const handle = container.dataset.handle;
+      const postId = container.dataset.postId;
+      const isCompact = container.classList.contains('bluesky-interactions-compact');
+
+      if (!handle || !postId) continue;
+
+      const loadingEl = container.querySelector('.bsky-loading');
+      const contentEl = container.querySelector('.bsky-content');
+      const errorEl = container.querySelector('.bsky-error');
+
+      try {
+        const response = await fetch(`/api/bluesky-stats?handle=${encodeURIComponent(handle)}&postId=${encodeURIComponent(postId)}`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch');
+        }
+
+        const stats: BlueskyStats = await response.json();
+
+        // Hide loading, show content
+        loadingEl?.classList.add('hidden');
+        contentEl?.classList.remove('hidden');
+
+        if (contentEl) {
+          if (isCompact) {
+            renderCompactMode(contentEl as HTMLElement, stats);
+          } else {
+            renderFullMode(contentEl as HTMLElement, stats);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load Bluesky stats:', e);
+        loadingEl?.classList.add('hidden');
+        errorEl?.classList.remove('hidden');
+      }
+    }
+  }
+
+  // Load stats when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadBlueskyStats);
+  } else {
+    loadBlueskyStats();
+  }
+</script>
