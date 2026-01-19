@@ -198,4 +198,5 @@ This site is deployed on Netlify, which automatically builds and deploys the sit
 | `npm run astro ...`    | Run CLI commands like `astro add`, `astro check` |
 | `npm run og:generate`  | Generate OG image for a single post              |
 | `npm run og:migrate`   | Generate OG images for all posts (one-time)      |
+| `npm run og:check`     | Verify all OG images exist on Cloudinary         |
 | `npm run upload:images`| Upload local images to Cloudinary                |
