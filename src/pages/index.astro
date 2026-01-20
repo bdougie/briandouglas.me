@@ -17,7 +17,7 @@ const sortedPosts = posts
     <div class="lg:col-span-1">
       <!-- Avatar and Name Section -->
       <div class="flex items-start gap-4 mb-6">
-        <!-- Avatar -->
+        <!-- Avatar: Disable progressive loading for LCP optimization -->
         <OptimizedImage
           src="https://github.com/bdougie.png"
           alt="Brian Douglas"
@@ -25,7 +25,6 @@ const sortedPosts = posts
           height={96}
           class="w-20 h-24 rounded-lg flex-shrink-0 object-cover border-2 border-orange-500"
           useCloudinary={false}
-          progressive={true}
           loading="eager"
         />
         
