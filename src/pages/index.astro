@@ -25,7 +25,7 @@ const sortedPosts = posts
           height={96}
           class="w-20 h-24 rounded-lg flex-shrink-0 object-cover border-2 border-orange-500"
           useCloudinary={false}
-          progressive={true}
+          progressive={false} // LCP optimization: avoid opacity transition
           loading="eager"
         />
         
