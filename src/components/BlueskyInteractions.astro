@@ -286,57 +286,74 @@ const bskyPostUrl = actualPostUrl || `https://bsky.app/profile/${handle}/post/${
     return div.innerHTML;
   }
 
-  async function loadBlueskyStats(): Promise<void> {
-    // Handle full mode containers
-    const fullContainers = document.querySelectorAll<HTMLElement>('.bluesky-interactions');
-    // Handle compact mode containers
-    const compactContainers = document.querySelectorAll<HTMLElement>('.bluesky-interactions-compact');
+  async function loadStatsForContainer(container: HTMLElement): Promise<void> {
+    // Avoid double loading
+    if (container.dataset.loaded === 'true') return;
+    container.dataset.loaded = 'true';
 
+    const handle = container.dataset.handle;
+    const postId = container.dataset.postId;
+    const isCompact = container.classList.contains('bluesky-interactions-compact');
+
+    if (!handle || !postId) return;
+
+    const loadingEl = container.querySelector('.bsky-loading');
+    const contentEl = container.querySelector('.bsky-content');
+    const errorEl = container.querySelector('.bsky-error');
+
+    try {
+      const response = await fetch(`/api/bluesky-stats?handle=${encodeURIComponent(handle)}&postId=${encodeURIComponent(postId)}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch');
+      }
+
+      const stats: BlueskyStats = await response.json();
+
+      // Hide loading, show content
+      loadingEl?.classList.add('hidden');
+      contentEl?.classList.remove('hidden');
+
+      if (contentEl) {
+        if (isCompact) {
+          renderCompactMode(contentEl as HTMLElement, stats);
+        } else {
+          renderFullMode(contentEl as HTMLElement, stats);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load Bluesky stats:', e);
+      loadingEl?.classList.add('hidden');
+      errorEl?.classList.remove('hidden');
+    }
+  }
+
+  function initBlueskyStats(): void {
+    const fullContainers = document.querySelectorAll<HTMLElement>('.bluesky-interactions');
+    const compactContainers = document.querySelectorAll<HTMLElement>('.bluesky-interactions-compact');
     const allContainers = [...fullContainers, ...compactContainers];
 
-    for (const container of allContainers) {
-      const handle = container.dataset.handle;
-      const postId = container.dataset.postId;
-      const isCompact = container.classList.contains('bluesky-interactions-compact');
-
-      if (!handle || !postId) continue;
-
-      const loadingEl = container.querySelector('.bsky-loading');
-      const contentEl = container.querySelector('.bsky-content');
-      const errorEl = container.querySelector('.bsky-error');
-
-      try {
-        const response = await fetch(`/api/bluesky-stats?handle=${encodeURIComponent(handle)}&postId=${encodeURIComponent(postId)}`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch');
-        }
-
-        const stats: BlueskyStats = await response.json();
-
-        // Hide loading, show content
-        loadingEl?.classList.add('hidden');
-        contentEl?.classList.remove('hidden');
-
-        if (contentEl) {
-          if (isCompact) {
-            renderCompactMode(contentEl as HTMLElement, stats);
-          } else {
-            renderFullMode(contentEl as HTMLElement, stats);
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            loadStatsForContainer(entry.target as HTMLElement);
+            observer.unobserve(entry.target);
           }
-        }
-      } catch (e) {
-        console.error('Failed to load Bluesky stats:', e);
-        loadingEl?.classList.add('hidden');
-        errorEl?.classList.remove('hidden');
-      }
+        });
+      }, { rootMargin: '200px' }); // Load when within 200px of viewport
+
+      allContainers.forEach(container => observer.observe(container));
+    } else {
+      // Fallback for browsers without IntersectionObserver
+      allContainers.forEach(container => loadStatsForContainer(container));
     }
   }
 
   // Load stats when DOM is ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadBlueskyStats);
+    document.addEventListener('DOMContentLoaded', initBlueskyStats);
   } else {
-    loadBlueskyStats();
+    initBlueskyStats();
   }
 </script>

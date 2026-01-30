@@ -5,3 +5,7 @@
 ## 2026-01-28 - Progressive Loading on LCP Images
 **Learning:** The `progressive={true}` prop on `OptimizedImage` introduces an opacity transition (fade-in) via inline styles that negatively impacts LCP (Largest Contentful Paint) for above-the-fold images.
 **Action:** Always disable progressive loading (`progressive={false}`) for hero images, avatars, or any critical image visible in the initial viewport to ensure they render immediately.
+
+## 2026-01-30 - Lazy Load Bluesky Interactions
+**Learning:** The `BlueskyInteractions.astro` component was fetching data immediately on page load, even for posts where the comments were at the bottom of the page. This delayed TTI and wasted bandwidth.
+**Action:** Implemented `IntersectionObserver` to lazy load the interactions only when they come into view (with a 200px margin). This saves initial network requests and main thread time.
