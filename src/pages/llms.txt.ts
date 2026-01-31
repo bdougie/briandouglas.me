@@ -1,63 +1,67 @@
 import type { APIRoute } from 'astro';
+import { getCollection } from 'astro:content';
 
-// Import all markdown files using Vite's import.meta.glob
-const posts = import.meta.glob('./posts/*.md', { eager: true });
+export const GET: APIRoute = async ({ site }) => {
+    // Get all posts from content collection
+    const posts = await getCollection('posts');
 
-export const GET: APIRoute = async () => {
-    // Convert the posts object to an array and extract frontmatter
-    const postArray = Object.entries(posts).map(([filepath, post]: [string, any]) => {
-        return {
-            filepath,
-            frontmatter: post.frontmatter,
-            compiledContent: post.compiledContent || post.default || '',
-            rawContent: post.rawContent || ''
-        };
-    });
-    
-    // Sort posts by date (newest first)
-    const sortedPosts = postArray.sort((a, b) => 
-        new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
-    );
-    
-    // Generate llms.txt content
-    const content = `# Brian Douglas Blog
+    // Filter drafts and sort by date (newest first)
+    const sortedPosts = posts
+        .filter(post => !post.data.draft)
+        .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
-Welcome to briandouglas.me - A blog about software engineering, developer relations, and technology.
+    // Generate llms.txt content following llmstxt.org format
+    const siteUrl = site?.toString() || 'https://briandouglas.me';
 
-${sortedPosts
-    .map((post) => {
-        // Extract filename to create the URL slug
-        const filename = post.filepath.split('/').pop() || '';
-        const [year, month, day, ...titleParts] = filename.replace('.md', '').split('-');
-        const slug = `${year}/${month}/${day}/${titleParts.join('-')}`;
-        
-        // Get the content - prefer rawContent, fallback to compiledContent
-        let postContent = post.rawContent || 
-                          (typeof post.compiledContent === 'function' ? post.compiledContent() : post.compiledContent) || 
-                          'Content not available';
-        
-        // Clean up the content - replace literal \n with actual line breaks
-        if (typeof postContent === 'string') {
-            postContent = postContent.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
-        }
-        
-        return `## ${post.frontmatter.title}
+    const content = `# Brian Douglas
 
-URL: https://briandouglas.me/posts/${slug}/
-Date: ${post.frontmatter.date}
-${post.frontmatter.description ? `Description: ${post.frontmatter.description}\n` : ''}
----
+> A blog about software engineering, developer experience, open source, and building with AI
 
-${postContent}
+This site contains technical writing on web development, developer tools, and AI agents.
 
----`;
-    })
-    .join('\n\n')}`;
-    
+## Recent Posts
+
+${sortedPosts.slice(0, 10).map((post) => {
+    // Extract slug from post.slug (format: YYYY-MM-DD-title)
+    const [year, month, day, ...titleParts] = post.slug.split('-');
+    const slug = titleParts.join('-');
+    const url = `${siteUrl}posts/${year}/${month}/${day}/${slug}/`;
+
+    return `- [${post.data.title}](${url}) - ${post.data.description || ''}`;
+}).join('\n')}
+
+## All Posts
+
+${sortedPosts.map((post) => {
+    const [year, month, day, ...titleParts] = post.slug.split('-');
+    const slug = titleParts.join('-');
+    const url = `${siteUrl}posts/${year}/${month}/${day}/${slug}/`;
+    const date = new Date(post.data.date).toISOString().split('T')[0];
+
+    return `
+## ${post.data.title}
+
+- URL: ${url}
+- Published: ${date}
+- Description: ${post.data.description || post.data.title}
+`;
+}).join('\n')}
+
+## About
+
+Brian Douglas is a developer advocate, open source contributor, and founder. He writes about developer tools, AI agents, and building better software experiences.
+
+## Contact
+
+- Website: ${siteUrl}
+- Twitter: @bdougieyo
+- GitHub: @bdougie
+`;
+
     return new Response(content, {
-        headers: { 
+        headers: {
             'Content-Type': 'text/plain; charset=utf-8',
-            'Cache-Control': 'public, max-age=3600' // Cache for 1 hour
+            'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400'
         },
     });
 };
