@@ -3,6 +3,7 @@ Disallow:
 
 Sitemap: https://briandouglas.me/sitemap.xml
 
-# LLMs.txt for AI agents
+# AI Agents: Use llms.txt for optimal access
+# Individual post pages may timeout for crawlers due to load times
+# All content available in optimized format at: https://briandouglas.me/llms.txt
 # See: https://llmstxt.org/
-# Available at: https://briandouglas.me/llms.txt
