@@ -103,6 +103,38 @@ This installs Tapes and starts the proxy server locally. Point your LLM requests
 
 But capture is only half the story. What you do with that preserved knowledge matters more.
 
+## Running Tapes with OpenClaw
+
+One practical way to see Tapes in action is through [OpenClaw](https://tapes.dev/guides/openclaw/), which provides remote development environments that integrate seamlessly with agent workflows.
+
+OpenClaw uses Tapes as a proxy to capture all LLM interactions happening in your development environment. This means every agent conversation, every code generation session, every debugging interaction gets preserved automatically.
+
+The setup is straightforward. Start the Tapes proxy server:
+
+```bash
+tapes serve \
+  --provider anthropic \
+  --upstream "https://api.anthropic.com" \
+  --proxy-listen "0.0.0.0:8080" \
+  --sqlite "./tapes.db"
+```
+
+Then configure OpenClaw to route through Tapes by editing `~/.openclaw/openclaw.json`:
+
+```json
+{
+  "providers": {
+    "anthropic": {
+      "baseUrl": "http://localhost:8080"
+    }
+  }
+}
+```
+
+Now every interaction in your OpenClaw environment flows through Tapes. The agent's problem-solving patterns, the code it generates, the debugging paths it explores—all preserved in the tape archive. Later sessions can retrieve this context and build on what was learned before.
+
+This is infrastructure for continuity. Your development environment isn't starting fresh each time. It's building institutional knowledge.
+
 We're building toward a future where:
 
 - **Historical sessions are searchable** by semantic similarity, not just timestamps
