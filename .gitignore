@@ -44,6 +44,8 @@ public/images/*.webp
 !public/images/og-default.png
 !public/images/black-social-bg.png
 !public/images/edge-ssr-x.png
+!public/images/zoidburg-home.webp
+!public/images/tapes.png
 
 # GIFs should be served from Cloudinary
 public/gifs/*.gif
