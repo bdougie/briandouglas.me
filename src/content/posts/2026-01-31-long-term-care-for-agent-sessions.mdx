@@ -1,0 +1,136 @@
+---
+title: "Long-Term Care for Agents with Tapes"
+date: 2026-01-31
+description: "Agent sessions contain valuable wisdom worth preserving. Like magnetic tape archives knowledge for decades, Tapes preserves agent memory for lasting value."
+---
+
+<img src="/images/zoidburg-home.webp" alt="Zoidberg at home" width="600" />
+
+*Image: Zoidberg finally a homeowner. Source: [Reddit](https://www.reddit.com/r/futurama/comments/131cr6m/zoidburghome_owner/)*
+
+Every agent session contains wisdom worth preserving.
+
+Watch an agent debug a tricky integration. See it discover the right sequence of tool calls. Observe it figure out which documentation actually matters. That agent just learned something valuable—patterns that worked, approaches that failed, context that matters.
+
+Then the session ends. All that knowledge evaporates.
+
+We preserve conversations with grandparents because they contain irreplaceable knowledge. Agent sessions deserve the same care. The difference is we have the infrastructure to make agent memory durable.
+
+The problem isn't observability—we can watch agents work. The problem is preservation. What if we could store sessions in a way that lets agents recall them later? Not just logs to grep through, but searchable, retrievable wisdom that agents can actually learn from.
+
+Magnetic tape is still the most durable form of media we have. NASA uses it for archival storage. Libraries preserve their collections on it. It lasts decades without degradation. The knowledge doesn't fade.
+
+<img src="/images/tapes.png" alt="Tapes - Agent observability infrastructure" width="600" />
+
+That's what we're building with [tapes.dev](https://tapes.dev/), transparent agent instrumentation for content-addressable LLM interactions. The kind of observability infrastructure that [autonomous agents need](https://bdougie.live/posts/2026-01-18-for-every-ralph-there-needs-to-be-a-super-nintendo/) to learn from their own history.
+
+## From Observation to Preservation
+
+You can watch what your agents do. Cost per iteration, tool call patterns, where tokens went. That's table stakes for running autonomous agents in production.
+
+But observation isn't preservation.
+
+Your agent solves a hard problem on Monday. On Tuesday, it has no idea that problem ever existed. The patterns it discovered, the approaches that worked, the dead ends it identified—all gone. You put tokens into the machine for that knowledge. It evaporated with the session.
+
+This isn't a minor inefficiency. It's architectural neglect. We're treating valuable knowledge as disposable when we should be preserving it like archival tape.
+
+## Why Vector Search?
+
+The answer isn't bigger context windows. It's **selective recall** from preserved sessions.
+
+[Vector search](https://tapes.dev/guides/search/) gives agents the ability to retrieve relevant historical context without loading entire session histories into memory. Instead of cramming everything into a 200k token window and praying, you query for what matters:
+
+- What did we discuss about this customer's integration requirements?
+- What tool call patterns worked for similar requests?
+- What errors did we encounter with this API endpoint before?
+
+This is how human experts work. A senior engineer doesn't re-read every document before answering a question. They recall relevant experiences based on semantic similarity to the current problem.
+
+With proper vector infrastructure, your agents can do the same—but with perfect recall across thousands of sessions. Tapes worked with [Chroma](https://www.trychroma.com/) to provide vector storage, giving you production-ready semantic search out of the box.
+
+## The Tapes Approach
+
+Tapes is open source infrastructure for preserving agent sessions with the durability of archival tape.
+
+```
+┌─────────────┐
+│   Agent     │
+│ Application │
+└──────┬──────┘
+       │
+       │ LLM API calls
+       ▼
+┌─────────────────────────────────┐
+│      Tapes Proxy Server         │
+│  ┌───────────────────────────┐  │
+│  │  Transparent Forwarding   │  │
+│  └───────────┬───────────────┘  │
+│              │                  │
+│  ┌───────────▼───────────────┐  │
+│  │   Async Worker Pool       │  │
+│  │  ┌─────────────────────┐  │  │
+│  │  │  Merkle DAG Storage │  │  │
+│  │  │  (Content-Addressed)│  │  │
+│  │  └─────────────────────┘  │  │
+│  │  ┌─────────────────────┐  │  │
+│  │  │  Vector Embeddings  │  │  │
+│  │  │  (Chroma)           │  │  │
+│  │  └─────────────────────┘  │  │
+│  └─────────────────────────┘  │
+└──────────┬──────────────────────┘
+           │
+           │ Forwarded to upstream
+           ▼
+     ┌────────────┐
+     │   LLM      │
+     │  Provider  │
+     │ (Anthropic,│
+     │  OpenAI)   │
+     └────────────┘
+```
+
+It [records every request and response](https://tapes.dev/guides/history/) between your application and LLM providers. Acting as a proxy server, Tapes captures and stores conversation history, allowing you to inspect, search, and verify what happened. No SDK integration. No code changes. Just preservation that works.
+
+Get started with two commands:
+
+```bash
+curl -fsSL https://tapes.dev/install.sh | sh
+tapes serve
+```
+
+This installs Tapes and starts the proxy server locally. Point your LLM requests through it without any framework or code changes. Your agents can now build institutional memory from day one.
+
+But capture is only half the story. What you do with that preserved knowledge matters more.
+
+We're building toward a future where:
+
+- **Historical sessions are searchable** by semantic similarity, not just timestamps
+- **Execution patterns become retrievable skills** that agents can apply to new situations
+- **Cost attribution ties back to specific reasoning paths**, so you know which recordings are worth preserving
+- **Compliance requirements are satisfied** with cryptographic verification of what actually happened
+
+This is what we mean by long-term care for agent sessions. Not just logging what happened, but preserving that knowledge like archival tape—durable, retrievable, and useful for future decisions.
+
+## What This Enables
+
+When agents can access preserved sessions, entirely new capabilities emerge:
+
+**Self-healing infrastructure loops.** Agents can analyze their own preserved performance history and generate improved strategies. Not through fine-tuning, but through retrieving what worked before and applying it immediately.
+
+**Warm starts.** New sessions begin with relevant context retrieved from the archive. Your agent doesn't just know the user's name—it recalls the state of their project, their preferred communication style, and the context of their last three requests.
+
+**Institutional knowledge.** When one agent session solves a hard problem, that solution gets preserved in the tape. Every future session can retrieve and learn from it. You're building collective intelligence, not isolated instances.
+
+**Cost efficiency.** Stop paying to re-derive the same insights. Retrieval from preserved sessions is cheaper than regeneration. Preservation infrastructure pays for itself.
+
+## The Path Forward
+
+We're sharing [Tapes on GitHub](https://github.com/papercomputeco/tapes) today because we believe agent memory needs to be preserved as infrastructure, not discarded as logs.
+
+Vector search and semantic recall from preserved sessions aren't optional features for production agents—they're requirements. Without them, you're building systems with no institutional memory, no learning, and no continuity.
+
+Like magnetic tape preserves knowledge for decades, Tapes preserves agent sessions for lasting value. The agents that win will be the ones that remember.
+
+---
+
+*[Tapes](https://tapes.dev/) is open source infrastructure for providing long-term care for agent sessions. We're currently working with open source design partners shipping production agents who need durable memory, cost intelligence, and compliance guarantees. If that sounds like you, reach out.*
