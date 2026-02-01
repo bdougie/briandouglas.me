@@ -9,3 +9,7 @@
 ## 2026-01-30 - Lazy Load Bluesky Interactions
 **Learning:** The `BlueskyInteractions.astro` component was fetching data immediately on page load, even for posts where the comments were at the bottom of the page. This delayed TTI and wasted bandwidth.
 **Action:** Implemented `IntersectionObserver` to lazy load the interactions only when they come into view (with a 200px margin). This saves initial network requests and main thread time.
+
+## 2026-01-31 - Unused Preconnects
+**Learning:** The site used system fonts but had a preconnect to `fonts.googleapis.com`. Even if fonts were used, `crossorigin` on preconnect can prevent connection reuse for non-CORS CSS requests.
+**Action:** Remove unused preconnects. Ensure `crossorigin` matches the request mode (CORS vs non-CORS) if adding preconnects in the future.
