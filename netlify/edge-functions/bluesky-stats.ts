@@ -29,7 +29,7 @@ async function resolveDid(handle: string): Promise<string | null> {
 
   try {
     const response = await fetch(
-      `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(handle)}`
+      `https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=${encodeURIComponent(handle)}`
     );
     if (response.ok) {
       const data = await response.json();
@@ -79,7 +79,7 @@ export default async (req: Request, context: Context): Promise<Response> => {
         { headers: { Accept: "application/json" } }
       ),
       fetch(
-        `https://public.api.bsky.app/xrpc/app.bsky.feed.getLikes?uri=${encodeURIComponent(atUri)}&limit=10`,
+        `https://public.api.bsky.app/xrpc/app.bsky.feed.getLikes?uri=${encodeURIComponent(atUri)}&limit=5`,
         { headers: { Accept: "application/json" } }
       ).catch(() => null),
     ]);
