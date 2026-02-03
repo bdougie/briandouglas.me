@@ -29,7 +29,7 @@ async function resolveDid(handle: string): Promise<string | null> {
 
   try {
     const response = await fetch(
-      `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(handle)}`
+      `https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle?handle=${encodeURIComponent(handle)}`
     );
     if (response.ok) {
       const data = await response.json();
