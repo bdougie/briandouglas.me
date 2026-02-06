@@ -38,7 +38,7 @@ const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
                 <div class="flex items-start justify-between">
                   <div class="flex-1">
                     <h3 class="text-base font-medium mb-2">
-                      <a href={`/posts/${complexSlug}/`} class="text-gray-200 group-hover:text-white transition-colors">
+                      <a href={`/posts/${complexSlug}/`} class="text-gray-200 group-hover:text-white transition-colors" data-astro-prefetch>
                         {post.data.title}
                       </a>
                     </h3>
