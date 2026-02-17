@@ -14,6 +14,7 @@ const posts = defineCollection({
     category: z.string().optional(),
     blueskyUrl: z.string().optional(),
     blueskyUri: z.string().optional(),
+    canonical_url: z.string().optional(),
   }),
 });
 

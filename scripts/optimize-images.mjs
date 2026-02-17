@@ -1,5 +1,4 @@
 import imagemin from 'imagemin';
-import imageminGifsicle from 'imagemin-gifsicle';
 import imageminMozjpeg from 'imagemin-mozjpeg';
 import imageminPngquant from 'imagemin-pngquant';
 import imageminSvgo from 'imagemin-svgo';
@@ -21,14 +20,9 @@ async function optimizeImages() {
   try {
     await fs.mkdir(tempDir, { recursive: true });
     
-    const files = await imagemin([`${publicDir}/**/*.{jpg,jpeg,png,gif,svg}`], {
+    const files = await imagemin([`${publicDir}/**/*.{jpg,jpeg,png,svg}`], {
       destination: tempDir,
       plugins: [
-        imageminGifsicle({
-          optimizationLevel: 3,
-          interlaced: true,
-          colors: 256
-        }),
         imageminMozjpeg({
           quality: 85,
           progressive: true
