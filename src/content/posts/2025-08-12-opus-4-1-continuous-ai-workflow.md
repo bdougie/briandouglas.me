@@ -30,11 +30,11 @@ This is not something I could have done before, but I read a book [Designing Dat
 
 Last we I saw on X w perfectly captures what users actually feel:
 
-![x.com/BrendanFalk/status/1953925364709044626](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/opuwhen-to-use-opus-4-1s-4-1-what-is-it-good-for-109.png)
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/opuwhen-to-use-opus-4-1s-4-1-what-is-it-good-for-109.png" alt="x.com/BrendanFalk/status/1953925364709044626" />
 
 I responded as soon as I saw Brendan's clarifying question. Not all models should be treated the same—they're like different tools in your toolbox. You wouldn't use a sledgehammer to hang a picture, right? Opus isn't meant for one-shot solutions; it's designed for deep reasoning.
 
-![Opus vs Sonnet comparison](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/opuwhen-to-use-opus-4-1s-4-1-what-is-it-good-for-110.png)
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/opuwhen-to-use-opus-4-1s-4-1-what-is-it-good-for-110.png" alt="Opus vs Sonnet comparison" />
 
 ## Meet Your New Architect: Opus
 
@@ -61,7 +61,7 @@ Implement structured logging throughout the pipeline for debugging, monitoring, 
 
 It didn't just say "add logging" - it thought through correlation IDs, audit trails, and performance metrics. These are things I would've discovered the hard way in production. Quick tip: take all that reasoning work and produce wonderful documentation and reference guides to use for future context engineering.
 
-![Opus planning output](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/opuwhen-to-use-opus-4-1s-4-1-what-is-it-good-for-111.png)
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/opuwhen-to-use-opus-4-1s-4-1-what-is-it-good-for-111.png" alt="Opus planning output" />
 
 ### The Deep Thinking Sessions
 

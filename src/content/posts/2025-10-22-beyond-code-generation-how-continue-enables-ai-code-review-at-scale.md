@@ -7,7 +7,7 @@ canonical_url: "https://blog.continue.dev/beyond-code-generation-how-continue-en
 
 Generative coding started with autocomplete and has evolved into sophisticated code generation. But what if your AI assistant could do more than just write code? What if it could reason about your codebase, enforce standards, and provide intelligent feedback? This is where Continue transcends its identity as a coding assistant and becomes a platform for custom AI agents.
 
-![Continue AI code review](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/beyond-code-generation-how-continue-enables-ai-code-review-at-scale-52.png)
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/beyond-code-generation-how-continue-enables-ai-code-review-at-scale-52.png" alt="Continue AI code review" />
 
 While most developers know Continue for its excellent code completion and chat features, its true power lies in its extensible architecture. Continue isn't just another copilot—it's a framework for building tailored AI experiences that understand your specific context, conventions, and requirements. Want to see this in action? Check out my [CodeBunny project](https://briandouglas.me/posts/2025/10/20/codebunny-privacy-first-ai-code-reviews/?ref=blog.continue.dev), a privacy-first PR review bot built on Continue's agent capabilities.
 
@@ -78,7 +78,7 @@ The hub agents come with pre-configured MCP (Model Context Protocol) tools, allo
 
 [See how I made my own Codebunny](https://briandouglas.me/posts/2025/10/20/codebunny-privacy-first-ai-code-reviews/?ref=blog.continue.dev)
 
-![https://github.com/bdougie/codebunny](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/beyond-code-generation-how-continue-enables-ai-code-review-at-scale-53.png)
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/beyond-code-generation-how-continue-enables-ai-code-review-at-scale-53.png" alt="CodeBunny GitHub repository" />
 
 ## Privacy-First Intelligence
 

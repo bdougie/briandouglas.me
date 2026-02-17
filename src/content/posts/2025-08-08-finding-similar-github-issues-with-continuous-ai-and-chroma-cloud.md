@@ -21,7 +21,7 @@ Chroma allows you to work with embedding vectors of text, in our case GitHubissu
 
 Working on Continue [PR #6683](https://github.com/continuedev/continue/pull/6683?ref=blog.continue.dev)? Let me show you what semantic search reveals:
 
-![Semantic search results](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/finding-similar-github-issues-with-continuous-ai-and-chroma-cloud-113.jpg)
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/finding-similar-github-issues-with-continuous-ai-and-chroma-cloud-113.jpg" alt="Semantic search results" />
 
 Note: [Issue #5053](https://github.com/continuedev/continue/issues/5053?ref=blog.continue.dev) is 60% similar and already closed. That's valuable context - someone already solved a related problem. This was a simple test using the default embeddings provided by the Chroma client, but I could definitely see the potential for improving this experience and adding it to my continuous AI workflow.
 
@@ -36,7 +36,7 @@ Check out [PR #7066](https://github.com/continuedev/continue/pull/7066?ref=blog.
 
 Here's what the bot comment looks like:
 
-![Bot comment with similar issues](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/finding-similar-github-issues-with-continuous-ai-and-chroma-cloud-114.png)
+<img src="https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/finding-similar-github-issues-with-continuous-ai-and-chroma-cloud-114.png" alt="Bot comment with similar issues" />
 
 ## **Continue the Plan Mode**
 
