@@ -7,6 +7,8 @@ canonical_url: "https://blog.continue.dev/go-offline-with-context-engineering/"
 
 I ride BART every day, and I've turned those underground stretches into productive coding time using Continue's agent mode with Ollama. No internet required.
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/TbJ0gaC0T-E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 ## The reality of offline development
 
 We've all been there. No access to LLMs goes down for 30-40mins because your coffee shop WiFi is crawling. You're in a secure environment where code can't leave the network. Or you're simply trying to focus without the constant pull of online distractions.
@@ -147,6 +149,6 @@ The setup takes minutes, but it fundamentally changes how you approach offline t
 
 Check out our [installation guide](https://docs.continue.dev/quickstart?ref=blog.continue.dev) to get started. And if you're interested in sharing rules and PRD templates with the community, take a look at our new [awesome-rules repository](https://github.com/continuedev/awesome-rules?ref=blog.continue.dev) that includes [my rules for setting up tasks](https://github.com/continuedev/awesome-rules/blob/main/rules/task-management/agent-task-generate-tasks.md?ref=blog.continue.dev).
 
-We'd love to hear about your offline coding experiences. [Join our Discord](https://discord.com/invite/EfJEfdFnDQ?ref=blog.continue.dev) to share what you've built during your commute.
+We'd love to hear about your offline coding experiences. [Join the discussion](https://github.com/continuedev/continue/discussions) to share what you've built during your commute.
 
 Because sometimes the best code gets written underground.
