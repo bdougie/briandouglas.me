@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run prebuild && npm run optimize:images && astro build",
-    "build:prod": "npm run prebuild && npm run optimize:images:all && astro build",
+    "build": "npm run prebuild && npm run optimize:images && astro build && npx pagefind --site dist",
+    "build:prod": "npm run prebuild && npm run optimize:images:all && astro build && npx pagefind --site dist",
     "prebuild": "npm run upload:images && npm run replace:paths",
     "preview": "astro preview",
     "astro": "astro",
@@ -45,6 +45,7 @@
     "imagemin-pngquant": "^10.0.0",
     "imagemin-svgo": "^11.0.1",
     "imagemin-webp": "^8.0.0",
+    "pagefind": "^1.4.0",
     "playwright": "^1.55.1",
     "satori": "^0.19.1",
     "sharp": "^0.34.3",

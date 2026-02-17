@@ -1,6 +1,7 @@
 ---
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import SearchModal from '../components/SearchModal.astro';
 
 interface Props {
   title?: string;
@@ -171,6 +172,7 @@ if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
       </main>
       <Footer />
     </div>
+    <SearchModal />
   </body>
 </html>
 
