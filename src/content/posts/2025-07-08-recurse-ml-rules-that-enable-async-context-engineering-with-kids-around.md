@@ -37,7 +37,7 @@ When I'm doing async context engineering with kids around, I'm solving what Ty d
 
 This workflow is incredibly productive BUT requires automated quality gates. As Ty notes, "bad context is worse than no context" - and the recurse-ml rules from the [awesome-rules repository](https://github.com/continuedev/awesome-rules/blob/main/rules/recurse-ml/rml-verify.md?ref=blog.continue.dev) prevent context poisoning that could propagate errors throughout my codebase.
 
-![Recurse ML rules in action](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/recurse-ml-rules-that-enable-async-context-engineering-with-kids-around-137)
+![Recurse ML rules in action](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/recurse-ml-rules-that-enable-async-context-engineering-with-kids-around-137.png)
 
 **My async context engineering pattern:**
 
@@ -51,7 +51,7 @@ This workflow is incredibly productive BUT requires automated quality gates. As 
 
 The beauty of the recurse-ml rule is they're designed for exactly this scenario - fast iteration with automated quality control. But here's the game-changer: adding these rules to `.continue/rules` means they're automatically applied to every AI interaction, keeping your code clean even when you're working completely async.
 
-![Recurse ML verification output](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/recurse-ml-rules-that-enable-async-context-engineering-with-kids-around-138)
+![Recurse ML verification output](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/recurse-ml-rules-that-enable-async-context-engineering-with-kids-around-138.png)
 
 Here's what they caught in my weekend session:
 
