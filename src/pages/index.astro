@@ -46,7 +46,7 @@ const sortedPosts = posts
       <!-- Bio -->
       <div class="space-y-3">
         <p class="text-sm text-gray-300 leading-relaxed">
-          I work at <a href="https://continue.dev" target="_blank" rel="noopener noreferrer" class="text-orange-500 hover:text-orange-400 underline underline-offset-2">Continue</a>, where we help folks ship faster with <a href="https://blog.continue.dev/what-is-continuous-ai-a-developers-guide/" target="_blank" rel="noopener noreferrer" class="text-orange-500 hover:text-orange-400 underline underline-offset-2">Continuous AI</a>.
+          I work at the <a href="https://papercompute.com/" target="_blank" rel="noopener noreferrer" class="text-orange-500 hover:text-orange-400 underline underline-offset-2">Paper Compute Company</a>.
         </p>
         <p class="text-sm text-gray-300 leading-relaxed">
           Previously founded <a href="https://opensauced.pizza" target="_blank" rel="noopener noreferrer" class="text-orange-500 hover:text-orange-400 underline underline-offset-2">Open Sauced</a> (joined Linux Foundation 2024) and led Developer Advocacy at <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-orange-500 hover:text-orange-400 underline underline-offset-2">GitHub</a>.
@@ -58,7 +58,7 @@ const sortedPosts = posts
       
       <!-- Subscribe Link -->
       <div class="mt-6">
-        <a href="/subscribe" class="inline-flex items-center gap-2 text-sm text-orange-500 hover:text-orange-400 transition-colors">
+        <a href="/subscribe" class="inline-flex items-center gap-2 text-sm text-orange-500 hover:text-orange-400 transition-colors" data-astro-prefetch>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 11a9 9 0 0 1 9 9"></path>
             <path d="M4 4a16 16 0 0 1 16 16"></path>
@@ -81,7 +81,7 @@ const sortedPosts = posts
             <article class="group bg-gray-900/30 border border-gray-800 rounded-lg p-5 hover:bg-gray-900/50 hover:border-gray-700 transition-all">
               <div class="flex items-start justify-between mb-2">
                 <h3 class="text-base font-medium">
-                  <a href={`/posts/${complexSlug}/`} class="text-gray-200 group-hover:text-white transition-colors">
+                  <a href={`/posts/${complexSlug}/`} class="text-gray-200 group-hover:text-white transition-colors" data-astro-prefetch>
                     {post.data.title}
                   </a>
                 </h3>
@@ -98,7 +98,7 @@ const sortedPosts = posts
       </div>
       
       <div class="mt-8">
-        <a href="/posts" class="inline-flex items-center text-sm text-orange-500 hover:text-orange-400 transition-colors group">
+        <a href="/posts" class="inline-flex items-center text-sm text-orange-500 hover:text-orange-400 transition-colors group" data-astro-prefetch>
           View all posts 
           <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

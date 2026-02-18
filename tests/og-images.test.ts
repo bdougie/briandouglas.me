@@ -27,6 +27,17 @@ function isDraft(content: string): boolean {
 }
 
 /**
+ * Check if post has a canonical_url (cross-post from external source)
+ */
+function hasCanonicalUrl(content: string): boolean {
+  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  if (!frontmatterMatch) return false;
+
+  const frontmatter = frontmatterMatch[1];
+  return /^canonical_url:\s*.+/m.test(frontmatter);
+}
+
+/**
  * Get all published post slugs
  */
 function getPublishedPostSlugs(): string[] {
@@ -43,7 +54,7 @@ function getPublishedPostSlugs(): string[] {
 
   for (const file of files) {
     const content = fs.readFileSync(path.join(postsDir, file), 'utf8');
-    if (!isDraft(content)) {
+    if (!isDraft(content) && !hasCanonicalUrl(content)) {
       slugs.push(getSlugFromFilename(file));
     }
   }

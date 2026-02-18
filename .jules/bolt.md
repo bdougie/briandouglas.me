@@ -14,6 +14,6 @@
 **Learning:** The site used system fonts but had a preconnect to `fonts.googleapis.com`. Even if fonts were used, `crossorigin` on preconnect can prevent connection reuse for non-CORS CSS requests.
 **Action:** Remove unused preconnects. Ensure `crossorigin` matches the request mode (CORS vs non-CORS) if adding preconnects in the future.
 
-## 2026-02-01 - Optimizing Bluesky Identity Resolution
-**Learning:** `app.bsky.actor.getProfile` returns a large payload (full profile) when only the DID is needed. `com.atproto.identity.resolveHandle` is a dedicated, lightweight endpoint for this purpose.
-**Action:** Use `com.atproto.identity.resolveHandle` when only resolving a handle to a DID to reduce latency and bandwidth.
+## 2026-02-05 - Optimized Bluesky Handle Resolution
+**Learning:** `app.bsky.actor.getProfile` returns the entire profile (avatar, description, counts), which is heavy when only the DID is needed. `com.atproto.identity.resolveHandle` is a lightweight alternative that returns only the DID.
+**Action:** Use `com.atproto.identity.resolveHandle` when resolving a handle to a DID for AT Protocol URIs.
