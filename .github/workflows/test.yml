@@ -33,8 +33,8 @@ jobs:
         CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
         CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       run: |
-        if [ -n "$CLOUDINARY_API_KEY" ]; then
-          npm run og:migrate || echo "OG image generation skipped (credentials not available)"
+        if [ -n "$CLOUDINARY_API_KEY" ] && [ -n "$CLOUDINARY_API_SECRET" ]; then
+          npm run og:migrate
         else
           echo "Skipping OG image generation (Cloudinary credentials not configured)"
         fi

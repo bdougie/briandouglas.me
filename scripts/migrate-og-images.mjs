@@ -242,8 +242,9 @@ async function main() {
       uploaded++;
 
     } catch (error) {
-      console.error(`   ❌ Failed: ${error.message}`);
-      progress.failed.push({ slug: post.slug, error: error.message });
+      const errMsg = error.message || error.error?.message || JSON.stringify(error);
+      console.error(`   ❌ Failed: ${errMsg}`);
+      progress.failed.push({ slug: post.slug, error: errMsg });
       saveProgress(progress);
       failed++;
     }
