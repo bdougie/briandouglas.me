@@ -1,0 +1,94 @@
+---
+title: "Claude Failed Mid-Session. tapes Brought It Back."
+date: 2026-03-04
+description: "I was an hour deep into a Postgres integration when Claude Code crashed. No session recovery. But tapes had every message stored in a local SQLite database."
+---
+
+I was an hour deep into designing a Postgres integration for my AI agent's memory system when Claude Code crashed. No session recovery. No history. Just gone.
+
+Except it wasn't — because I had [tapes](https://tapes.dev) running.
+
+## My Workflow: `yolo`
+
+Every Claude Code session starts the same way. I open my terminal and type `yolo` — an alias for `claude --dangerously-skip-permissions`. I work fast, trust the tooling, and let the agent do its thing.
+
+This particular session was ambitious. I was planning how to close the loop between StarSearch (an AI agent in [contributor.info](https://contributor.info)) and tapes, the transparent proxy that already sits between StarSearch and OpenAI. The goal: write conversation data to Supabase Postgres so the agent could build memory — recalling previous sessions, distilling knowledge over time.
+
+We'd gotten through the full architecture:
+- Data flow design (tapes → Supabase with admin-only RLS)
+- A `recall_sessions` tool for the agent's manager
+- A `tapes_knowledge` table for distilled insights via Inngest background jobs
+
+An hour of exploration, back-and-forth, and decision-making. Then Claude crashed.
+
+## What tapes Captured
+
+tapes is a transparent proxy — it records every request and response between your application and LLM providers. It ships with a local SQLite database that stores everything as a content-addressed Merkle DAG.
+
+Every message — user prompts, assistant responses, tool calls, tool results — gets stored as a `node` with a hash, a role, content, and a parent pointer. The full conversation tree is reconstructable.
+
+## The Recovery
+
+When I started a new Claude Code session and mentioned I'd lost my previous work on "tapes/postgres," Claude had no memory of it. But I pointed it at the tapes database:
+
+```
+we can check the tapes sessions, ~/.tapes has the most recent session
+```
+
+From there, Claude queried the SQLite database directly:
+
+```sql
+SELECT role, content, created_at
+FROM nodes
+WHERE project = 'tapes.dev'
+ORDER BY created_at ASC
+```
+
+It walked through every message exchange — my initial questions, the agent's codebase exploration, my design constraints ("admin-only RLS, not public"), the three-section architecture we'd agreed on, and exactly where we left off.
+
+In minutes, I had the full context restored. Not a vague summary — the actual conversation, decisions, and plan.
+
+## Why This Matters
+
+Most tools treat conversation history as disposable. Claude Code has no built-in session persistence beyond the current process. When it crashes, your context is gone. If you've spent an hour getting an agent to understand your codebase and your constraints, that's an hour you're paying to re-derive.
+
+Think of tapes like a black box recorder on an airplane. The black box survives the crash because it records everything independently of the systems around it. tapes works on the same principle — thankfully, Claude sessions crash far more often than planes do. Magnetic tape is still the most durable form of media we have. NASA archives on it. Libraries preserve collections on it. It lasts decades without degradation.
+
+tapes works the same way, sitting one layer below at the proxy level. It doesn't care which AI tool you're using or whether that tool has its own session management. Every LLM call flows through it, and every call gets recorded.
+
+The irony isn't lost on me: the feature I was *designing* (agent memory via tapes + Postgres) is exactly what *saved* me when the session died. The local SQLite database that tapes already maintains was enough to recover everything.
+
+And the work got done. After recovering the session, I picked up exactly where Claude left off and shipped the [full integration](https://github.com/bdougie/contributor.info/pull/1720) — Supabase migrations, an ingest endpoint, a `recall_sessions` tool for the StarSearch manager agent, and a daily knowledge distillation job via Inngest. The same architecture we'd designed in the crashed session, now running in production.
+
+But here's what I keep thinking about: I recovered that session manually. I pointed Claude at the database, told it what to query, and waited while it reconstructed the context. What if it didn't need me to do that?
+
+We've solved this problem before. Distributed systems have had durable execution, deterministic replay, and self-healing recovery for decades. When a process crashes in Erlang, a supervisor restarts it with its last known state. When a Kafka consumer dies, another picks up from the last committed offset. The system heals itself.
+
+AI agents don't have any of this yet. As the Paper Compute team put it in [The Missing Harness](https://papercompute.com/blog/the-missing-harness/), reliability in AI isn't a model problem — it's a systems problem. We're running probabilistic agents on fragile scaffolding with no replay, no checkpointing, and no recovery primitives. When something fails, the agent doesn't know what it was doing or why.
+
+tapes is the first layer of that missing infrastructure. Today it's a black box recorder — durable state capture that survives the crash. But content-addressed storage and a full conversation DAG mean you have the building blocks for something bigger: deterministic replay of agent reasoning, context virtualization across sessions, and eventually agents that recover from their own failures without a human pointing them at a SQLite database.
+
+Session recovery was my problem last Tuesday. Self-healing agents are the real goal.
+
+## The Setup
+
+If you want this safety net, it takes about two minutes:
+
+```bash
+# Install tapes
+curl -fsSL https://download.tapes.dev/install | bash
+
+# Initialize persistent storage
+tapes init
+
+# Start the proxy
+tapes serve
+
+# Point your AI tools at the proxy URL
+```
+
+That's it. Every conversation gets recorded. When something crashes — and it will — your work is still there.
+
+---
+
+*[tapes](https://tapes.dev) is open source. The session that saved this blog post now powers the very memory system I was building when Claude crashed.*
