@@ -46,6 +46,7 @@ public/images/*.webp
 !public/images/edge-ssr-x.png
 !public/images/zoidburg-home.webp
 !public/images/tapes.png
+!public/images/hero.png
 
 # GIFs should be served from Cloudinary
 public/gifs/*.gif
