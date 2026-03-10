@@ -5,7 +5,7 @@ blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3mgpqvjs5hc2t"
 description: "How a DeepMind paper turned my Pokemon agent from 'watch and tweak' into 'run and measure.'"
 ---
 
-![Pokemon Red agent running headless in the terminal](/images/hero2.png)
+![Pokemon Red agent running headless in the terminal](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/hero2)
 
 I spent an evening building a Pokemon Red agent. If you've read the [pokedex logs](https://github.com/papercomputeco/pokemon/tree/dfab7e6c1ce2e65f86999a341819522da5390cdc/pokedex), you know the journey: six logs of fixing text-box detection, discovering PyBoy's button API quirks, fighting door loops, and getting the agent from Red's bedroom to Pallet Town.
 
