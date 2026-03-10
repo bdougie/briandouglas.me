@@ -4,6 +4,8 @@ date: 2026-03-10
 description: "How a DeepMind paper turned my Pokemon agent from 'watch and tweak' into 'run and measure.'"
 ---
 
+![Pokemon Red agent running headless in the terminal](/images/hero.png)
+
 I spent an evening building a Pokemon Red agent. If you've read the [pokedex logs](https://github.com/papercomputeco/pokemon/tree/dfab7e6c1ce2e65f86999a341819522da5390cdc/pokedex), you know the journey: six logs of fixing text-box detection, discovering PyBoy's button API quirks, fighting door loops, and getting the agent from Red's bedroom to Pallet Town.
 
 Every log followed the same pattern. Watch the agent run. Notice something wrong. Form a hypothesis. Write a fix. Run it again. Sometimes my hypothesis was right. Sometimes I'd spend an hour tweaking a parameter that turned out to be irrelevant.
@@ -13,6 +15,8 @@ Then I read DeepMind's [AlphaEvolve paper](https://arxiv.org/abs/2602.16928). Th
 My Pokemon agent runs headless at roughly 100x real-time. I could run 10 strategy variants in 36 seconds and let the numbers decide what works.
 
 ## Watching One Agent Hits a Ceiling
+
+![Single Pokemon agent navigating Pallet Town](/images/gif1_single_agent.gif)
 
 The pokedex logs tell the story of manual iteration. [Log 1](https://github.com/papercomputeco/pokemon/blob/dfab7e6c1ce2e65f86999a341819522da5390cdc/pokedex/log1.md) was just getting Python to run in the NixOS sandbox. [Log 5](https://github.com/papercomputeco/pokemon/blob/dfab7e6c1ce2e65f86999a341819522da5390cdc/pokedex/log5.md) was discovering that `pyboy.button_press()` doesn't work reliably in headless mode. [Log 6](https://github.com/papercomputeco/pokemon/blob/dfab7e6c1ce2e65f86999a341819522da5390cdc/pokedex/log6.md) was adding oscillation detection because the stuck counter kept resetting when the agent bounced between two positions.
 
@@ -63,6 +67,8 @@ The navigator parameters are now configurable via an `EVOLVE_PARAMS` environment
 The [evolution harness](https://github.com/papercomputeco/pokemon/blob/dfab7e6c1ce2e65f86999a341819522da5390cdc/scripts/evolve.py) sets this before launching each subprocess.
 
 ### Parallel Multi-Agent Runner
+
+![Multiple Pokemon agents running in parallel with split screen view](/images/gif3_split_screen.gif)
 
 [`run_10_agents.py`](https://github.com/papercomputeco/pokemon/blob/dfab7e6c1ce2e65f86999a341819522da5390cdc/scripts/run_10_agents.py) launches 10 parameter variants simultaneously:
 
@@ -117,6 +123,8 @@ Getting the fitness function wrong means optimizing for the wrong thing. If I on
 The pokedex logs are full of decisions about what matters. Map transitions. Party count. Battles won. Stuck events. All of those became fitness components because I'd already learned they were important through manual debugging. The watch-and-tweak phase wasn't wasted work. It was building the vocabulary for the fitness function.
 
 ## What Changes When You Race Instead of Watch
+
+![Ten Pokemon agents racing simultaneously](/images/gif5_race.gif)
 
 | | Watch One Agent | Race Ten Agents |
 |---|---|---|
