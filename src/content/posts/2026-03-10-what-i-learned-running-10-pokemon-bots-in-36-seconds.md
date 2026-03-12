@@ -17,7 +17,7 @@ My Pokemon agent runs headless at roughly 100x real-time. I could run 10 strateg
 
 ## Watching One Agent Hits a Ceiling
 
-![Single Pokemon agent navigating Pallet Town](/images/gif1_single_agent.gif)
+![Single Pokemon agent navigating Pallet Town](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/gif1_single_agent)
 
 The pokedex logs tell the story of manual iteration. [Log 1](https://github.com/papercomputeco/pokemon/blob/dfab7e6c1ce2e65f86999a341819522da5390cdc/pokedex/log1.md) was just getting Python to run in the NixOS sandbox. [Log 5](https://github.com/papercomputeco/pokemon/blob/dfab7e6c1ce2e65f86999a341819522da5390cdc/pokedex/log5.md) was discovering that `pyboy.button_press()` doesn't work reliably in headless mode. [Log 6](https://github.com/papercomputeco/pokemon/blob/dfab7e6c1ce2e65f86999a341819522da5390cdc/pokedex/log6.md) was adding oscillation detection because the stuck counter kept resetting when the agent bounced between two positions.
 
@@ -69,7 +69,7 @@ The [evolution harness](https://github.com/papercomputeco/pokemon/blob/dfab7e6c1
 
 ### Parallel Multi-Agent Runner
 
-![Multiple Pokemon agents running in parallel with split screen view](/images/gif3_split_screen.gif)
+![Multiple Pokemon agents running in parallel with split screen view](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/gif3_split_screen)
 
 [`run_10_agents.py`](https://github.com/papercomputeco/pokemon/blob/dfab7e6c1ce2e65f86999a341819522da5390cdc/scripts/run_10_agents.py) launches 10 parameter variants simultaneously:
 
@@ -125,7 +125,7 @@ The pokedex logs are full of decisions about what matters. Map transitions. Part
 
 ## What Changes When You Race Instead of Watch
 
-![Ten Pokemon agents racing simultaneously](/images/gif5_race.gif)
+![Ten Pokemon agents racing simultaneously](https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog/gif5_race)
 
 | | Watch One Agent | Race Ten Agents |
 |---|---|---|

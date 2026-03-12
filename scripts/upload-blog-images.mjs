@@ -105,7 +105,7 @@ async function processLocalImages() {
 }
 
 async function scanBlogPosts() {
-  const postsDir = path.join(__dirname, '../src/pages/posts');
+  const postsDir = path.join(__dirname, '../src/content/posts');
   const posts = fs.readdirSync(postsDir).filter(file => 
     file.endsWith('.mdx') || file.endsWith('.md')
   );

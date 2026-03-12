@@ -19,6 +19,8 @@ export const GET: APIRoute = async ({ site }) => {
 
 This site contains technical writing on web development, developer tools, and AI agents.
 
+For full post content, see: ${siteUrl}llms-full.txt
+
 ## Recent Posts
 
 ${sortedPosts.slice(0, 10).map((post) => {
