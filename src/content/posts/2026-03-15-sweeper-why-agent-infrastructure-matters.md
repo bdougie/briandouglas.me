@@ -1,6 +1,7 @@
 ---
 title: "842 Lint Errors, 5 Parallel Agents, 54 Minutes"
 date: 2026-03-15
+blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3mh4d22uqos2d"
 description: "I built a tool that fans out parallel Claude Code agents to fix lint errors across a codebase. It taught me that the hard problems aren't prompts or models. They're isolation, observability, and memory."
 ---
 
