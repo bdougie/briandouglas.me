@@ -1,5 +1,5 @@
 // Service Worker for Offline Support and Image Caching
-const CACHE_NAME = 'briandouglas-v4';
+const CACHE_NAME = 'briandouglas-v5';
 const IMAGE_CACHE_NAME = 'briandouglas-images-v3';
 const CLOUDINARY_ORIGIN = 'https://res.cloudinary.com';
 
@@ -98,6 +98,11 @@ self.addEventListener('fetch', event => {
     return;
   }
   
+  // Skip caching for API routes - always go to network
+  if (url.origin === self.location.origin && url.pathname.startsWith('/api/')) {
+    return;
+  }
+
   // Handle other static resources (CSS, JS, etc.)
   if (url.origin === self.location.origin) {
     event.respondWith(
