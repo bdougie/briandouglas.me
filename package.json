@@ -38,7 +38,7 @@
     "@netlify/edge-functions": "^3.0.3",
     "@squoosh/lib": "^0.3.1",
     "@vitest/ui": "^4.0.16",
-    "happy-dom": "^20.0.11",
+    "happy-dom": "^20.8.9",
     "imagemin": "^9.0.1",
     "imagemin-gifsicle": "^7.0.0",
     "imagemin-mozjpeg": "^10.0.0",
