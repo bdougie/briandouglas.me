@@ -2,6 +2,7 @@
 title: "I Trained a Model Instead of Writing a Skill"
 date: 2026-05-20
 description: "Skills are a great way to teach an agent a pattern. I got curious whether the agent could just learn the pattern, so I tried training a model while also figuring out what RL actually is."
+blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3mmbnznsvsk2u"
 ---
 
 Skills are popular right now, and worth paying attention to. A skill is a markdown file that teaches an agent a pattern. You write the workflow down once, point the agent at it, and the agent picks up the pattern without you re-explaining it every session.
