@@ -70,6 +70,8 @@ I did not guess my way to that split. The per-model data showed me what each kin
 
 I braced for a quality drop and could not find one. The inbox reports read the same. The org triage still catches stale PRs and CI failures. The morning briefs still surface the right meetings. For classification and triage, Sonnet was never the compromise. Opus was the extravagance.
 
+You can also point OpenClaw at a Claude Max plan instead of the API, and that is a fair way to cap the bill. I skipped it. At a few dollars a day, the API is cheap enough that it is not worth burning the weekly limits I use for my actual day-to-day work.
+
 > The default model is not a technical setting. It is a spend policy.
 
 ## What I took away
