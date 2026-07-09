@@ -2,6 +2,7 @@
 title: "My OpenClaw Was Spending $80 a Day to Read My Email"
 date: 2026-06-01
 description: "My OpenClaw chief-of-staff agent was burning $80 a day in Anthropic API costs. The fix was one config line, and the only reason I found it was observability."
+blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3mq7kftjchs2e"
 ---
 
 I run an AI chief of staff called [clawchief](https://github.com/bdougie/clawchief). It triages my Gmail, watches my GitHub org, preps me for meetings, and DMs me on Slack like a diligent coworker who never sleeps. Last month, it cost me $80 a day to do that. Some days it hit $90.
