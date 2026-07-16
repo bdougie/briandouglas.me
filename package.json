@@ -16,9 +16,8 @@
     "replace:paths": "node scripts/replace-image-paths.mjs",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "og:generate": "node scripts/generate-og-image.mjs",
-    "og:migrate": "node scripts/migrate-og-images.mjs",
-    "og:check": "vitest run tests/og-images.test.ts"
+    "og:check": "vitest run tests/og-images.test.ts",
+    "og:bench": "node scripts/og-bench.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.9",

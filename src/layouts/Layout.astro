@@ -28,13 +28,9 @@ const pageDescription = isBlogPost && frontmatter?.description ? frontmatter.des
 // Get the canonical URL for the current page
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://briandouglas.me');
 
-// Cloudinary base URL for OG images
-const CLOUDINARY_OG_BASE = 'https://res.cloudinary.com/bdougie/image/upload/og';
-
-// Generate OG image URL
-// For blog posts: use pre-generated static images on Cloudinary
-// For other pages: use default OG image
-let finalOgImageUrl: string;
+// OG images are generated at build time by src/pages/og/[...slug].png.ts
+// and served from this site, so a post and its card deploy atomically.
+let ogImagePath = '/og/default.png';
 
 if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
   // Extract slug from URL: /posts/2026/01/18/for-every-ralph-there-needs-to-be-a-super-nintendo/
@@ -43,17 +39,12 @@ if (isBlogPost && Astro.url.pathname.includes('/posts/')) {
   const slug = pathParts[pathParts.length - 1]; // Last part is the slug
 
   if (slug && slug !== 'posts') {
-    // Use pre-generated OG image from Cloudinary
-    // Short, simple URL: ~80 chars vs 400+ for dynamic URLs
-    finalOgImageUrl = `${CLOUDINARY_OG_BASE}/${slug}.png`;
-  } else {
-    // Fallback to default OG image
-    finalOgImageUrl = `${CLOUDINARY_OG_BASE}/default.png`;
+    ogImagePath = `/og/${slug}.png`;
   }
-} else {
-  // Non-blog pages use default OG image
-  finalOgImageUrl = `${CLOUDINARY_OG_BASE}/default.png`;
 }
+
+// og:image must be an absolute URL for social scrapers
+const finalOgImageUrl = new URL(ogImagePath, Astro.site || 'https://briandouglas.me').toString();
 ---
 
 <!doctype html>
