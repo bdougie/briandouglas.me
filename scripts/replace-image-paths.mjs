@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { glob } from 'glob';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +13,8 @@ const __dirname = path.dirname(__filename);
 const CLOUDINARY_BASE_URL = 'https://res.cloudinary.com/bdougie/image/upload/f_auto,q_auto/blog';
 const POSTS_DIR = path.join(__dirname, '../src/content/posts');
 const PUBLIC_IMAGES_DIR = path.join(__dirname, '../public/images');
+const UPLOAD_CACHE_FILE = path.join(__dirname, '../.cloudinary-uploads.json');
+const RASTER_IMAGE_PATTERN = /\.(png|jpg|jpeg|gif|webp)$/i;
 
 // Track replacements for reporting
 const replacements = [];
@@ -29,22 +32,66 @@ function getPostFiles() {
 /**
  * Check if an image exists in public/images
  */
-function imageExists(imageName) {
-  const extensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
-  
-  for (const ext of extensions) {
-    const imagePath = path.join(PUBLIC_IMAGES_DIR, imageName + ext);
-    if (fs.existsSync(imagePath)) {
-      return true;
+function stripQueryAndHash(imagePath) {
+  return imagePath.split(/[?#]/, 1)[0];
+}
+
+function resolvePublicImagePath(imagePath, publicImagesDir = PUBLIC_IMAGES_DIR) {
+  const cleanPath = stripQueryAndHash(imagePath.trim());
+  let relativePath;
+
+  if (cleanPath.startsWith('/public/images/')) {
+    relativePath = cleanPath.slice('/public/images/'.length);
+  } else if (cleanPath.startsWith('/images/')) {
+    relativePath = cleanPath.slice('/images/'.length);
+  } else if (cleanPath.startsWith('../images/')) {
+    relativePath = cleanPath.slice('../images/'.length);
+  } else if (cleanPath.startsWith('./')) {
+    relativePath = cleanPath.slice(2);
+  } else {
+    relativePath = cleanPath;
+  }
+
+  const resolvedPath = path.resolve(publicImagesDir, relativePath);
+  const publicRoot = path.resolve(publicImagesDir);
+  if (!resolvedPath.startsWith(`${publicRoot}${path.sep}`)) return null;
+
+  return resolvedPath;
+}
+
+function imageExists(imagePath, publicImagesDir = PUBLIC_IMAGES_DIR) {
+  const resolvedPath = resolvePublicImagePath(imagePath, publicImagesDir);
+  return Boolean(resolvedPath && fs.existsSync(resolvedPath));
+}
+
+function loadUploadCache() {
+  try {
+    if (fs.existsSync(UPLOAD_CACHE_FILE)) {
+      return JSON.parse(fs.readFileSync(UPLOAD_CACHE_FILE, 'utf8'));
     }
+  } catch {
+    console.log('⚠️  Could not read the Cloudinary upload cache');
   }
-  
-  // Check if the name already has an extension
-  if (fs.existsSync(path.join(PUBLIC_IMAGES_DIR, imageName))) {
-    return true;
-  }
-  
-  return false;
+  return {};
+}
+
+function getFileHash(filePath) {
+  const fileBuffer = fs.readFileSync(filePath);
+  return crypto.createHash('sha256').update(fileBuffer).digest('hex');
+}
+
+function getUploadedCloudinaryUrl(imagePath, uploadCache, publicImagesDir = PUBLIC_IMAGES_DIR) {
+  const cleanPath = stripQueryAndHash(imagePath);
+  if (!RASTER_IMAGE_PATTERN.test(cleanPath)) return null;
+
+  const localPath = resolvePublicImagePath(cleanPath, publicImagesDir);
+  if (!localPath || !fs.existsSync(localPath)) return null;
+
+  const imageName = getImageName(cleanPath);
+  const cacheEntry = uploadCache[imageName];
+  if (!cacheEntry || cacheEntry.hash !== getFileHash(localPath)) return null;
+
+  return `${CLOUDINARY_BASE_URL}/${imageName}`;
 }
 
 /**
@@ -52,7 +99,7 @@ function imageExists(imageName) {
  */
 function getImageName(imagePath) {
   // Remove leading slashes and directory paths
-  const filename = path.basename(imagePath);
+  const filename = path.basename(stripQueryAndHash(imagePath));
   // Remove extension
   return filename.replace(/\.(png|jpg|jpeg|gif|webp)$/i, '');
 }
@@ -111,9 +158,11 @@ function isRemoteOrCloudinaryPath(imagePath) {
 /**
  * Replace local image paths with Cloudinary URLs in a file
  */
-function replaceImagePaths(filePath) {
+function replaceImagePaths(filePath, options = {}) {
   let content = fs.readFileSync(filePath, 'utf8');
   const fileName = path.basename(filePath);
+  const uploadCache = options.uploadCache || loadUploadCache();
+  const publicImagesDir = options.publicImagesDir || PUBLIC_IMAGES_DIR;
 
   let changesMade = false;
 
@@ -124,14 +173,14 @@ function replaceImagePaths(filePath) {
       if (isRemoteOrCloudinaryUrl(match)) {
         return match;
       }
-      const imageName = getImageName(imagePath);
-      if (imageExists(imageName) || imageExists(imagePath)) {
-        const cloudinaryUrl = `${CLOUDINARY_BASE_URL}/${imageName}`;
+      const fullImagePath = pathPrefix + imagePath;
+      const cloudinaryUrl = getUploadedCloudinaryUrl(fullImagePath, uploadCache, publicImagesDir);
+      if (cloudinaryUrl) {
         replacements.push({ file: fileName, original: match, replaced: `![${altText}](${cloudinaryUrl})` });
         changesMade = true;
         return `![${altText}](${cloudinaryUrl})`;
       }
-      console.log(`⚠️  Image not found in public/images: ${imagePath} (in ${fileName})`);
+      console.log(`⚠️  Image was not uploaded; keeping local path: ${fullImagePath} (in ${fileName})`);
       return match;
     }
   );
@@ -143,14 +192,14 @@ function replaceImagePaths(filePath) {
       if (isRemoteOrCloudinaryUrl(match)) {
         return match;
       }
-      const imageName = getImageName(imagePath);
-      if (imageExists(imageName) || imageExists(imagePath)) {
-        const cloudinaryUrl = `${CLOUDINARY_BASE_URL}/${imageName}`;
+      const fullImagePath = pathPrefix + imagePath;
+      const cloudinaryUrl = getUploadedCloudinaryUrl(fullImagePath, uploadCache, publicImagesDir);
+      if (cloudinaryUrl) {
         replacements.push({ file: fileName, original: match, replaced: `![${altText}](${cloudinaryUrl})` });
         changesMade = true;
         return `![${altText}](${cloudinaryUrl})`;
       }
-      console.log(`⚠️  Image not found in public/images: ${imagePath} (in ${fileName})`);
+      console.log(`⚠️  Image was not uploaded; keeping local path: ${fullImagePath} (in ${fileName})`);
       return match;
     }
   );
@@ -164,15 +213,17 @@ function replaceImagePaths(filePath) {
       if (isRemoteOrCloudinaryPath(fullSrcPath)) {
         return match;
       }
-      const imageName = getImageName(imagePath);
-      if (imageExists(imageName) || imageExists(imagePath)) {
-        const cloudinaryUrl = `${CLOUDINARY_BASE_URL}/${imageName}`;
-        const replaced = `<img ${before}src="${cloudinaryUrl}"${after} />`;
+      const cloudinaryUrl = getUploadedCloudinaryUrl(fullSrcPath, uploadCache, publicImagesDir);
+      if (cloudinaryUrl) {
+        const replaced = match.replace(fullSrcPath, cloudinaryUrl);
         replacements.push({ file: fileName, original: match, replaced });
         changesMade = true;
         return replaced;
       }
-      console.log(`⚠️  Image not found in public/images: ${imagePath} (in ${fileName})`);
+      if (imageExists(fullSrcPath, publicImagesDir) && !RASTER_IMAGE_PATTERN.test(stripQueryAndHash(fullSrcPath))) {
+        return match;
+      }
+      console.log(`⚠️  Image was not uploaded; keeping local path: ${fullSrcPath} (in ${fileName})`);
       return match;
     }
   );
@@ -197,9 +248,10 @@ function main() {
   console.log(`📝 Found ${postFiles.length} post files to process\n`);
   
   let filesUpdated = 0;
+  const uploadCache = loadUploadCache();
   
   for (const file of postFiles) {
-    if (replaceImagePaths(file)) {
+    if (replaceImagePaths(file, { uploadCache })) {
       filesUpdated++;
     }
   }
@@ -228,4 +280,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main();
 }
 
-export { replaceImagePaths, getImageName };
+export {
+  getImageName,
+  getUploadedCloudinaryUrl,
+  imageExists,
+  replaceImagePaths,
+  resolvePublicImagePath,
+  stripQueryAndHash
+};
