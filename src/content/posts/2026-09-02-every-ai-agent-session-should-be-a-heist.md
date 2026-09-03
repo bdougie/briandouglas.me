@@ -2,6 +2,7 @@
 title: "Every Agent Session Should Be a Heist"
 date: 2026-09-02T12:00:00-07:00
 description: "I stopped asking one model to play every role. Pokémon Red showed me how to cast a crew by benchmark and route each job with vLLM."
+blueskyUrl: "https://bsky.app/profile/bizza.pizza/post/3mulu7xoups2a"
 ---
 
 Pokémon has become my test bench for watching agents observe, act, fail, and improve. If you are new to the experiment, start with [what I learned running 10 Pokémon bots in 36 seconds](/posts/2026/03/10/what-i-learned-running-10-pokemon-bots-in-36-seconds/).
