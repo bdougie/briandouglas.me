@@ -11,7 +11,7 @@ Those first bots were racing through the opening minutes of Pokémon Red. The ex
 
 Most runs happen *headlessly*, meaning no game window needs to stay open. The gameplay viewer is for me; the emulator can advance faster than real time without making a model watch the screen as a video.
 
-I do not hand every part of a run to one model. I assemble what I started calling the crew. Pi is the coding-agent harness, not a Raspberry Pi. It gives each model the Pokémon codebase and tools for operating the emulator. Fable sits above Pi, plans the mission, and distributes the work. A semantic router from vLLM calls in a different specialist when the job changes. The crew is the experiment now.
+I do not hand every part of a run to one model. I assemble what I started calling the crew. Pi is the all purpose agent harness. It gives each model the Pokémon codebase and tools for operating the emulator. Fable sits above Pi, plans the mission, and distributes the work. A semantic router from vLLM calls in a different specialist when the job changes. The crew is the experiment now.
 
 Emulator save states let the crew spread out. A save state freezes an exact moment in the game: location, health, inventory, progress, everything. I can copy that moment and hand it to 23 agents, or 238, at the same time. Each run starts from the same game state and tests a different way forward. The emulator does not care how many copies I make, though my hardware eventually does.
 
